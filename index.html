@@ -749,17 +749,117 @@
     font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
     letter-spacing: 0.08em; color: var(--ink-muted); white-space: nowrap;
   }
-  .ops-select {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.8rem; color: var(--ink);
+
+  /* ── MULTISELECT DROPDOWN ── */
+  .ms-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+  .ms-btn {
     background: white;
     border: 1px solid rgba(26,26,46,0.14);
-    border-radius: var(--radius); padding: 5px 10px;
-    outline: none; cursor: pointer;
+    border-radius: var(--radius);
+    padding: 5px 28px 5px 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem; color: var(--ink);
+    cursor: pointer; min-width: 130px; max-width: 200px;
+    text-align: left; position: relative;
     transition: border-color 0.15s;
-    max-width: 180px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .ops-select:focus { border-color: var(--col1); }
+  .ms-btn::after {
+    content: '▾'; position: absolute; right: 8px; top: 50%;
+    transform: translateY(-50%); font-size: 0.7rem; color: var(--ink-muted);
+  }
+  .ms-btn.active { border-color: var(--col1); }
+  .ms-btn.has-selection { border-color: var(--accent); color: var(--accent); font-weight: 500; }
+
+  .ms-dropdown {
+    display: none;
+    position: absolute; top: calc(100% + 4px); left: 0; z-index: 500;
+    background: white;
+    border: 1px solid rgba(26,26,46,0.12);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    min-width: 220px; max-width: 300px;
+    max-height: 340px;
+    overflow: hidden;
+    flex-direction: column;
+  }
+  .ms-dropdown.open { display: flex; }
+
+  .ms-search {
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(26,26,46,0.08);
+    flex-shrink: 0;
+  }
+  .ms-search input {
+    width: 100%; border: 1px solid rgba(26,26,46,0.14);
+    border-radius: 5px; padding: 5px 9px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
+    outline: none; color: var(--ink);
+  }
+  .ms-search input:focus { border-color: var(--col1); }
+
+  .ms-actions {
+    display: flex; gap: 0;
+    border-bottom: 1px solid rgba(26,26,46,0.08);
+    flex-shrink: 0;
+  }
+  .ms-action-btn {
+    flex: 1; padding: 5px; font-size: 0.73rem; font-weight: 500;
+    border: none; background: none; cursor: pointer;
+    color: var(--col1); transition: background 0.12s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .ms-action-btn:hover { background: var(--paper-warm); }
+  .ms-action-btn.clear { color: var(--accent); }
+
+  .ms-list {
+    overflow-y: auto; flex: 1;
+  }
+  .ms-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 12px; cursor: pointer;
+    font-size: 0.8rem; transition: background 0.1s;
+    color: var(--ink);
+  }
+  .ms-item:hover { background: var(--paper-warm); }
+  .ms-item input[type=checkbox] { width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; }
+  .ms-item label { cursor: pointer; flex: 1; }
+
+  .ms-footer {
+    display: flex; gap: 6px; padding: 8px 10px;
+    border-top: 1px solid rgba(26,26,46,0.08); flex-shrink: 0;
+  }
+  .ms-ok { flex: 1; background: var(--accent); color: white; border: none;
+    border-radius: 5px; padding: 6px; font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem; font-weight: 500; cursor: pointer; }
+  .ms-ok:hover { background: var(--accent-light); }
+  .ms-cancel { flex: 1; background: none; border: 1px solid rgba(26,26,46,0.15);
+    border-radius: 5px; padding: 6px; font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem; cursor: pointer; color: var(--ink-light); }
+
+  /* ── COLORES TABLA OPERACIONES ── */
+  .oblig-impuesto {
+    background: #e8924a; color: white;
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 0.78rem; font-weight: 500;
+    display: inline-block; max-width: 100%;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .oblig-tarea {
+    background: #4a9fd4; color: white;
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 0.78rem; font-weight: 500;
+    display: inline-block; max-width: 100%;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .ops-table .estado-Cumplido { background: rgba(144,238,144,0.4) !important; color: #2d7a4f !important; }
+  .ops-table .estado-CumplidoTardio { background: #2d7a4f !important; color: white !important; }
+  .ops-table .estado-Pendiente { background: #ffd700 !important; color: #7a6000 !important; }
+  .ops-table .estado-Vencido { background: #e53935 !important; color: white !important; }
+
 
   .ops-date-filter {
     display: flex; align-items: center; gap: 5px;
@@ -1166,36 +1266,73 @@
       </div>
       <div class="ops-filter-group">
         <span class="ops-filter-label">Usuario</span>
-        <select class="ops-select" id="opsFilterUser" onchange="opsRender()">
-          <option value="">Todos</option>
-          <option>Facundo Giacoppo</option>
-          <option>Ramiro Joya</option>
-          <option>Rosa Herrera</option>
-          <option>Marcos Hinojosa</option>
-          <option>Jose Garzon</option>
-        </select>
+        <div class="ms-wrapper" id="ms-usuario">
+          <button class="ms-btn" onclick="mstoggle('usuario')">Todos</button>
+          <div class="ms-dropdown" id="ms-dropdown-usuario">
+            <div class="ms-actions">
+              <button class="ms-action-btn" onclick="msSelectAll('usuario')">✓ Todos</button>
+              <button class="ms-action-btn clear" onclick="msClearAll('usuario')">✕ Ninguno</button>
+            </div>
+            <div class="ms-list" id="ms-list-usuario"></div>
+            <div class="ms-footer">
+              <button class="ms-ok" onclick="msApply('usuario')">OK</button>
+              <button class="ms-cancel" onclick="msClose('usuario')">Cancelar</button>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="ops-filter-group">
         <span class="ops-filter-label">Estado</span>
-        <select class="ops-select" id="opsFilterEstado" onchange="opsRender()">
-          <option value="">Todos</option>
-          <option>Pendiente</option>
-          <option>Cumplido</option>
-          <option>Cumplido Tardio</option>
-          <option>Vencido</option>
-        </select>
+        <div class="ms-wrapper" id="ms-estado">
+          <button class="ms-btn" onclick="mstoggle('estado')">Todos</button>
+          <div class="ms-dropdown" id="ms-dropdown-estado">
+            <div class="ms-actions">
+              <button class="ms-action-btn" onclick="msSelectAll('estado')">✓ Todos</button>
+              <button class="ms-action-btn clear" onclick="msClearAll('estado')">✕ Ninguno</button>
+            </div>
+            <div class="ms-list" id="ms-list-estado"></div>
+            <div class="ms-footer">
+              <button class="ms-ok" onclick="msApply('estado')">OK</button>
+              <button class="ms-cancel" onclick="msClose('estado')">Cancelar</button>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="ops-filter-group">
         <span class="ops-filter-label">Obligación</span>
-        <select class="ops-select" id="opsFilterOblig" onchange="opsRender()">
-          <option value="">Todas</option>
-        </select>
+        <div class="ms-wrapper" id="ms-oblig">
+          <button class="ms-btn" onclick="mstoggle('oblig')">Todas</button>
+          <div class="ms-dropdown" id="ms-dropdown-oblig">
+            <div class="ms-search"><input type="text" placeholder="Buscar..." oninput="msFilter('oblig', this.value)"></div>
+            <div class="ms-actions">
+              <button class="ms-action-btn" onclick="msSelectAll('oblig')">✓ Todos</button>
+              <button class="ms-action-btn clear" onclick="msClearAll('oblig')">✕ Ninguno</button>
+            </div>
+            <div class="ms-list" id="ms-list-oblig"></div>
+            <div class="ms-footer">
+              <button class="ms-ok" onclick="msApply('oblig')">OK</button>
+              <button class="ms-cancel" onclick="msClose('oblig')">Cancelar</button>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="ops-filter-group">
         <span class="ops-filter-label">Cliente</span>
-        <select class="ops-select" id="opsFilterCliente" onchange="opsRender()">
-          <option value="">Todos</option>
-        </select>
+        <div class="ms-wrapper" id="ms-cliente">
+          <button class="ms-btn" onclick="mstoggle('cliente')">Todos</button>
+          <div class="ms-dropdown" id="ms-dropdown-cliente">
+            <div class="ms-search"><input type="text" placeholder="Buscar..." oninput="msFilter('cliente', this.value)"></div>
+            <div class="ms-actions">
+              <button class="ms-action-btn" onclick="msSelectAll('cliente')">✓ Todos</button>
+              <button class="ms-action-btn clear" onclick="msClearAll('cliente')">✕ Ninguno</button>
+            </div>
+            <div class="ms-list" id="ms-list-cliente"></div>
+            <div class="ms-footer">
+              <button class="ms-ok" onclick="msApply('cliente')">OK</button>
+              <button class="ms-cancel" onclick="msClose('cliente')">Cancelar</button>
+            </div>
+          </div>
+        </div>
       </div>
       <label class="import-zone" style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid rgba(26,26,46,0.15);border-radius:var(--radius);cursor:pointer;background:white;font-size:0.8rem;color:var(--ink-light);margin-left:auto">
         ↑ Importar Excel
@@ -1807,13 +1944,114 @@ function opsInit() {
   opsRender();
 }
 
+// ── MULTISELECT ENGINE ──
+const MS_DATA = {
+  usuario: { items: ['Facundo Giacoppo','Ramiro Joya','Rosa Herrera','Marcos Hinojosa','Jose Garzon'], selected: new Set(), label: 'Todos' },
+  estado:  { items: ['Pendiente','Cumplido','Cumplido Tardio','Vencido'], selected: new Set(), label: 'Todos' },
+  oblig:   { items: [], selected: new Set(), label: 'Todas' },
+  cliente: { items: [], selected: new Set(), label: 'Todos' },
+};
+
+function msInit(key, items) {
+  MS_DATA[key].items = items;
+  msRenderList(key, '');
+}
+
+function msRenderList(key, filter) {
+  const list = document.getElementById('ms-list-' + key);
+  const items = MS_DATA[key].items.filter(i => !filter || i.toLowerCase().includes(filter.toLowerCase()));
+  list.innerHTML = items.map(item => `
+    <div class="ms-item">
+      <input type="checkbox" id="ms-${key}-${item.replace(/[^a-z0-9]/gi,'_')}"
+        ${MS_DATA[key].selected.has(item) ? 'checked' : ''}
+        onchange="msToggleItem('${key}', '${item.replace(/'/g,"\'")}', this.checked)">
+      <label for="ms-${key}-${item.replace(/[^a-z0-9]/gi,'_')}">${item}</label>
+    </div>
+  `).join('');
+}
+
+function msFilter(key, val) { msRenderList(key, val); }
+
+function msToggleItem(key, item, checked) {
+  if (checked) MS_DATA[key].selected.add(item);
+  else MS_DATA[key].selected.delete(item);
+}
+
+function msSelectAll(key) {
+  MS_DATA[key].items.forEach(i => MS_DATA[key].selected.add(i));
+  msRenderList(key, '');
+}
+
+function msClearAll(key) {
+  MS_DATA[key].selected.clear();
+  msRenderList(key, '');
+}
+
+function mstoggle(key) {
+  const dd = document.getElementById('ms-dropdown-' + key);
+  const isOpen = dd.classList.contains('open');
+  // Close all
+  ['usuario','estado','oblig','cliente'].forEach(k => {
+    document.getElementById('ms-dropdown-' + k).classList.remove('open');
+    document.getElementById('ms-' + k).querySelector('.ms-btn').classList.remove('active');
+  });
+  if (!isOpen) {
+    dd.classList.add('open');
+    document.getElementById('ms-' + key).querySelector('.ms-btn').classList.add('active');
+    // Clear search
+    const si = dd.querySelector('.ms-search input');
+    if (si) { si.value = ''; msRenderList(key, ''); }
+  }
+}
+
+function msApply(key) {
+  msClose(key);
+  msUpdateBtn(key);
+  opsPage = 1;
+  opsRender();
+}
+
+function msClose(key) {
+  document.getElementById('ms-dropdown-' + key).classList.remove('open');
+  document.getElementById('ms-' + key).querySelector('.ms-btn').classList.remove('active');
+}
+
+function msUpdateBtn(key) {
+  const btn = document.getElementById('ms-' + key).querySelector('.ms-btn');
+  const sel = MS_DATA[key].selected;
+  if (sel.size === 0) {
+    btn.textContent = MS_DATA[key].label;
+    btn.classList.remove('has-selection');
+  } else if (sel.size === 1) {
+    btn.textContent = [...sel][0];
+    btn.classList.add('has-selection');
+  } else {
+    btn.textContent = sel.size + ' seleccionados';
+    btn.classList.add('has-selection');
+  }
+  // Truncate
+  btn.title = btn.textContent;
+}
+
+// Close dropdowns on outside click
+document.addEventListener('click', (e) => {
+  ['usuario','estado','oblig','cliente'].forEach(k => {
+    const wrapper = document.getElementById('ms-' + k);
+    if (wrapper && !wrapper.contains(e.target)) {
+      document.getElementById('ms-dropdown-' + k).classList.remove('open');
+      document.getElementById('ms-' + k).querySelector('.ms-btn').classList.remove('active');
+    }
+  });
+});
+
 function opsPopulateFilters() {
   const obligs = [...new Set(opsData.map(r => r.obligacion))].sort();
   const clientes = [...new Set(opsData.map(r => r.cliente))].sort();
-  const obligSel = document.getElementById('opsFilterOblig');
-  const clienteSel = document.getElementById('opsFilterCliente');
-  obligs.forEach(o => { const opt = document.createElement('option'); opt.textContent = o; obligSel.appendChild(opt); });
-  clientes.forEach(c => { const opt = document.createElement('option'); opt.textContent = c; clienteSel.appendChild(opt); });
+  msInit('oblig', obligs);
+  msInit('cliente', clientes);
+  // usuario y estado ya tienen items hardcodeados en MS_DATA
+  msInit('usuario', MS_DATA.usuario.items);
+  msInit('estado', MS_DATA.estado.items);
 }
 
 function opsSetFilter(f, btn) {
@@ -1864,18 +2102,18 @@ function opsInRange(r) {
 }
 
 function opsGetFiltered() {
-  const user = document.getElementById('opsFilterUser').value;
-  const estado = document.getElementById('opsFilterEstado').value;
-  const oblig = document.getElementById('opsFilterOblig').value;
-  const cliente = document.getElementById('opsFilterCliente').value;
+  const selUser = MS_DATA.usuario.selected;
+  const selEstado = MS_DATA.estado.selected;
+  const selOblig = MS_DATA.oblig.selected;
+  const selCliente = MS_DATA.cliente.selected;
   const q = document.getElementById('opsSearch') ? document.getElementById('opsSearch').value.toLowerCase() : '';
 
   return opsData.filter(r => {
     if (!opsInRange(r)) return false;
-    if (user && r.usuario !== user) return false;
-    if (estado && r.estado !== estado) return false;
-    if (oblig && r.obligacion !== oblig) return false;
-    if (cliente && r.cliente !== cliente) return false;
+    if (selUser.size > 0 && !selUser.has(r.usuario)) return false;
+    if (selEstado.size > 0 && !selEstado.has(r.estado)) return false;
+    if (selOblig.size > 0 && !selOblig.has(r.obligacion)) return false;
+    if (selCliente.size > 0 && !selCliente.has(r.cliente)) return false;
     if (q && ![r.usuario,r.cliente,r.obligacion,r.estado].some(v => v && v.toLowerCase().includes(q))) return false;
     return true;
   });
@@ -1932,10 +2170,12 @@ function opsRender() {
       const color = USER_COLORS[r.usuario] || '#888';
       const fechaVenc = r.vencimiento ? r.vencimiento.split('-').reverse().join('/') : '—';
       const fechaReg = r.fecha_registro ? r.fecha_registro.split('-').reverse().join('/') : '—';
+      const isTarea = /^[ACILS] ?-/i.test(r.obligacion.trim());
+      const obligClass = isTarea ? 'oblig-tarea' : 'oblig-impuesto';
       return `<tr>
         <td><div class="user-chip"><div class="user-chip-dot" style="background:${color}"></div>${r.usuario}</div></td>
         <td>${r.cliente}</td>
-        <td>${r.obligacion}</td>
+        <td><span class="${obligClass}" title="${r.obligacion}">${r.obligacion}</span></td>
         <td>${r.periodo}</td>
         <td>${fechaVenc}</td>
         <td><span class="estado-badge estado-${estadoKey}">${r.estado}</span></td>
@@ -2041,17 +2281,11 @@ async function opsImportFile(event) {
   opsData = imported;
   opsPage = 1;
   
-  // Repoblar filtros
-  const obligSel = document.getElementById('opsFilterOblig');
-  const clienteSel = document.getElementById('opsFilterCliente');
-  obligSel.innerHTML = '<option value="">Todas</option>';
-  clienteSel.innerHTML = '<option value="">Todos</option>';
-  [...new Set(imported.map(r=>r.obligacion))].sort().forEach(o => {
-    const opt = document.createElement('option'); opt.textContent = o; obligSel.appendChild(opt);
-  });
-  [...new Set(imported.map(r=>r.cliente))].sort().forEach(c => {
-    const opt = document.createElement('option'); opt.textContent = c; clienteSel.appendChild(opt);
-  });
+  // Repoblar multiselect
+  const newObligs = [...new Set(imported.map(r=>r.obligacion))].sort();
+  const newClientes = [...new Set(imported.map(r=>r.cliente))].sort();
+  MS_DATA.oblig.items = newObligs; MS_DATA.oblig.selected.clear(); msUpdateBtn('oblig'); msRenderList('oblig','');
+  MS_DATA.cliente.items = newClientes; MS_DATA.cliente.selected.clear(); msUpdateBtn('cliente'); msRenderList('cliente','');
   
   opsRender();
   showToast(`${imported.length} registros importados ✓`);
@@ -2097,6 +2331,13 @@ window.opsSortBy = opsSortBy;
 window.opsGoPage = opsGoPage;
 window.opsRender = opsRender;
 window.opsImportFile = opsImportFile;
+window.mstoggle = mstoggle;
+window.msSelectAll = msSelectAll;
+window.msClearAll = msClearAll;
+window.msApply = msApply;
+window.msClose = msClose;
+window.msFilter = msFilter;
+window.msToggleItem = msToggleItem;
 window.switchSection = switchSection;
 window.doLogin = doLogin;
 window.doLogout = doLogout;
