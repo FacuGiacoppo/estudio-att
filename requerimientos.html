@@ -265,8 +265,8 @@
   .col-0 .col-header { background: var(--col1); }
   .col-1 .col-header { background: var(--col2); }
   .col-2 .col-header { background: var(--col3); }
-  .col-3 .col-header { background: var(--col4); }
-  .col-4 .col-header { background: var(--col5); }
+  .col-3 .col-header { background: var(--col5); }
+
 
   /* ── CARD ── */
   .card {
@@ -512,6 +512,182 @@
   }
   .toast.show { transform: translateY(0); opacity: 1; }
 
+
+  /* ── DRAG & DROP ── */
+  .card.dragging {
+    opacity: 0.4;
+    transform: rotate(2deg) scale(0.97);
+    box-shadow: var(--shadow-lg);
+  }
+  .col-body.drag-over {
+    background: rgba(74,111,165,0.08);
+    border: 2px dashed var(--col1);
+    border-top: none;
+  }
+  .card-move-btns {
+    display: flex; gap: 3px; margin-top: 8px;
+  }
+  .card-move-btn {
+    flex: 1;
+    background: var(--paper-warm);
+    border: 1px solid rgba(26,26,46,0.1);
+    border-radius: 5px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--ink-light);
+    padding: 3px 0;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .card-move-btn:hover { background: var(--ink); color: white; border-color: var(--ink); }
+  .card-move-btn:disabled { opacity: 0.25; cursor: default; }
+  .card-move-btn:disabled:hover { background: var(--paper-warm); color: var(--ink-light); border-color: rgba(26,26,46,0.1); }
+
+
+  /* ── LOGIN ── */
+  .login-screen {
+    position: fixed; inset: 0; z-index: 9000;
+    background: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem;
+  }
+  .login-screen.hidden { display: none; }
+
+  .login-card {
+    background: var(--paper);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    width: 100%; max-width: 400px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+  }
+
+  .login-logo {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 32px;
+  }
+  .login-logo-mark {
+    width: 44px; height: 44px; background: var(--accent);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Serif Display', serif; color: white; font-size: 22px;
+  }
+  .login-logo-text { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--ink); }
+  .login-logo-sub { font-size: 0.72rem; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .login-title { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: var(--ink); margin-bottom: 6px; }
+  .login-sub { font-size: 0.85rem; color: var(--ink-muted); margin-bottom: 28px; }
+
+  .login-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+  .login-field label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-light); }
+  .login-field input {
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    border: 1.5px solid rgba(26,26,46,0.15); border-radius: var(--radius);
+    padding: 10px 14px; outline: none; transition: border-color 0.15s;
+    background: white; color: var(--ink);
+  }
+  .login-field input:focus { border-color: var(--col1); box-shadow: 0 0 0 3px rgba(74,111,165,0.1); }
+
+  .login-btn {
+    width: 100%; background: var(--accent); color: white; border: none;
+    padding: 12px; border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; margin-top: 8px;
+  }
+  .login-btn:hover { background: var(--accent-light); }
+  .login-btn:disabled { opacity: 0.6; cursor: default; }
+
+  .login-error {
+    background: #fde8e4; color: var(--accent);
+    border-radius: var(--radius); padding: 10px 14px;
+    font-size: 0.82rem; margin-top: 12px; display: none;
+  }
+  .login-error.show { display: block; }
+
+  /* Change password modal */
+  .change-pwd-overlay {
+    position: fixed; inset: 0; z-index: 8000;
+    background: rgba(26,26,46,0.7); backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem; display: none;
+  }
+  .change-pwd-overlay.open { display: flex; }
+  .change-pwd-card {
+    background: var(--paper); border-radius: var(--radius-lg);
+    padding: 32px; width: 100%; max-width: 380px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+  }
+  .change-pwd-title { font-family: 'DM Serif Display', serif; font-size: 1.3rem; margin-bottom: 6px; }
+  .change-pwd-sub { font-size: 0.82rem; color: var(--ink-muted); margin-bottom: 24px; }
+
+  /* User badge in header */
+  .user-badge {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius);
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .user-badge:hover { background: rgba(255,255,255,0.14); }
+  .user-avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent); color: white;
+    font-size: 0.65rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .user-name { font-size: 0.8rem; color: rgba(255,255,255,0.85); }
+  .user-role { font-size: 0.65rem; color: var(--ink-muted); }
+
+  .user-menu {
+    position: absolute; top: calc(100% + 8px); right: 0;
+    background: var(--paper); border-radius: var(--radius);
+    box-shadow: var(--shadow-lg); border: 1px solid rgba(26,26,46,0.1);
+    min-width: 180px; overflow: hidden; display: none; z-index: 200;
+  }
+  .user-menu.open { display: block; }
+  .user-menu-item {
+    padding: 10px 16px; font-size: 0.83rem; color: var(--ink);
+    cursor: pointer; transition: background 0.12s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .user-menu-item:hover { background: var(--paper-warm); }
+  .user-menu-item.danger { color: var(--accent); }
+
+  /* Admin panel */
+  .admin-panel-overlay {
+    position: fixed; inset: 0; z-index: 5000;
+    background: rgba(26,26,46,0.6); backdrop-filter: blur(4px);
+    display: none; align-items: center; justify-content: center; padding: 1rem;
+  }
+  .admin-panel-overlay.open { display: flex; }
+  .admin-panel {
+    background: var(--paper); border-radius: var(--radius-lg);
+    width: 100%; max-width: 520px; max-height: 80vh;
+    overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+  }
+  .admin-panel-header {
+    background: var(--ink); padding: 20px 24px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .admin-panel-title { font-family: 'DM Serif Display', serif; color: white; font-size: 1.1rem; }
+  .admin-panel-body { padding: 24px; }
+  .user-list-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0; border-bottom: 1px solid rgba(26,26,46,0.07);
+  }
+  .user-list-item:last-child { border-bottom: none; }
+  .user-list-info { display: flex; flex-direction: column; gap: 2px; }
+  .user-list-name { font-size: 0.88rem; font-weight: 500; }
+  .user-list-email { font-size: 0.75rem; color: var(--ink-muted); }
+  .role-badge {
+    font-size: 0.7rem; font-weight: 600; padding: 3px 10px;
+    border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .role-badge.admin { background: rgba(200,71,42,0.12); color: var(--accent); }
+  .role-badge.colaborador { background: rgba(74,111,165,0.12); color: var(--col1); }
+
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -528,6 +704,63 @@
 </head>
 <body>
 
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-mark">R</div>
+      <div>
+        <div class="login-logo-text">ESTUDIO-ATT</div>
+        
+      </div>
+    </div>
+    <div class="login-title">Bienvenido</div>
+    <div class="login-sub">Ingresá con tu cuenta para continuar</div>
+    <div class="login-field">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="tu@email.com" autocomplete="email">
+    </div>
+    <div class="login-field">
+      <label>Contraseña</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Ingresar</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- CHANGE PASSWORD MODAL -->
+<div class="change-pwd-overlay" id="changePwdOverlay">
+  <div class="change-pwd-card">
+    <div class="change-pwd-title">Cambiá tu contraseña</div>
+    <div class="change-pwd-sub">Es la primera vez que ingresás. Por seguridad, elegí una contraseña nueva.</div>
+    <div class="login-field">
+      <label>Nueva contraseña</label>
+      <input type="password" id="newPwd1" placeholder="Mínimo 6 caracteres">
+    </div>
+    <div class="login-field">
+      <label>Repetir contraseña</label>
+      <input type="password" id="newPwd2" placeholder="Repetir contraseña">
+    </div>
+    <div class="login-error" id="changePwdError"></div>
+    <button class="login-btn" style="margin-top:16px" onclick="doChangePassword()">Guardar contraseña</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-panel-overlay" id="adminPanelOverlay">
+  <div class="admin-panel">
+    <div class="admin-panel-header">
+      <span class="admin-panel-title">Gestión de Usuarios</span>
+      <button class="modal-close" onclick="closeAdminPanel()">✕</button>
+    </div>
+    <div class="admin-panel-body" id="adminPanelBody">
+      <div style="text-align:center;color:var(--ink-muted);padding:20px">Cargando...</div>
+    </div>
+  </div>
+</div>
+
 <!-- HEADER -->
 <header>
   <div class="logo">
@@ -539,7 +772,19 @@
   </div>
   <div class="header-actions">
     <button class="btn-secondary" onclick="exportData()">↓ Exportar</button>
-    <button class="btn-primary" onclick="openNewModal()">+ Nuevo Requerimiento</button>
+    <button class="btn-primary" id="btnNuevoReq" onclick="openNewModal()">+ Nuevo Requerimiento</button>
+    <div class="user-badge" onclick="toggleUserMenu()" id="userBadge" style="display:none">
+      <div class="user-avatar" id="userAvatar">?</div>
+      <div>
+        <div class="user-name" id="userName">—</div>
+        <div class="user-role" id="userRoleLabel">—</div>
+      </div>
+      <div class="user-menu" id="userMenu">
+        <div class="user-menu-item" onclick="event.stopPropagation();openChangePwd()">🔑 Cambiar contraseña</div>
+        <div class="user-menu-item" id="adminMenuItem" onclick="event.stopPropagation();openAdminPanel()" style="display:none">👥 Gestión de usuarios</div>
+        <div class="user-menu-item danger" onclick="event.stopPropagation();doLogout()">↩ Cerrar sesión</div>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -632,16 +877,22 @@
       <div class="field-group">
         <div class="field">
           <label>Responsable asignado</label>
-          <input type="text" id="f_responsible" placeholder="Nombre del colaborador">
+          <select id="f_responsible">
+            <option value="">Sin asignar</option>
+            <option value="Facundo Giacoppo">Facundo Giacoppo</option>
+            <option value="Ramiro Joya">Ramiro Joya</option>
+            <option value="Rosa Herrera">Rosa Herrera</option>
+            <option value="Marcos Hinojosa">Marcos Hinojosa</option>
+            <option value="Jose Garzon">Jose Garzon</option>
+          </select>
         </div>
         <div class="field">
           <label>Estado</label>
           <select id="f_stage">
             <option value="0">Recibido</option>
             <option value="1">En análisis</option>
-            <option value="2">Documentación en preparación</option>
-            <option value="3">Presentado</option>
-            <option value="4">Cerrado</option>
+            <option value="2">Presentado</option>
+            <option value="3">Cerrado</option>
           </select>
         </div>
       </div>
@@ -667,7 +918,8 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDIK4CIKUUDFwV1LOvuTaWHtmX6hwcHFCg",
@@ -680,30 +932,158 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 const colRef = collection(db, "requerimientos");
+const usersRef = collection(db, "usuarios");
+
+// Usuarios del sistema con roles
+const USUARIOS = {
+  'facundogiacoppo@outlook.com':  { nombre: 'Facundo Giacoppo', rol: 'admin' },
+  'ramirotomasjoya@outlook.com':  { nombre: 'Ramiro Joya',       rol: 'colaborador' },
+  'rosanelidaherrera@outlook.com':{ nombre: 'Rosa Herrera',      rol: 'colaborador' },
+  'marcosemanuelhinojosa@outlook.com':{ nombre: 'Marcos Hinojosa', rol: 'colaborador' },
+  'jgarzonatt@outlook.com':       { nombre: 'Jose Garzon',       rol: 'colaborador' },
+};
+
+let currentUser = null;
+let currentUserData = null;
+let unsubscribeBoard = null;
 
 // ── STATE ──
-const STAGES = ['Recibido', 'En análisis', 'Doc. en preparación', 'Presentado', 'Cerrado'];
-const STAGE_COLORS = ['var(--col1)','var(--col2)','var(--col3)','var(--col4)','var(--col5)'];
+const STAGES = ['Recibido', 'En análisis', 'Presentado', 'Cerrado'];
+const STAGE_COLORS = ['var(--col1)','var(--col2)','var(--col3)','var(--col4)'];
 
 let requirements = [];
 let currentFilter = 'todos';
 let currentDate = new Date();
 let editingId = null;
 
-// ── FIRESTORE LISTENER (tiempo real) ──
-onSnapshot(colRef, (snapshot) => {
-  requirements = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-  renderBoard();
-  const el = document.getElementById('connStatus');
-  el.textContent = '🟢 Sincronizado';
-  el.style.background = 'rgba(45,122,79,0.1)';
-  el.style.color = 'var(--green)';
-}, (error) => {
-  const el = document.getElementById('connStatus');
-  el.textContent = '🔴 Sin conexión';
-  el.style.color = 'var(--accent)';
+// ── AUTH STATE ──
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    currentUser = user;
+    currentUserData = USUARIOS[user.email] || { nombre: user.email, rol: 'colaborador' };
+    showApp();
+    startBoardListener();
+  } else {
+    currentUser = null;
+    currentUserData = null;
+    if (unsubscribeBoard) { unsubscribeBoard(); unsubscribeBoard = null; }
+    showLogin();
+  }
 });
+
+function showLogin() {
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('userBadge').style.display = 'none';
+}
+
+function showApp() {
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('userBadge').style.display = 'flex';
+  const u = currentUserData;
+  const initials = u.nombre.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('userAvatar').textContent = initials;
+  document.getElementById('userName').textContent = u.nombre.split(' ')[0];
+  document.getElementById('userRoleLabel').textContent = u.rol === 'admin' ? '★ Admin' : 'Colaborador';
+  if (u.rol === 'admin') document.getElementById('adminMenuItem').style.display = 'flex';
+  // Colaboradores no pueden eliminar — se maneja en renderCard
+}
+
+function startBoardListener() {
+  if (unsubscribeBoard) unsubscribeBoard();
+  unsubscribeBoard = onSnapshot(colRef, (snapshot) => {
+    requirements = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderBoard();
+    const el = document.getElementById('connStatus');
+    el.textContent = '🟢 Sincronizado';
+    el.style.background = 'rgba(45,122,79,0.1)';
+    el.style.color = 'var(--green)';
+  }, () => {
+    const el = document.getElementById('connStatus');
+    el.textContent = '🔴 Sin conexión';
+    el.style.color = 'var(--accent)';
+  });
+}
+
+// ── LOGIN / LOGOUT ──
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pwd = document.getElementById('loginPassword').value;
+  const btn = document.getElementById('loginBtn');
+  const errEl = document.getElementById('loginError');
+  errEl.classList.remove('show');
+  btn.disabled = true; btn.textContent = 'Ingresando...';
+  try {
+    await signInWithEmailAndPassword(auth, email, pwd);
+    // Check if using default password → force change
+    if (pwd === 'Estudio2026!') {
+      document.getElementById('changePwdOverlay').classList.add('open');
+    }
+  } catch(e) {
+    let msg = 'Email o contraseña incorrectos.';
+    errEl.textContent = msg;
+    errEl.classList.add('show');
+  }
+  btn.disabled = false; btn.textContent = 'Ingresar';
+}
+
+async function doLogout() {
+  await signOut(auth);
+  closeUserMenu();
+}
+
+function openChangePwd() {
+  closeUserMenu();
+  document.getElementById('changePwdOverlay').classList.add('open');
+}
+
+async function doChangePassword() {
+  const p1 = document.getElementById('newPwd1').value;
+  const p2 = document.getElementById('newPwd2').value;
+  const errEl = document.getElementById('changePwdError');
+  errEl.classList.remove('show');
+  if (p1.length < 6) { errEl.textContent = 'Mínimo 6 caracteres.'; errEl.classList.add('show'); return; }
+  if (p1 !== p2) { errEl.textContent = 'Las contraseñas no coinciden.'; errEl.classList.add('show'); return; }
+  try {
+    await updatePassword(auth.currentUser, p1);
+    document.getElementById('changePwdOverlay').classList.remove('open');
+    showToast('Contraseña actualizada ✓');
+  } catch(e) {
+    errEl.textContent = 'Error: ' + e.message;
+    errEl.classList.add('show');
+  }
+}
+
+// ── USER MENU ──
+function toggleUserMenu() {
+  document.getElementById('userMenu').classList.toggle('open');
+}
+function closeUserMenu() {
+  document.getElementById('userMenu').classList.remove('open');
+}
+document.addEventListener('click', (e) => {
+  if (!document.getElementById('userBadge').contains(e.target)) closeUserMenu();
+});
+
+// ── ADMIN PANEL ──
+function openAdminPanel() {
+  closeUserMenu();
+  const body = document.getElementById('adminPanelBody');
+  body.innerHTML = Object.entries(USUARIOS).map(([email, u]) => `
+    <div class="user-list-item">
+      <div class="user-list-info">
+        <div class="user-list-name">${u.nombre}</div>
+        <div class="user-list-email">${email}</div>
+      </div>
+      <span class="role-badge ${u.rol}">${u.rol}</span>
+    </div>
+  `).join('');
+  document.getElementById('adminPanelOverlay').classList.add('open');
+}
+function closeAdminPanel() {
+  document.getElementById('adminPanelOverlay').classList.remove('open');
+}
 
 // ── DATOS DE EJEMPLO (solo si la BD está vacía) ──
 async function loadSampleData() {
@@ -711,12 +1091,12 @@ async function loadSampleData() {
   const snap = await getDocs(colRef);
   if (!snap.empty) return;
   const samples = [
-    { org:'AFIP', desc:'Fiscalización IVA períodos 2022-2023. Se requiere documentación respaldatoria de compras y ventas.', client:'García Hnos. SRL', exp:'0123/2025', received:'2025-03-01', deadline:'2025-03-28', responsible:'María López', stage:0, notes:'Cliente notificado. Pendiente envío de facturas.', org_custom:'' },
-    { org:'ARBA', desc:'Intimación por diferencias en Ingresos Brutos. Períodos enero-junio 2024.', client:'Techno Servicios SA', exp:'ARB-4521', received:'2025-03-05', deadline:'2025-04-10', responsible:'Carlos Ruiz', stage:1, notes:'En análisis con el cliente.', org_custom:'' },
-    { org:'AFIP', desc:'Requerimiento de información sobre empleados en relación de dependencia. RG 4550.', client:'Distribuidora Del Sur', exp:'9988/2025', received:'2025-02-20', deadline:'2025-03-25', responsible:'María López', stage:2, notes:'Preparando listado de empleados y recibos.', org_custom:'' },
-    { org:'Municipalidad', desc:'Habilitación comercial vencida. Requiere renovación y planos actualizados.', client:'Restaurante El Patio', exp:'MUN-0087', received:'2025-02-10', deadline:'2025-03-15', responsible:'Jorge Pérez', stage:3, notes:'Presentado el 14/03. Esperamos resolución.', org_custom:'' },
-    { org:'ANSES', desc:'Impugnación de aportes voluntarios. Período 2023.', client:'Martínez, Roberto', exp:'ANS-2231', received:'2025-01-15', deadline:'2025-02-28', responsible:'Carlos Ruiz', stage:4, notes:'Resuelto favorablemente.', org_custom:'' },
-    { org:'Otro', desc:'Requerimiento de documentación ante la Dirección de Rentas Provincial por diferencias en sellos.', client:'Agro Campo SA', exp:'REN-1102', received:'2025-03-10', deadline:'2025-04-05', responsible:'María López', stage:0, notes:'', org_custom:'Rentas Provincial' },
+    { org:'AFIP', desc:'Fiscalización IVA períodos 2022-2023. Se requiere documentación respaldatoria de compras y ventas.', client:'García Hnos. SRL', exp:'0123/2025', received:'2026-03-01', deadline:'2026-03-28', responsible:'María López', stage:0, notes:'Cliente notificado. Pendiente envío de facturas.', org_custom:'' },
+    { org:'ARBA', desc:'Intimación por diferencias en Ingresos Brutos. Períodos enero-junio 2024.', client:'Techno Servicios SA', exp:'ARB-4521', received:'2026-03-05', deadline:'2026-04-10', responsible:'Carlos Ruiz', stage:1, notes:'En análisis con el cliente.', org_custom:'' },
+    { org:'AFIP', desc:'Requerimiento de información sobre empleados en relación de dependencia. RG 4550.', client:'Distribuidora Del Sur', exp:'9988/2025', received:'2026-02-20', deadline:'2026-03-25', responsible:'María López', stage:1, notes:'Preparando listado de empleados y recibos.', org_custom:'' },
+    { org:'Municipalidad', desc:'Habilitación comercial vencida. Requiere renovación y planos actualizados.', client:'Restaurante El Patio', exp:'MUN-0087', received:'2026-02-10', deadline:'2026-03-15', responsible:'Jorge Pérez', stage:2, notes:'Presentado el 14/03. Esperamos resolución.', org_custom:'' },
+    { org:'ANSES', desc:'Impugnación de aportes voluntarios. Período 2023.', client:'Martínez, Roberto', exp:'ANS-2231', received:'2026-01-15', deadline:'2026-03-30', responsible:'Carlos Ruiz', stage:3, notes:'Resuelto favorablemente.', org_custom:'' },
+    { org:'Otro', desc:'Requerimiento de documentación ante la Dirección de Rentas Provincial por diferencias en sellos.', client:'Agro Campo SA', exp:'REN-1102', received:'2026-03-10', deadline:'2026-04-05', responsible:'María López', stage:0, notes:'', org_custom:'Rentas Provincial' },
   ];
   for (const s of samples) {
     s.created = serverTimestamp();
@@ -724,6 +1104,21 @@ async function loadSampleData() {
   }
 }
 loadSampleData();
+
+// ── MIGRACIÓN: remapear etapas viejas (5 etapas → 4 etapas) ──
+async function migrateStages() {
+  const { getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+  const snap = await getDocs(colRef);
+  const stageMap = { 2: 1, 3: 2, 4: 3 }; // doc.prep→análisis, presentado→presentado, cerrado→cerrado
+  for (const d of snap.docs) {
+    const stage = d.data().stage;
+    if (stage !== undefined && stageMap[stage] !== undefined) {
+      await updateDoc(doc(db, "requerimientos", d.id), { stage: stageMap[stage] });
+    }
+  }
+}
+migrateStages();
+
 
 
 // ── DATE HELPERS ──
@@ -737,7 +1132,10 @@ function weekOf(d) {
   return [s, e];
 }
 function monthOf(d) {
-  return [new Date(d.getFullYear(), d.getMonth(), 1), new Date(d.getFullYear(), d.getMonth()+1, 0)];
+  const start = new Date(d.getFullYear(), d.getMonth(), 1);
+  const end = new Date(d.getFullYear(), d.getMonth()+1, 0);
+  end.setHours(23,59,59,999);
+  return [start, end];
 }
 function formatDate(s) {
   if (!s) return '—';
@@ -812,10 +1210,10 @@ function getFiltered() {
 
 function renderStats(filtered) {
   const bar = document.getElementById('statsBar');
-  const overdue = filtered.filter(r => dateStatus(r.deadline) === 'overdue' && r.stage < 4).length;
-  const dueSoon = filtered.filter(r => dateStatus(r.deadline) === 'due-soon' && r.stage < 4).length;
-  const open = filtered.filter(r => r.stage < 4).length;
-  const closed = filtered.filter(r => r.stage === 4).length;
+  const overdue = filtered.filter(r => dateStatus(r.deadline) === 'overdue' && r.stage < 3).length;
+  const dueSoon = filtered.filter(r => dateStatus(r.deadline) === 'due-soon' && r.stage < 3).length;
+  const open = filtered.filter(r => r.stage < 3).length;
+  const closed = filtered.filter(r => r.stage === 3).length;
   bar.innerHTML = `
     <div class="stat-item"><div class="stat-dot" style="background:var(--ink-muted)"></div><span class="stat-num">${filtered.length}</span><span class="stat-label">total</span></div>
     <div class="stat-item"><div class="stat-dot" style="background:var(--col1)"></div><span class="stat-num">${open}</span><span class="stat-label">en curso</span></div>
@@ -833,7 +1231,13 @@ function renderBoard() {
   board.innerHTML = '';
 
   STAGES.forEach((stage, i) => {
-    const cards = filtered.filter(r => r.stage === i);
+    const cards = filtered
+      .filter(r => r.stage === i)
+      .sort((a, b) => {
+        if (!a.deadline) return 1;
+        if (!b.deadline) return -1;
+        return new Date(a.deadline) - new Date(b.deadline);
+      });
     const col = document.createElement('div');
     col.className = `column col-${i}`;
 
@@ -849,17 +1253,24 @@ function renderBoard() {
     `;
     board.appendChild(col);
   });
+  setupDropZones();
 }
 
 function renderCard(r) {
   const status = dateStatus(r.deadline);
   const initials = r.responsible ? r.responsible.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2) : '?';
   const orgName = r.org === 'Otro' && r.org_custom ? r.org_custom : r.org;
+  const canPrev = r.stage > 0;
+  const canNext = r.stage < 3;
   return `
-    <div class="card ${status}" onclick="openDetail('${r.id}')">
+    <div class="card ${status}"
+         draggable="true"
+         ondragstart="dragStart(event, '${r.id}')"
+         ondragend="dragEnd(event)"
+         onclick="openDetail('${r.id}')">
       <div class="card-actions">
         <button class="card-btn" onclick="event.stopPropagation();openEdit('${r.id}')">✏️</button>
-        <button class="card-btn danger" onclick="event.stopPropagation();deleteReq('${r.id}')">🗑</button>
+        ${currentUserData && currentUserData.rol === 'admin' ? `<button class="card-btn danger" onclick="event.stopPropagation();deleteReq('${r.id}')">🗑</button>` : ''}
       </div>
       <div class="card-org">${orgName || '—'}</div>
       <div class="card-title">${r.desc || 'Sin descripción'}</div>
@@ -872,8 +1283,58 @@ function renderCard(r) {
         </div>
         <div class="card-avatar" title="${r.responsible || 'Sin asignar'}">${initials}</div>
       </div>
+      <div class="card-move-btns">
+        <button class="card-move-btn" ${canPrev ? '' : 'disabled'}
+          onclick="event.stopPropagation();moveStage('${r.id}', ${r.stage - 1})">‹ Anterior</button>
+        <button class="card-move-btn" ${canNext ? '' : 'disabled'}
+          onclick="event.stopPropagation();moveStage('${r.id}', ${r.stage + 1})">Siguiente ›</button>
+      </div>
     </div>
   `;
+}
+
+
+// ── DRAG & DROP ──
+let draggedId = null;
+
+function dragStart(event, id) {
+  draggedId = id;
+  event.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => event.target.classList.add('dragging'), 0);
+}
+
+function dragEnd(event) {
+  event.target.classList.remove('dragging');
+  document.querySelectorAll('.col-body').forEach(c => c.classList.remove('drag-over'));
+  draggedId = null;
+}
+
+function setupDropZones() {
+  document.querySelectorAll('.col-body').forEach((col, stageIndex) => {
+    col.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      document.querySelectorAll('.col-body').forEach(c => c.classList.remove('drag-over'));
+      col.classList.add('drag-over');
+    });
+    col.addEventListener('dragleave', (e) => {
+      if (!col.contains(e.relatedTarget)) col.classList.remove('drag-over');
+    });
+    col.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      col.classList.remove('drag-over');
+      if (draggedId) await moveStage(draggedId, stageIndex);
+    });
+  });
+}
+
+async function moveStage(id, newStage) {
+  if (newStage < 0 || newStage > 3) return;
+  try {
+    await updateDoc(doc(db, "requerimientos", id), { stage: newStage, updated: serverTimestamp() });
+  } catch(e) {
+    showToast('Error al mover: ' + e.message);
+  }
 }
 
 // ── MODAL ──
@@ -988,6 +1449,14 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
+// ── LOGIN ENTER KEY ──
+document.addEventListener('DOMContentLoaded', () => {
+  ['loginEmail','loginPassword'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  });
+});
+
 // ── INIT ──
 updateDateDisplay();
 
@@ -1002,6 +1471,14 @@ window.setFilter = setFilter;
 window.navDate = navDate;
 window.exportData = exportData;
 window.renderBoard = renderBoard;
+window.moveStage = moveStage;
+window.doLogin = doLogin;
+window.doLogout = doLogout;
+window.doChangePassword = doChangePassword;
+window.openChangePwd = openChangePwd;
+window.toggleUserMenu = toggleUserMenu;
+window.openAdminPanel = openAdminPanel;
+window.closeAdminPanel = closeAdminPanel;
 
 </script>
 </body>
