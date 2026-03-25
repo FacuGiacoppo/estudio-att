@@ -1604,12 +1604,33 @@
       </div>
     </div>
 
-    <!-- Diagrama Sankey Cliente → Usuario -->
+    <!-- Tabla Clientes → Usuarios -->
     <div class="rep-criticos-section" style="margin-top:2rem">
-      <div class="rep-chart-title" style="padding:0 0 4px">🔗 Relaciones Cliente → Usuario</div>
-      <div class="rep-chart-sub" style="padding:0 0 14px;color:var(--ink-muted);font-size:0.8rem">Flujo de obligaciones por cliente y operador asignado</div>
-      <div id="repSankeyWrap" style="width:100%;overflow-x:auto">
-        <svg id="repSankey" style="width:100%;min-height:400px"></svg>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0 0 14px;flex-wrap:wrap;gap:10px">
+        <div>
+          <div class="rep-chart-title" style="padding:0">👥 Clientes por Usuario</div>
+          <div class="rep-chart-sub" style="color:var(--ink-muted);font-size:0.8rem;margin-top:2px">Hacé clic en un cliente para ver los usuarios que lo atienden</div>
+        </div>
+        <div style="position:relative;min-width:200px">
+          <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink-muted);font-size:0.85rem">🔍</span>
+          <input type="text" id="repRelClienteBuscar" placeholder="Buscar cliente..."
+            style="width:100%;padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--ink);font-size:0.83rem;box-sizing:border-box"
+            oninput="repRelRender()">
+        </div>
+      </div>
+      <div class="ops-table-wrap" style="padding:0;max-height:500px;overflow-y:auto">
+        <table class="ops-table" id="repRelTable">
+          <thead style="position:sticky;top:0;z-index:2">
+            <tr>
+              <th style="width:36px"></th>
+              <th>Cliente</th>
+              <th style="text-align:center">Total</th>
+              <th style="text-align:center">Usuarios</th>
+            </tr>
+          </thead>
+          <tbody id="repRelTbody"></tbody>
+        </table>
+        <div id="repRelEmpty" class="ops-empty" style="display:none">Sin datos con los filtros actuales.</div>
       </div>
     </div>
 
@@ -2727,7 +2748,7 @@ function repRender() {
   repRenderPeriodoTorta(data);
   repRenderUsuarioDetalle(data);
   repRenderRendimiento(data);
-  repRenderSankey(data);
+  repRenderRelaciones(data);
   repRenderDetalle(data);
 }
 
@@ -3190,145 +3211,121 @@ function repDetalleClear() {
 }
 
 // ── DIAGRAMA SANKEY Cliente → Usuario ──
-function repRenderSankey(data) {
-  const wrap = document.getElementById('repSankeyWrap');
-  const svgEl = document.getElementById('repSankey');
-  if (!wrap || !svgEl || typeof d3 === 'undefined') return;
+// ── TABLA RELACIONES CLIENTE → USUARIOS (interactiva) ──
+let repRelData = [];
+let repRelExpanded = new Set();
 
-  // Construir nodos y links únicos
-  const clientesSet = new Set();
-  const usuariosSet = new Set();
-  const flowMap = {};
+function repRenderRelaciones(data) {
+  repRelData = data;
+  repRelRender();
+}
 
-  data.forEach(r => {
+function repRelRender() {
+  const tbody = document.getElementById('repRelTbody');
+  const empty = document.getElementById('repRelEmpty');
+  if (!tbody) return;
+
+  const buscar = (document.getElementById('repRelClienteBuscar')?.value || '').toLowerCase();
+  const coloresUsuario = {
+    'Facundo Giacoppo': '#4F7CFF',
+    'Ramiro Joya':      '#FF6B35',
+    'Rosa Herrera':     '#10B981',
+    'Marcos Hinojosa':  '#F59E0B',
+    'Jose Garzon':      '#8B5CF6'
+  };
+
+  // Agrupar por cliente
+  const clienteMap = {};
+  repRelData.forEach(r => {
     if (!r.cliente || !r.usuario) return;
-    clientesSet.add(r.cliente);
-    usuariosSet.add(r.usuario);
-    const key = r.cliente + '||' + r.usuario;
-    flowMap[key] = (flowMap[key] || 0) + 1;
+    if (!clienteMap[r.cliente]) clienteMap[r.cliente] = {};
+    if (!clienteMap[r.cliente][r.usuario]) clienteMap[r.cliente][r.usuario] = { total: 0, cumplido: 0, pendiente: 0, vencido: 0 };
+    clienteMap[r.cliente][r.usuario].total++;
+    if (r.estado === 'Cumplido') clienteMap[r.cliente][r.usuario].cumplido++;
+    if (r.estado === 'Cumplido Tardio') clienteMap[r.cliente][r.usuario].cumplido++;
+    if (r.estado === 'Pendiente') clienteMap[r.cliente][r.usuario].pendiente++;
+    if (r.estado === 'Vencido') clienteMap[r.cliente][r.usuario].vencido++;
   });
 
-  // Solo mostrar top 20 clientes por volumen para que el gráfico sea legible
-  const clienteVolumen = {};
-  Object.entries(flowMap).forEach(([k, v]) => {
-    const [cl] = k.split('||');
-    clienteVolumen[cl] = (clienteVolumen[cl] || 0) + v;
-  });
-  const topClientes = Object.entries(clienteVolumen)
-    .sort((a,b) => b[1]-a[1]).slice(0,20).map(e => e[0]);
+  // Ordenar clientes por total desc
+  let clientes = Object.entries(clienteMap)
+    .map(([cl, uMap]) => ({
+      cl,
+      total: Object.values(uMap).reduce((s, u) => s + u.total, 0),
+      usuarios: Object.entries(uMap).sort((a, b) => b[1].total - a[1].total)
+    }))
+    .sort((a, b) => b.total - a.total);
 
-  const usuarios = [...usuariosSet];
-  const nodes = [...topClientes, ...usuarios];
-  const nodeIndex = {};
-  nodes.forEach((n,i) => nodeIndex[n] = i);
+  if (buscar) clientes = clientes.filter(c => c.cl.toLowerCase().includes(buscar));
 
-  const links = [];
-  Object.entries(flowMap).forEach(([k,v]) => {
-    const [cl, us] = k.split('||');
-    if (!topClientes.includes(cl)) return;
-    links.push({ source: nodeIndex[cl], target: nodeIndex[us], value: v });
-  });
+  if (!clientes.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
 
-  if (!links.length) { svgEl.innerHTML = ''; return; }
+  tbody.innerHTML = clientes.map(c => {
+    const isOpen = repRelExpanded.has(c.cl);
+    const usuariosAvatars = c.usuarios.slice(0, 4).map(([u]) => {
+      const color = coloresUsuario[u] || '#94a3b8';
+      const ini = u.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+      return `<span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:${color};color:#fff;font-size:0.65rem;font-weight:700;margin-right:-4px;border:2px solid var(--surface-1)" title="${u}">${ini}</span>`;
+    }).join('');
+    const extra = c.usuarios.length > 4 ? `<span style="font-size:0.75rem;color:var(--ink-muted);margin-left:8px">+${c.usuarios.length - 4}</span>` : '';
 
-  // Dimensiones
-  const W = Math.max(wrap.clientWidth || 800, 600);
-  const H = Math.max(topClientes.length * 22 + 60, 400);
-  svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  svgEl.style.height = H + 'px';
+    const safeKey = c.cl.replace(/'/g, "\\'");
+    let rows = `<tr style="cursor:pointer" onclick="repRelToggle('${safeKey}')">
+      <td style="text-align:center;color:var(--ink-muted);font-size:0.9rem">${isOpen ? '▼' : '▶'}</td>
+      <td style="font-weight:600">${c.cl}</td>
+      <td style="text-align:center;font-weight:700;color:var(--accent)">${c.total}</td>
+      <td><div style="display:flex;align-items:center">${usuariosAvatars}${extra}</div></td>
+    </tr>`;
 
-  // Sankey manual (simple columnas izq/der)
-  const PAD = 8, NODE_W = 18, LEFT_X = 160, RIGHT_X = W - 140;
+    if (isOpen) {
+      rows += `<tr><td colspan="4" style="padding:0 0 8px 32px;background:var(--surface-2)">
+        <table style="width:100%;border-collapse:collapse;font-size:0.83rem">
+          <thead><tr style="color:var(--ink-muted);font-size:0.78rem">
+            <th style="text-align:left;padding:6px 8px;font-weight:600">Usuario</th>
+            <th style="text-align:center;padding:6px 8px;font-weight:600">Total</th>
+            <th style="text-align:center;padding:6px 8px;font-weight:600">✓ Cumplido</th>
+            <th style="text-align:center;padding:6px 8px;font-weight:600">⏳ Pendiente</th>
+            <th style="text-align:center;padding:6px 8px;font-weight:600">⚠ Vencido</th>
+            <th style="padding:6px 8px;font-weight:600">Distribución</th>
+          </tr></thead>
+          <tbody>
+          ${c.usuarios.map(([u, stats]) => {
+            const color = coloresUsuario[u] || '#94a3b8';
+            const ini = u.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+            const pctC = stats.total ? Math.round(stats.cumplido / stats.total * 100) : 0;
+            const pctP = stats.total ? Math.round(stats.pendiente / stats.total * 100) : 0;
+            const pctV = stats.total ? Math.round(stats.vencido / stats.total * 100) : 0;
+            return `<tr style="border-top:1px solid var(--border)">
+              <td style="padding:7px 8px;display:flex;align-items:center;gap:8px">
+                <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:${color};color:#fff;font-size:0.7rem;font-weight:700;flex-shrink:0">${ini}</span>
+                <span style="font-weight:500">${u.split(' ')[0]} ${u.split(' ').slice(-1)[0]}</span>
+              </td>
+              <td style="text-align:center;padding:7px 8px;font-weight:700">${stats.total}</td>
+              <td style="text-align:center;padding:7px 8px;color:#10B981;font-weight:600">${stats.cumplido}</td>
+              <td style="text-align:center;padding:7px 8px;color:#F59E0B;font-weight:600">${stats.pendiente}</td>
+              <td style="text-align:center;padding:7px 8px;color:#EF4444;font-weight:600">${stats.vencido}</td>
+              <td style="padding:7px 8px;min-width:120px">
+                <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--border)">
+                  ${pctC ? `<div style="width:${pctC}%;background:#10B981"></div>` : ''}
+                  ${pctP ? `<div style="width:${pctP}%;background:#F59E0B"></div>` : ''}
+                  ${pctV ? `<div style="width:${pctV}%;background:#EF4444"></div>` : ''}
+                </div>
+              </td>
+            </tr>`;
+          }).join('')}
+          </tbody>
+        </table>
+      </td></tr>`;
+    }
+    return rows;
+  }).join('');
+}
 
-  // Calcular alturas proporcionales por nodo
-  const totalFlow = links.reduce((s,l) => s+l.value, 0);
-  const TOTAL_H = H - 40;
-
-  // Posiciones clientes (izq)
-  const clienteH = {};
-  topClientes.forEach(cl => {
-    clienteH[cl] = links.filter(l => l.source === nodeIndex[cl]).reduce((s,l) => s+l.value, 0);
-  });
-  let cy = 20;
-  const clientePos = {};
-  topClientes.forEach(cl => {
-    const h = Math.max((clienteH[cl] / totalFlow) * TOTAL_H, 4);
-    clientePos[cl] = { y: cy, h };
-    cy += h + PAD;
-  });
-
-  // Posições usuarios (der)
-  const usuarioH = {};
-  usuarios.forEach(u => {
-    usuarioH[u] = links.filter(l => l.target === nodeIndex[u]).reduce((s,l) => s+l.value, 0);
-  });
-  const totalUsuH = usuarios.reduce((s,u) => s + (usuarioH[u]||0), 0);
-  let uy = 20;
-  const usuarioPos = {};
-  const colores = ['#4F7CFF','#FF6B35','#10B981','#F59E0B','#8B5CF6'];
-  usuarios.forEach((u,i) => {
-    const h = Math.max(((usuarioH[u]||0) / Math.max(totalUsuH,1)) * TOTAL_H, 4);
-    usuarioPos[u] = { y: uy, h, color: colores[i % colores.length] };
-    uy += h + PAD;
-  });
-
-  // Dibujar SVG
-  const svg = d3.select(svgEl);
-  svg.selectAll('*').remove();
-
-  // Links (paths curvos)
-  // Rastrear offset de uso por cliente y usuario
-  const clientOffset = {};
-  const usuOffset = {};
-  topClientes.forEach(cl => clientOffset[cl] = 0);
-  usuarios.forEach(u => usuOffset[u] = 0);
-
-  // Ordenar links por target para agrupar
-  const sortedLinks = [...links].sort((a,b) => a.target - b.target);
-
-  sortedLinks.forEach(lk => {
-    const cl = nodes[lk.source];
-    const us = nodes[lk.target];
-    const cp = clientePos[cl];
-    const up = usuarioPos[us];
-    if (!cp || !up) return;
-
-    const h = Math.max((lk.value / totalFlow) * TOTAL_H, 2);
-    const cy0 = cp.y + clientOffset[cl];
-    const uy0 = up.y + usuOffset[us];
-    clientOffset[cl] += h;
-    usuOffset[us] += h;
-
-    const x0 = LEFT_X + NODE_W, x1 = RIGHT_X;
-    const midX = (x0 + x1) / 2;
-
-    svg.append('path')
-      .attr('class','sankey-link')
-      .attr('d', `M${x0},${cy0} C${midX},${cy0} ${midX},${uy0} ${x1},${uy0} L${x1},${uy0+h} C${midX},${uy0+h} ${midX},${cy0+h} ${x0},${cy0+h} Z`)
-      .attr('fill', up.color)
-      .attr('opacity', 0.3)
-      .on('mouseover', function() { d3.select(this).attr('opacity', 0.65); })
-      .on('mouseout', function() { d3.select(this).attr('opacity', 0.3); })
-      .append('title').text(`${cl} → ${us}: ${lk.value}`);
-  });
-
-  // Rectángulos clientes (izq)
-  topClientes.forEach(cl => {
-    const p = clientePos[cl];
-    svg.append('rect').attr('x', LEFT_X).attr('y', p.y).attr('width', NODE_W).attr('height', p.h).attr('fill','#94a3b8').attr('rx',3);
-    const label = cl.length > 22 ? cl.slice(0,20)+'…' : cl;
-    svg.append('text').attr('x', LEFT_X - 6).attr('y', p.y + p.h/2).attr('dy','0.35em')
-      .attr('text-anchor','end').attr('font-size',11).attr('fill','var(--ink-main)').text(label);
-  });
-
-  // Rectángulos usuarios (der)
-  usuarios.forEach(u => {
-    const p = usuarioPos[u];
-    svg.append('rect').attr('x', RIGHT_X).attr('y', p.y).attr('width', NODE_W).attr('height', p.h).attr('fill', p.color).attr('rx',3);
-    const label = u.split(' ')[0];
-    svg.append('text').attr('x', RIGHT_X + NODE_W + 6).attr('y', p.y + p.h/2).attr('dy','0.35em')
-      .attr('text-anchor','start').attr('font-size',12).attr('font-weight','600').attr('fill', p.color).text(label);
-  });
+function repRelToggle(cliente) {
+  if (repRelExpanded.has(cliente)) repRelExpanded.delete(cliente);
+  else repRelExpanded.add(cliente);
+  repRelRender();
 }
 
 // ── LOGIN ENTER KEY ──
@@ -3371,6 +3368,8 @@ window.switchSection = switchSection;
 window.repRender = repRender;
 window.repClearFilters = repClearFilters;
 window.repMsApply = repMsApply;
+window.repRelToggle = repRelToggle;
+window.repRelRender = repRelRender;
 window.repDetalleFilter = repDetalleFilter;
 window.repDetalleSort = repDetalleSort;
 window.repDetGoPage = repDetGoPage;
