@@ -4531,6 +4531,13 @@ async function tiemposImportFile(event) {
 }
 
 // ── NAVEGACIÓN POR SECCIONES ──
+/** El target del click puede ser un nodo de texto (p. ej. al tocar "Socios"); esos nodos no tienen .closest(). */
+function clickTargetElement(e) {
+  const t = e.target;
+  if (!t) return null;
+  return t.nodeType === 1 ? t : t.parentElement;
+}
+
 function resetSectionDropdownMenuStyles() {
   document.querySelectorAll('.section-dropdown-menu').forEach((menu) => {
     menu.style.position = '';
@@ -6743,8 +6750,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.addEventListener('click', (e) => {
     setTimeout(() => {
-      const t = e.target;
-      if (t && t.closest && t.closest('.section-nav-dropdown')) return;
+      const el = clickTargetElement(e);
+      if (el && typeof el.closest === 'function' && el.closest('.section-nav-dropdown')) return;
       document.querySelectorAll('details.section-nav-dropdown').forEach((d) => {
         d.open = false;
       });
