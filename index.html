@@ -695,9 +695,72 @@
     position: sticky; top: 64px; z-index: 90;
     background: white;
     border-bottom: 2px solid rgba(26,26,46,0.08);
-    display: flex; gap: 0; padding: 0 2rem;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0;
+    padding: 0 2rem;
     overflow-x: auto;
+    overflow-y: hidden;
+    max-height: 56px;
+    scrollbar-width: thin;
   }
+  .section-nav::-webkit-scrollbar { height: 6px; }
+  .section-nav::-webkit-scrollbar-thumb {
+    background: rgba(26,26,46,0.2);
+    border-radius: 4px;
+  }
+
+  /* Dropdowns en la barra de secciones (Socios / Admin) */
+  .section-nav-dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .section-nav-dropdown .section-tab-dropdown {
+    padding-right: 18px;
+  }
+  .section-nav-dropdown .section-tab-dropdown::after {
+    content: '▾';
+    margin-left: 6px;
+    font-size: 0.7rem;
+    opacity: 0.75;
+  }
+  .section-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    min-width: 220px;
+    background: #fff;
+    border: 1px solid rgba(26,26,46,0.12);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 200;
+    padding: 6px 0;
+  }
+  .section-nav-dropdown.open .section-dropdown-menu { display: block; }
+  .section-nav-dropdown.has-active > .section-tab-dropdown {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    font-weight: 600;
+  }
+  .section-dropdown-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 0.83rem;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .section-dropdown-item:hover { background: var(--paper-warm); }
   .section-tab {
     padding: 14px 22px;
     font-size: 0.83rem; font-weight: 500;
@@ -1596,6 +1659,9 @@
   <button class="section-tab" onclick="switchSection('reporteria', this)" id="tab-reporteria">
     📈 Reportería
   </button>
+  <button class="section-tab" onclick="switchSection('tiempos', this)" id="tab-tiempos">
+    ⏱️ Tiempos
+  </button>
   <button class="section-tab" onclick="switchSection('mis-clientes', this)" id="tab-mis-clientes">
     👥 Mis Clientes
   </button>
@@ -1608,15 +1674,22 @@
   <button class="section-tab" id="tab-balances" style="opacity:0.5;cursor:default">
     📁 Proy. Balances <span class="section-tag soon">Próximo</span>
   </button>
-  <button class="section-tab" onclick="switchSection('tiempos', this)" id="tab-tiempos" style="display:none">
-    ⏱️ Tiempos <span class="section-tag soon">Socios</span>
-  </button>
-  <button class="section-tab" onclick="switchSection('carga-trabajo', this)" id="tab-carga-trabajo" style="display:none">
-    📌 Carga de trabajo <span class="section-tag soon">Socios</span>
-  </button>
-  <button class="section-tab" onclick="switchSection('importaciones', this)" id="tab-importaciones" style="display:none">
-    ⬆️ Importaciones <span class="section-tag soon">Admin</span>
-  </button>
+  <div class="section-nav-dropdown" id="navSocios" style="display:none;">
+    <button type="button" class="section-tab section-tab-dropdown" id="tab-socios-trigger" aria-haspopup="true" aria-expanded="false" onclick="event.stopPropagation(); toggleSectionDropdown('navSocios');">
+      Socios <span class="section-tag soon">Socios</span>
+    </button>
+    <div class="section-dropdown-menu" role="menu" aria-label="Sección Socios">
+      <button type="button" class="section-dropdown-item" onclick="switchSectionFromDropdown('carga-trabajo', 'navSocios')">📌 Carga de trabajo</button>
+    </div>
+  </div>
+  <div class="section-nav-dropdown" id="navAdmin" style="display:none;">
+    <button type="button" class="section-tab section-tab-dropdown" id="tab-admin-trigger" aria-haspopup="true" aria-expanded="false" onclick="event.stopPropagation(); toggleSectionDropdown('navAdmin');">
+      Admin <span class="section-tag soon">Admin</span>
+    </button>
+    <div class="section-dropdown-menu" role="menu" aria-label="Sección Admin">
+      <button type="button" class="section-dropdown-item" onclick="switchSectionFromDropdown('importaciones', 'navAdmin')">⬆️ Importaciones</button>
+    </div>
+  </div>
 </div>
 
 <!-- PANEL REQUERIMIENTOS -->
@@ -2059,13 +2132,16 @@
   </div>
 </div><!-- /panel-reporteria -->
 
-<!-- PANEL TIEMPOS (privada socios) -->
+<!-- PANEL TIEMPOS (socios: vista completa · miembros: solo sus filas) -->
 <div class="section-panel" id="panel-tiempos" style="padding:0 2rem 3rem">
   <div class="rep-container">
     <div class="rep-toolbar" style="position:relative;top:auto;background:transparent;border-bottom:none;padding:0 0 14px">
       <div>
         <div class="rep-chart-title" style="padding:0">⏱️ Tiempos</div>
         <div class="rep-chart-sub">Seleccioná valores por dimensión y arrastrá a Filas o Columnas. Métrica: suma de minutos.</div>
+        <div id="tiSelfViewNote" style="display:none;margin-top:10px;padding:10px 12px;border-radius:8px;background:rgba(79,124,255,0.08);border:1px solid rgba(79,124,255,0.22);font-size:0.82rem;color:var(--ink)">
+          Estás viendo <b>solo tus registros</b> para poder analizar tu carga. Los socios tienen vista de todo el equipo.
+        </div>
       </div>
     </div>
 
@@ -2435,12 +2511,10 @@ function showApp() {
   document.getElementById('userRoleLabel').textContent = roleLabelMap[u.rol] || u.rol || '—';
   if (u.rol === 'socio-admin') document.getElementById('adminMenuItem').style.display = 'flex';
   document.getElementById('sectionNav').style.display = 'flex';
-  const tabCarga = document.getElementById('tab-carga-trabajo');
-  if (tabCarga) tabCarga.style.display = isSocioRole(u.rol) ? '' : 'none';
-  const tabTiempos = document.getElementById('tab-tiempos');
-  if (tabTiempos) tabTiempos.style.display = isSocioRole(u.rol) ? '' : 'none';
-  const tabImp = document.getElementById('tab-importaciones');
-  if (tabImp) tabImp.style.display = isAdminRole(u.rol) ? '' : 'none';
+  const navSocios = document.getElementById('navSocios');
+  if (navSocios) navSocios.style.display = isSocioRole(u.rol) ? '' : 'none';
+  const navAdmin = document.getElementById('navAdmin');
+  if (navAdmin) navAdmin.style.display = isAdminRole(u.rol) ? '' : 'none';
   importLastRender();
   importLastSyncFromCloud();
   // Activar sección operaciones por defecto
@@ -4438,12 +4512,43 @@ async function tiemposImportFile(event) {
 }
 
 // ── NAVEGACIÓN POR SECCIONES ──
+function clearSectionNavActive() {
+  document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.section-nav-dropdown').forEach(d => {
+    d.classList.remove('open', 'has-active');
+    const tr = d.querySelector('.section-tab-dropdown');
+    if (tr) tr.setAttribute('aria-expanded', 'false');
+  });
+}
+
+function toggleSectionDropdown(dropdownId) {
+  const dd = document.getElementById(dropdownId);
+  if (!dd) return;
+  const willOpen = !dd.classList.contains('open');
+  document.querySelectorAll('.section-nav-dropdown').forEach(d => {
+    d.classList.remove('open');
+    const tr = d.querySelector('.section-tab-dropdown');
+    if (tr) tr.setAttribute('aria-expanded', 'false');
+  });
+  if (willOpen) {
+    dd.classList.add('open');
+    const tr = dd.querySelector('.section-tab-dropdown');
+    if (tr) tr.setAttribute('aria-expanded', 'true');
+  }
+}
+
+function switchSectionFromDropdown(section, dropdownId) {
+  const dd = document.getElementById(dropdownId);
+  if (dd) {
+    dd.classList.remove('open');
+    const tr = dd.querySelector('.section-tab-dropdown');
+    if (tr) tr.setAttribute('aria-expanded', 'false');
+  }
+  switchSection(section, null);
+}
+
 function switchSection(section, btn) {
   if (section === 'carga-trabajo' && currentUserData && !isSocioRole(currentUserData.rol)) {
-    showToast('Sección privada para socios');
-    return;
-  }
-  if (section === 'tiempos' && currentUserData && !isSocioRole(currentUserData.rol)) {
     showToast('Sección privada para socios');
     return;
   }
@@ -4453,7 +4558,7 @@ function switchSection(section, btn) {
   }
   currentSection = section;
   document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
+  clearSectionNavActive();
   document.getElementById('panel-' + section).classList.add('active');
   if (section === 'operaciones') { opsPopulateFilters(); opsRender(); }
   if (section === 'reporteria') { repInit(); repRender(); }
@@ -4464,7 +4569,13 @@ function switchSection(section, btn) {
     clientsRenderForm();
     clientsRenderInsights();
   }
-  if (btn) btn.classList.add('active');
+  if (btn) {
+    btn.classList.add('active');
+  } else if (section === 'carga-trabajo') {
+    document.getElementById('navSocios')?.classList.add('has-active');
+  } else if (section === 'importaciones') {
+    document.getElementById('navAdmin')?.classList.add('has-active');
+  }
   // Mostrar/ocultar botón nuevo requerimiento
   document.getElementById('btnNuevoReq').style.display = section === 'requerimientos' ? '' : 'none';
   document.getElementById('btnExportar').style.display = section === 'requerimientos' ? '' : 'none';
@@ -4773,8 +4884,27 @@ function tiemposNormVal(key, v) {
   return s0.toLowerCase();
 }
 
+/** Miembros no socios solo ven sus filas (medición personal); socios ven todo el dataset. */
+function tiemposUserSeesOnlySelf() {
+  return !!(currentUserData && !isSocioRole(currentUserData.rol));
+}
+
+function tiemposRowsForView() {
+  if (!Array.isArray(tiemposData)) return [];
+  if (!tiemposUserSeesOnlySelf()) return tiemposData;
+  const me = currentUserData && currentUserData.nombre
+    ? tiemposNormVal('usuario', currentUserData.nombre)
+    : '';
+  if (!me) return tiemposData;
+  return tiemposData.filter(r => {
+    const fv = tiemposNormVal('usuario', tiemposGetField(r, 'usuario'));
+    return fv === me;
+  });
+}
+
 function tiemposGetFiltered() {
-  if (!Array.isArray(tiemposData) || tiemposData.length === 0) return [];
+  const base = tiemposRowsForView();
+  if (!Array.isArray(base) || base.length === 0) return [];
   // Cache de sets normalizados por dimensión para esta pasada
   const normSets = {};
   for (const d of TI_DIMS) {
@@ -4783,7 +4913,7 @@ function tiemposGetFiltered() {
       normSets[d.key] = new Set([...sel].map(v => tiemposNormVal(d.key, v)).filter(Boolean));
     }
   }
-  return tiemposData.filter(r => {
+  return base.filter(r => {
     for (const d of TI_DIMS) {
       const sel = tiDimFilters[d.key];
       if (sel instanceof Set) {
@@ -5269,7 +5399,8 @@ function tiemposRemoveAt(zone, idx) {
 }
 
 function tiemposPopulateFilters() {
-  if (!Array.isArray(tiemposData)) return;
+  const src = tiemposRowsForView();
+  if (!Array.isArray(src)) return;
   const uniq = (arr) => [...new Set(arr.filter(Boolean))].sort((a,b) => a.localeCompare(b,'es'));
   const perSort = (p) => {
     const s = (p||'').toString().trim();
@@ -5280,7 +5411,7 @@ function tiemposPopulateFilters() {
     return 999999;
   };
   TI_DIMS.forEach(d => {
-    const raw = tiemposData.map(r => tiemposGetField(r, d.key)).filter(Boolean);
+    const raw = src.map(r => tiemposGetField(r, d.key)).filter(Boolean);
     if (d.key === 'periodo') {
       // Mostrar en UI en formato canónico cuando se pueda
       const vals = [...new Set(raw.map(v => tiemposNormVal('periodo', v) || v))].filter(Boolean);
@@ -5297,19 +5428,32 @@ function tiemposRender() {
   const wrap = document.getElementById('tiemposPivotWrap');
   const empty = document.getElementById('tiemposPivotEmpty');
   const dbg = document.getElementById('tiDebugStatus');
+  const selfNote = document.getElementById('tiSelfViewNote');
   if (!wrap || !empty) return;
+  if (selfNote) selfNote.style.display = 'none';
   if (!Array.isArray(tiemposData) || tiemposData.length === 0) {
     wrap.innerHTML = '';
     empty.style.display = 'block';
+    empty.textContent = 'Importá “Tiempos (Plan‑IN)” para ver el análisis.';
     if (dbg) dbg.textContent = '';
     return;
   }
+  const viewRows = tiemposRowsForView();
+  if (viewRows.length === 0 && tiemposUserSeesOnlySelf()) {
+    wrap.innerHTML = '';
+    empty.style.display = 'block';
+    empty.textContent = 'No hay registros con tu usuario en Tiempos. Verificá que la columna Usuario del Excel coincida con tu nombre en el sistema.';
+    if (dbg) dbg.textContent = '';
+    return;
+  }
+  if (selfNote) selfNote.style.display = tiemposUserSeesOnlySelf() ? 'block' : 'none';
   empty.style.display = 'none';
 
+  const filtKey = `${tiemposData.length}|${tiemposUserSeesOnlySelf() ? '1' : '0'}|${(currentUserData && currentUserData.nombre) || ''}`;
   // Asegurar filtros una vez por dataset (evita resetear selecciones en cada render)
-  if (!tiemposRender._filtersInitedFor || tiemposRender._filtersInitedFor !== (tiemposData.length + '')) {
+  if (!tiemposRender._filtersInitedFor || tiemposRender._filtersInitedFor !== filtKey) {
     tiemposPopulateFilters();
-    tiemposRender._filtersInitedFor = (tiemposData.length + '');
+    tiemposRender._filtersInitedFor = filtKey;
   }
   let data = tiemposGetFiltered();
 
@@ -5451,7 +5595,7 @@ function tiemposRender() {
         const sset = new Set([...sel].map(v => tiemposNormVal(d.key, v)).filter(Boolean));
         if (sset.size === 0) continue;
         let m = 0;
-        for (const r of tiemposData) {
+        for (const r of tiemposRowsForView()) {
           const fv = tiemposNormVal(d.key, tiemposGetField(r, d.key));
           if (fv && sset.has(fv)) m++;
         }
@@ -5463,7 +5607,9 @@ function tiemposRender() {
     const exTxt = (parseOk === 0 && data.length > 0)
       ? ` · ejemplo raw(min): ${String(rawExample).slice(0, 24)}${String(rawExample).length > 24 ? '…' : ''}${keysExample ? ` · keys: ${keysExample}` : ''}`
       : '';
-    dbg.textContent = `Datos: ${tiemposData.length} · Filtrados: ${data.length} · Minutos OK: ${parseOk} (Σ≈${Math.round(sumAll)}) · inválidos: ${parseBad}${noneTxt}${extra}${zeroExplain}${typesTxt}${exTxt}`;
+    const baseN = tiemposRowsForView().length;
+    const scopeHint = tiemposUserSeesOnlySelf() ? ' · alcance: solo tu usuario' : '';
+    dbg.textContent = `Datos: ${baseN}${scopeHint} · Filtrados: ${data.length} · Minutos OK: ${parseOk} (Σ≈${Math.round(sumAll)}) · inválidos: ${parseBad}${noneTxt}${extra}${zeroExplain}${typesTxt}${exTxt}`;
   }
 
   const rowDims = Array.isArray(tiRowDims) ? tiRowDims.filter(Boolean) : [];
@@ -6420,6 +6566,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
   });
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.section-nav-dropdown')) return;
+    document.querySelectorAll('.section-nav-dropdown.open').forEach(d => {
+      d.classList.remove('open');
+      const tr = d.querySelector('.section-tab-dropdown');
+      if (tr) tr.setAttribute('aria-expanded', 'false');
+    });
+  });
   tiemposBindPivotControls();
   tiemposBindDragDrop();
 });
@@ -6456,6 +6610,8 @@ window.msClose = msClose;
 window.msFilter = msFilter;
 window.msToggleItem = msToggleItem;
 window.switchSection = switchSection;
+window.toggleSectionDropdown = toggleSectionDropdown;
+window.switchSectionFromDropdown = switchSectionFromDropdown;
 window.repRender = repRender;
 window.repClearFilters = repClearFilters;
 window.repMsApply = repMsApply;
