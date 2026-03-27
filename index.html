@@ -2233,6 +2233,9 @@ const ATT_LOGO_FALLBACK = "data:image/svg+xml;utf8," + encodeURIComponent(`
 </svg>
 `);
 const IMPORT_LAST_LOCAL_KEY = 'imports_last_status_v1';
+/** Imports a Firestore: 20s era corto y disparaba “nube lenta” con conexión normal. */
+const FIRESTORE_IMPORT_META_TIMEOUT_MS = 60000;
+const FIRESTORE_IMPORT_BATCH_TIMEOUT_MS = 180000;
 
 // Usuarios del sistema con roles
 const USUARIOS = {
@@ -4037,7 +4040,7 @@ async function opsImportFile(event) {
         current_import_id: importId,
         updated_at: serverTimestamp(),
         updated_by: currentUserData ? currentUserData.nombre : ''
-      }, { merge: true }), 20000, 'setDoc meta');
+      }, { merge: true }), FIRESTORE_IMPORT_META_TIMEOUT_MS, 'setDoc meta');
 
       const CHUNK = 250;
       let batch = writeBatch(db);
@@ -4056,11 +4059,11 @@ async function opsImportFile(event) {
         inBatch++;
         if (inBatch >= CHUNK) {
           try {
-            await withTimeout(batch.commit(), 20000, 'batch.commit');
+            await withTimeout(batch.commit(), FIRESTORE_IMPORT_BATCH_TIMEOUT_MS, 'batch.commit');
           } catch (e) {
             cloudAborted = true;
             console.error('Commit Firestore demoró demasiado, corto nube:', e);
-            showToast('La nube está lenta: termino con guardado local', 2200);
+            showToast('El guardado en línea tardó demasiado (se detuvo). Los datos quedaron en este navegador; probá de nuevo con mejor conexión.', 4500);
             break;
           }
           const pct = Math.max(1, Math.min(99, Math.round(((i + 1) / imported.length) * 100)));
@@ -4073,7 +4076,7 @@ async function opsImportFile(event) {
       }
       if (!cloudAborted && inBatch > 0) {
         try {
-          await withTimeout(batch.commit(), 20000, 'batch.commit final');
+          await withTimeout(batch.commit(), FIRESTORE_IMPORT_BATCH_TIMEOUT_MS, 'batch.commit final');
           showToast('Importando... (guardando 99%)', 0, true);
           persisted = true;
         } catch (e) {
@@ -4285,7 +4288,7 @@ async function tiemposImportFile(event) {
         current_import_id: importId,
         updated_at: serverTimestamp(),
         updated_by: currentUserData ? currentUserData.nombre : ''
-      }, { merge: true }), 20000, 'setDoc tiempos meta');
+      }, { merge: true }), FIRESTORE_IMPORT_META_TIMEOUT_MS, 'setDoc tiempos meta');
 
       const CHUNK = 250;
       let batch = writeBatch(db);
@@ -4304,11 +4307,11 @@ async function tiemposImportFile(event) {
         inBatch++;
         if (inBatch >= CHUNK) {
           try {
-            await withTimeout(batch.commit(), 20000, 'batch.commit tiempos');
+            await withTimeout(batch.commit(), FIRESTORE_IMPORT_BATCH_TIMEOUT_MS, 'batch.commit tiempos');
           } catch (e) {
             cloudAborted = true;
             console.error('Commit tiempos demoró demasiado, corto nube:', e);
-            showToast('La nube está lenta: termino con guardado local (tiempos)', 2200);
+            showToast('El guardado en línea tardó demasiado (se detuvo). Los datos de tiempos quedaron en este navegador; probá de nuevo con mejor conexión.', 4500);
             break;
           }
           const pct = Math.max(1, Math.min(99, Math.round(((i + 1) / imported.length) * 100)));
@@ -4320,7 +4323,7 @@ async function tiemposImportFile(event) {
       }
       if (!cloudAborted && inBatch > 0) {
         try {
-          await withTimeout(batch.commit(), 20000, 'batch.commit tiempos final');
+          await withTimeout(batch.commit(), FIRESTORE_IMPORT_BATCH_TIMEOUT_MS, 'batch.commit tiempos final');
           showToast('Importando tiempos... (guardando 99%)', 0, true);
           persisted = true;
         } catch (e) {
