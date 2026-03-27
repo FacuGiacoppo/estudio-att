@@ -4051,19 +4051,28 @@ async function opsImportFile(event) {
     if (unsubscribeOps) { try { unsubscribeOps(); } catch (_) {} unsubscribeOps = null; }
     currentOpsImportId = null;
 
-    // Uso inmediato en el navegador (lo que antes sentías como “segundos”)
+    // Memoria al instante; localStorage y tabla se hacen después (JSON.stringify + opsRender con miles de filas bloqueaban minutos)
     opsData = imported;
     opsPage = 1;
-    opsSaveLocal(imported, { import_id: importId, saved_at: Date.now(), source: 'local' });
+    setTimeout(() => {
+      const ok = opsSaveLocal(imported, { import_id: importId, saved_at: Date.now(), source: 'local' });
+      if (ok === false && imported.length) {
+        showToast('Archivo grande: copia local de operaciones omitida; seguí trabajando y sincronizá con la nube.', 4000);
+      }
+    }, 0);
 
-    const newObligs = [...new Set(imported.map(r=>r.obligacion))].sort();
-    const newClientes = [...new Set(imported.map(r=>r.cliente))].sort();
-    MS_DATA.oblig.items = newObligs; MS_DATA.oblig.selected.clear(); msUpdateBtn('oblig'); msRenderList('oblig','');
-    MS_DATA.cliente.items = newClientes; MS_DATA.cliente.selected.clear(); msUpdateBtn('cliente'); msRenderList('cliente','');
-
-    opsRender();
-    repInit();
-    repRender();
+    const runOpsHeavyUi = () => {
+      try {
+        opsPopulateFilters();
+        opsRender();
+      } catch (err) { console.warn('ops UI post-import:', err); }
+    };
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(runOpsHeavyUi, { timeout: 1500 });
+    } else {
+      setTimeout(runOpsHeavyUi, 0);
+    }
+    // Reportería: repInit/repRender solo al abrir esa pestaña (antes se ejecutaban acá y recalculaban todo el dashboard = minutos)
     importLastSave('ops', { at: Date.now(), file: file.name || '', count: imported.length });
     importLastRender();
     showToast(`${imported.length} operaciones listas. Sincronizando con la nube en segundo plano…`, 4200);
@@ -4304,16 +4313,27 @@ async function tiemposImportFile(event) {
     const importId = 'tiempos_' + Date.now().toString(36);
 
     tiemposData = imported;
-    const savedLocal = tiemposSaveLocal(imported, { import_id: importId, saved_at: Date.now(), source: 'local' });
-    if (savedLocal === false && imported.length > 0) {
-      showToast('Archivo grande: copia local omitida; al terminar la nube quedará el respaldo.', 4200);
+    setTimeout(() => {
+      const savedLocal = tiemposSaveLocal(imported, { import_id: importId, saved_at: Date.now(), source: 'local' });
+      if (savedLocal === false && imported.length > 0) {
+        showToast('Archivo grande: copia local omitida; al terminar la nube quedará el respaldo.', 4200);
+      }
+    }, 0);
+    const runTiemposHeavyUi = () => {
+      try {
+        computeComplexityMapFromTiempos();
+        if (currentSection === 'tiempos') {
+          tiemposRender._filtersInitedFor = null;
+          tiemposRender();
+        }
+        if (currentSection === 'carga-trabajo') workloadRender();
+      } catch (err) { console.warn('tiempos UI post-import:', err); }
+    };
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(runTiemposHeavyUi, { timeout: 1500 });
+    } else {
+      setTimeout(runTiemposHeavyUi, 0);
     }
-    computeComplexityMapFromTiempos();
-    if (currentSection === 'tiempos') {
-      tiemposRender._filtersInitedFor = null;
-      tiemposRender();
-    }
-    if (currentSection === 'carga-trabajo') workloadRender();
     importLastSave('tiempos', { at: Date.now(), file: file.name || '', count: imported.length });
     importLastRender();
     showToast(`${imported.length} tiempos listos. Sincronizando con la nube en segundo plano…`, 4200);
@@ -4415,6 +4435,7 @@ function switchSection(section, btn) {
   document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('panel-' + section).classList.add('active');
+  if (section === 'operaciones') { opsPopulateFilters(); opsRender(); }
   if (section === 'reporteria') { repInit(); repRender(); }
   if (section === 'tiempos') tiemposRender();
   if (section === 'carga-trabajo') workloadRender();
@@ -5561,13 +5582,35 @@ let currentOpsImportId = null;
 
 const OPS_LOCAL_KEY = 'opsData_local_v1';
 const OPS_LOCAL_META_KEY = 'opsData_local_meta_v1';
+const OPS_LOCAL_MAX_ROWS = 12000;
 
 function opsSaveLocal(imported, meta) {
+  const list = imported || [];
+  const baseMeta = { ...(meta || {}), saved_at: (meta && meta.saved_at) || Date.now() };
   try {
-    localStorage.setItem(OPS_LOCAL_KEY, JSON.stringify(imported || []));
-    localStorage.setItem(OPS_LOCAL_META_KEY, JSON.stringify(meta || { saved_at: Date.now() }));
+    if (list.length > OPS_LOCAL_MAX_ROWS) {
+      try { localStorage.removeItem(OPS_LOCAL_KEY); } catch (_) {}
+      localStorage.setItem(
+        OPS_LOCAL_META_KEY,
+        JSON.stringify({
+          ...baseMeta,
+          local_rows_omitted: true,
+          local_row_count: list.length,
+          note: 'operaciones: dataset demasiado grande para copia local completa'
+        })
+      );
+      return false;
+    }
+    localStorage.setItem(OPS_LOCAL_KEY, JSON.stringify(list));
+    localStorage.setItem(OPS_LOCAL_META_KEY, JSON.stringify(baseMeta));
+    return true;
   } catch (e) {
-    // si el navegador bloquea localStorage, lo ignoramos
+    if (e && (e.name === 'QuotaExceededError' || e.code === 22)) {
+      try {
+        localStorage.setItem(OPS_LOCAL_META_KEY, JSON.stringify({ ...baseMeta, local_quota_error: true }));
+      } catch (_) {}
+    }
+    return false;
   }
 }
 
