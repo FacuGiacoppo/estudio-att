@@ -5963,6 +5963,36 @@ function tiemposLoadLocal() {
   }
 }
 
+function tiemposLoadLocalMeta() {
+  try {
+    const raw = localStorage.getItem(TIEMPOS_LOCAL_META_KEY);
+    if (!raw) return null;
+    const o = JSON.parse(raw);
+    return (o && typeof o === 'object') ? o : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function tiemposApplyLoadedRows(rows, impId) {
+  if (!Array.isArray(rows) || rows.length === 0) return;
+  tiemposData = rows;
+  const id = impId || currentTiemposImportId;
+  setTimeout(() => {
+    if (id) {
+      try {
+        tiemposSaveLocal(rows, { import_id: id, saved_at: Date.now(), source: 'local-restore' });
+      } catch (_) {}
+    }
+    computeComplexityMapFromTiempos();
+    if (currentSection === 'tiempos') {
+      tiemposRender._filtersInitedFor = null;
+      tiemposRender();
+    }
+    if (currentSection === 'carga-trabajo') workloadRender();
+  }, 0);
+}
+
 async function startTiemposListener() {
   if (unsubscribeTiempos) { unsubscribeTiempos(); unsubscribeTiempos = null; }
   currentTiemposImportId = null;
@@ -5971,20 +6001,35 @@ async function startTiemposListener() {
     if (meta.exists()) currentTiemposImportId = meta.data().current_import_id || null;
   } catch (e) {
     const local = tiemposLoadLocal();
-    if (local.length > 0) {
-      tiemposData = local;
-      computeComplexityMapFromTiempos();
-      if (currentSection === 'carga-trabajo') workloadRender();
+    const lm = tiemposLoadLocalMeta();
+    if (local.length > 0 && !lm?.local_rows_omitted) {
+      tiemposApplyLoadedRows(local, lm && lm.import_id);
     }
     return;
   }
 
-  if (!currentTiemposImportId) return;
+  // Sin import_id en la nube: igual podemos tener copia local del último import en este navegador.
+  if (!currentTiemposImportId) {
+    const local = tiemposLoadLocal();
+    const lm = tiemposLoadLocalMeta();
+    if (local.length > 0 && !lm?.local_rows_omitted) {
+      tiemposApplyLoadedRows(local, lm && lm.import_id);
+    }
+    return;
+  }
 
   const q = query(tiemposRef, where('import_id', '==', currentTiemposImportId));
   unsubscribeTiempos = onSnapshot(q, (snapshot) => {
     const loaded = snapshot.docs.map(d => d.data());
-    if (loaded.length === 0) return;
+    if (loaded.length === 0) {
+      // Firestore a veces entrega 0 docs al inicio o falla la lectura; usar respaldo local si coincide el import.
+      const local = tiemposLoadLocal();
+      const lm = tiemposLoadLocalMeta();
+      if (local.length > 0 && !lm?.local_rows_omitted && lm && lm.import_id === currentTiemposImportId) {
+        tiemposApplyLoadedRows(local, currentTiemposImportId);
+      }
+      return;
+    }
     tiemposData = loaded;
     const impId = currentTiemposImportId;
     setTimeout(() => {
@@ -5996,6 +6041,13 @@ async function startTiemposListener() {
       }
       if (currentSection === 'carga-trabajo') workloadRender();
     }, 0);
+  }, (err) => {
+    console.warn('tiempos onSnapshot:', err);
+    const local = tiemposLoadLocal();
+    const lm = tiemposLoadLocalMeta();
+    if (local.length > 0 && !lm?.local_rows_omitted && lm && lm.import_id === currentTiemposImportId) {
+      tiemposApplyLoadedRows(local, currentTiemposImportId);
+    }
   });
 }
 
