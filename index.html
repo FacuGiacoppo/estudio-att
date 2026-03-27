@@ -2366,6 +2366,50 @@ function importLastRender() {
   bind('tiempos', 'imp-last-tiempos');
 }
 
+async function importLastSyncFromCloud() {
+  try {
+    const [opsMeta, tiMeta, clMeta] = await Promise.all([
+      getDoc(opsImportMetaRef),
+      getDoc(tiemposImportMetaRef),
+      getDoc(doc(db, "imports", "clientes")),
+    ]);
+    const local = importLastLoad();
+    const pickTs = (x) => {
+      if (!x) return null;
+      // Firestore Timestamp support
+      if (x.toDate && typeof x.toDate === 'function') return x.toDate().getTime();
+      const d = new Date(x);
+      return Number.isFinite(d.getTime()) ? d.getTime() : null;
+    };
+    if (opsMeta.exists()) {
+      const d = opsMeta.data() || {};
+      local.ops = {
+        at: pickTs(d.last_uploaded_at || d.updated_at) || local.ops?.at || null,
+        file: d.last_file_name || local.ops?.file || '',
+        count: Number.isFinite(d.last_count) ? d.last_count : (local.ops?.count ?? null),
+      };
+    }
+    if (tiMeta.exists()) {
+      const d = tiMeta.data() || {};
+      local.tiempos = {
+        at: pickTs(d.last_uploaded_at || d.updated_at) || local.tiempos?.at || null,
+        file: d.last_file_name || local.tiempos?.file || '',
+        count: Number.isFinite(d.last_count) ? d.last_count : (local.tiempos?.count ?? null),
+      };
+    }
+    if (clMeta.exists()) {
+      const d = clMeta.data() || {};
+      local.clientes = {
+        at: pickTs(d.last_uploaded_at || d.updated_at) || local.clientes?.at || null,
+        file: d.last_file_name || local.clientes?.file || '',
+        count: Number.isFinite(d.last_count) ? d.last_count : (local.clientes?.count ?? null),
+      };
+    }
+    localStorage.setItem(IMPORT_LAST_LOCAL_KEY, JSON.stringify(local));
+    importLastRender();
+  } catch (_) {}
+}
+
 function showApp() {
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('userBadge').style.display = 'flex';
@@ -2390,6 +2434,7 @@ function showApp() {
   const tabImp = document.getElementById('tab-importaciones');
   if (tabImp) tabImp.style.display = isAdminRole(u.rol) ? '' : 'none';
   importLastRender();
+  importLastSyncFromCloud();
   // Activar sección operaciones por defecto
   switchSection('operaciones', document.getElementById('tab-operaciones'));
   opsInit();
@@ -3878,6 +3923,14 @@ async function clientsImportFile(event) {
   }
 
   importLastSave('clientes', { at: Date.now(), file: file.name || '', count: imported });
+  try {
+    await setDoc(doc(db, "imports", "clientes"), {
+      last_uploaded_at: serverTimestamp(),
+      last_file_name: file.name || '',
+      last_count: imported,
+      updated_by: currentUserData ? currentUserData.nombre : ''
+    }, { merge: true });
+  } catch (_) {}
   importLastRender();
   showToast(`${imported} clientes importados ✓`);
   event.target.value = '';
@@ -4036,6 +4089,13 @@ async function opsImportFile(event) {
     repInit();
     repRender();
     importLastSave('ops', { at: Date.now(), file: file.name || '', count: imported.length });
+    try {
+      await setDoc(opsImportMetaRef, {
+        last_uploaded_at: serverTimestamp(),
+        last_file_name: file.name || '',
+        last_count: imported.length
+      }, { merge: true });
+    } catch (_) {}
     importLastRender();
     showToast(`${imported.length} registros importados ✓ (${persisted ? 'guardado' : 'guardado local'})`, 3500);
   } catch (e) {
@@ -4267,6 +4327,13 @@ async function tiemposImportFile(event) {
     }
     if (currentSection === 'carga-trabajo') workloadRender();
     importLastSave('tiempos', { at: Date.now(), file: file.name || '', count: imported.length });
+    try {
+      await setDoc(tiemposImportMetaRef, {
+        last_uploaded_at: serverTimestamp(),
+        last_file_name: file.name || '',
+        last_count: imported.length
+      }, { merge: true });
+    } catch (_) {}
     importLastRender();
     showToast(`${imported.length} tiempos importados ✓ (${persisted ? 'guardado' : 'guardado local'})`, 3500);
   } catch (e) {
