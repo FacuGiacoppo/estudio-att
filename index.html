@@ -916,7 +916,26 @@
     background: var(--paper-warm);
     border-bottom: 1px solid rgba(26,26,46,0.08);
     padding: 0.75rem 2rem;
-    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .ops-toolbar-filters {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .ops-toolbar-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: 2px;
+    border-top: 1px solid rgba(26, 26, 46, 0.07);
+  }
+  .ops-toolbar-actions .btn-clear-filters {
+    margin-left: 0;
   }
 
   .ops-filter-group {
@@ -1732,6 +1751,7 @@
   <div class="ops-container">
 
     <div class="ops-toolbar">
+      <div class="ops-toolbar-filters">
       <div class="ops-filter-group">
         <span class="ops-filter-label">Vista</span>
         <div class="ops-date-filter">
@@ -1814,8 +1834,10 @@
           </div>
         </div>
       </div>
-
-      <button type="button" class="btn-clear-filters" onclick="opsClearFilters()">✕ Limpiar filtros</button>
+      </div>
+      <div class="ops-toolbar-actions">
+        <button type="button" class="btn-clear-filters" onclick="opsClearFilters()">✕ Limpiar filtros</button>
+      </div>
     </div>
 
     <div class="ops-stats" id="opsStats"></div>
