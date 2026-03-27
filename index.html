@@ -51,7 +51,7 @@
     background: var(--ink);
     padding: 0 2rem;
     display: flex; align-items: center; justify-content: space-between;
-    height: 64px;
+    height: 72px;
     box-shadow: 0 2px 20px rgba(0,0,0,0.25);
   }
 
@@ -60,14 +60,14 @@
   }
 
   .logo-mark {
-    width: 36px; height: 36px;
-    background: var(--accent);
-    border-radius: 8px;
+    width: 150px; height: 56px;
+    background: white;
+    border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-family: 'DM Serif Display', serif;
-    color: white; font-size: 18px; font-weight: bold;
-    letter-spacing: -1px;
+    padding: 4px 8px;
+    box-sizing: border-box;
   }
+  #attLogoImg { width: 100%; height: 100%; object-fit: contain; display: block; }
 
   .logo-text {
     font-family: 'DM Serif Display', serif;
@@ -685,8 +685,9 @@
     font-size: 0.7rem; font-weight: 600; padding: 3px 10px;
     border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;
   }
-  .role-badge.admin { background: rgba(200,71,42,0.12); color: var(--accent); }
-  .role-badge.colaborador { background: rgba(74,111,165,0.12); color: var(--col1); }
+  .role-badge.socio-admin { background: rgba(200,71,42,0.12); color: var(--accent); }
+  .role-badge.socio { background: rgba(201,168,76,0.18); color: #b8891a; }
+  .role-badge.miembro { background: rgba(74,111,165,0.12); color: var(--col1); }
 
 
   /* ── NAVEGACIÓN POR SECCIONES ── */
@@ -727,6 +728,182 @@
 
   .section-panel { display: none; }
   .section-panel.active { display: block; }
+
+  /* ── PANEL MIS CLIENTES ── */
+  .clients-container { padding: 1.2rem 2rem 2.8rem; }
+  .clients-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  .clients-box {
+    background: white;
+    border: 1px solid rgba(26,26,46,0.1);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  .clients-list-head {
+    padding: 12px;
+    border-bottom: 1px solid rgba(26,26,46,0.08);
+  }
+  .clients-list-head input {
+    width: 100%;
+    border: 1px solid rgba(26,26,46,0.14);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 0.82rem;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .clients-list {
+    max-height: 66vh;
+    overflow-y: auto;
+  }
+  .client-item {
+    padding: 11px 12px;
+    border-bottom: 1px solid rgba(26,26,46,0.06);
+    cursor: pointer;
+  }
+  .client-item:last-child { border-bottom: none; }
+  .client-item:hover { background: var(--paper-warm); }
+  .client-item.active {
+    background: rgba(74,111,165,0.1);
+    border-left: 3px solid var(--col1);
+    padding-left: 9px;
+  }
+  .client-item-name { font-size: 0.84rem; font-weight: 600; color: var(--ink); }
+  .client-item-meta { margin-top: 3px; font-size: 0.74rem; color: var(--ink-muted); }
+  .client-form {
+    padding: 14px 16px 16px;
+  }
+  .client-form-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.15rem;
+    margin-bottom: 12px;
+    color: var(--ink);
+  }
+  .client-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+  .accesos-wrap {
+    border: 1px solid rgba(26,26,46,0.1);
+    border-radius: 8px;
+    background: #fff;
+    padding: 8px;
+  }
+  .acceso-row {
+    display: grid;
+    grid-template-columns: 0.95fr 0.9fr auto 0.9fr auto auto auto;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .acceso-row:last-child { margin-bottom: 0; }
+  .acceso-row select, .acceso-row input {
+    width: 100%;
+    border: 1px solid rgba(26,26,46,0.14);
+    border-radius: 6px;
+    padding: 6px 7px;
+    font-size: 0.78rem;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .acceso-mini-btn {
+    border: 1px solid rgba(26,26,46,0.16);
+    background: #fff;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 0.74rem;
+    cursor: pointer;
+  }
+  .acceso-mini-btn.danger { color: var(--accent); border-color: rgba(200,71,42,0.3); }
+  .acceso-add-btn {
+    margin-top: 8px;
+    border: 1px dashed rgba(26,26,46,0.2);
+    background: #fff;
+    border-radius: 7px;
+    padding: 6px 10px;
+    font-size: 0.76rem;
+    cursor: pointer;
+  }
+  .client-form-empty {
+    color: var(--ink-muted);
+    font-size: 0.85rem;
+    padding: 18px 4px;
+  }
+  .clients-insights {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-top: 1px solid rgba(26,26,46,0.07);
+    background: rgba(247,243,238,0.55);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  }
+  .clients-insights-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .clients-insights-actions { display:flex; justify-content:flex-end; margin-bottom:8px; }
+  .clients-insights-clear {
+    border: 1px solid rgba(26,26,46,0.2);
+    background: white;
+    border-radius: 7px;
+    padding: 5px 10px;
+    font-size: 0.74rem;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  .clients-insights-filters {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .clients-facet {
+    border: 1px solid rgba(26,26,46,0.1);
+    border-radius: 8px;
+    background: white;
+    padding: 8px 9px;
+  }
+  .clients-facet-title {
+    font-size: 0.73rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .clients-facet-list {
+    max-height: 120px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.78rem;
+  }
+  .clients-facet-item { display: flex; align-items: center; gap: 6px; color: var(--ink); }
+  .clients-facet-item input { width: 13px; height: 13px; }
+  .clients-insights-result {
+    margin-top: 10px;
+    font-size: 0.82rem;
+    color: var(--ink);
+    max-height: 220px;
+    overflow-y: auto;
+    line-height: 1.45;
+  }
+  .clients-insights-kpi {
+    margin-top: 8px;
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+  }
+
+  @media (max-width: 1040px) {
+    .clients-insights-filters { grid-template-columns: 1fr; }
+    .clients-list { max-height: 280px; }
+    .acceso-row { grid-template-columns: 1fr; }
+  }
 
   /* ── PANEL OPERACIONES ── */
   .ops-container {
@@ -1048,6 +1225,126 @@
   .rep-chart-title { font-weight: 600; font-size: 0.9rem; color: var(--ink); }
   .rep-chart-sub { font-size: 0.75rem; color: var(--ink-muted); margin-bottom: 14px; margin-top: 2px; }
 
+  /* ── Info helpers ── */
+  .info-btn {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:20px;height:20px;
+    border-radius:50%;
+    border:1px solid rgba(26,26,46,0.18);
+    background: rgba(26,26,46,0.04);
+    color: var(--ink-muted);
+    font-size: 0.72rem;
+    font-weight: 800;
+    cursor:pointer;
+    margin-left:8px;
+    flex-shrink:0;
+  }
+  .info-btn:hover { background: rgba(26,26,46,0.08); color: var(--ink); }
+  .info-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(26,26,46,0.62); backdrop-filter: blur(4px);
+    display:none; align-items:center; justify-content:center; padding: 1rem;
+  }
+  .info-overlay.open { display:flex; }
+  .info-modal {
+    background: white;
+    width: 100%;
+    max-width: 720px;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+    overflow: hidden;
+  }
+  .info-modal-header {
+    background: var(--ink);
+    padding: 18px 22px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .info-modal-title { color:#fff; font-family:'DM Serif Display', serif; font-size: 1.05rem; }
+  .info-modal-body { padding: 18px 22px; color: var(--ink); font-size: 0.9rem; line-height: 1.55; }
+  .info-modal-body ul { margin: 8px 0 0; padding-left: 18px; }
+  .info-modal-body li { margin: 6px 0; }
+
+  /* Pivot Tiempos (botones: sin drag & drop) */
+  .ti-pivot-legend {
+    font-size: 0.78rem; color: var(--ink-muted); line-height: 1.45;
+    padding: 10px 12px; border-radius: 10px; background: rgba(26,26,46,0.04);
+    border: 1px dashed rgba(26,26,46,0.12); margin-bottom: 12px;
+  }
+  .ti-palette { display:flex; flex-wrap:wrap; gap:8px; align-items:flex-start; min-height:40px; }
+  .ti-dim-card {
+    display:inline-flex; flex-direction:column;
+    border:1px solid rgba(26,26,46,0.16); border-radius:10px;
+    background:var(--surface-2); min-width:150px; max-width:270px;
+    overflow:hidden; font-size:0.82rem;
+  }
+  .ti-dim-card.ti-dim-open { min-width:200px; }
+  .ti-dim-card-header {
+    display:flex; align-items:center; gap:5px; padding:7px 10px;
+    cursor:pointer; user-select:none;
+  }
+  .ti-dim-card-header:hover { background:rgba(26,26,46,0.04); }
+  .ti-dim-handle { color:var(--ink-muted); cursor:grab; flex-shrink:0; line-height:1; }
+  .ti-dim-card-name { flex:1; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ti-dim-badge { font-size:0.68rem; background:rgba(200,71,42,0.12); color:var(--accent); padding:1px 6px; border-radius:8px; font-weight:700; flex-shrink:0; }
+  .ti-dim-chevron { font-size:0.65rem; color:var(--ink-muted); transition:transform 0.15s; flex-shrink:0; }
+  .ti-dim-open .ti-dim-chevron { transform:rotate(180deg); }
+  .ti-dim-card-body { border-top:1px solid rgba(26,26,46,0.1); padding:8px; display:none; }
+  .ti-dim-open .ti-dim-card-body { display:block; }
+  .ti-dim-search-input {
+    width:100%; padding:4px 8px; border:1px solid rgba(26,26,46,0.16); border-radius:6px;
+    font-size:0.76rem; margin-bottom:6px; box-sizing:border-box; outline:none;
+  }
+  .ti-dim-options { max-height:150px; overflow-y:auto; display:flex; flex-direction:column; gap:1px; }
+  .ti-dim-option { display:flex; align-items:center; gap:6px; padding:3px 4px; border-radius:4px; cursor:pointer; }
+  .ti-dim-option:hover { background:rgba(26,26,46,0.05); }
+  .ti-dim-option input[type=checkbox] { cursor:pointer; flex-shrink:0; width:13px; height:13px; }
+  .ti-dim-option span { font-size:0.77rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ti-dim-opt-all { font-weight:700; border-bottom:1px solid rgba(26,26,46,0.1); padding-bottom:5px; margin-bottom:3px; }
+  .ti-dim-modebar{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:6px 8px; border:1px solid rgba(26,26,46,0.12); border-radius:8px;
+    background: rgba(255,255,255,0.8); margin-bottom:8px;
+  }
+  .ti-dim-modebar .ti-dim-mode{
+    font-size:0.74rem; color:var(--ink-muted); font-weight:700; letter-spacing:0.02em;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .ti-dim-modebar .ti-dim-mode strong{ color:var(--ink); }
+  .ti-dim-footer { display:flex; gap:8px; align-items:center; justify-content:flex-end; margin-top:8px; flex-wrap:wrap; }
+  .ti-dim-footer .imp-btn { padding:5px 10px; font-size:0.75rem; }
+  .ti-dim-footer .ti-dim-foot-note { margin-right:auto; font-size:0.72rem; color:var(--ink-muted); }
+  .ti-dim-footer .ti-dim-foot-note.warn { color: var(--accent); font-weight:700; }
+  .ti-pivot-list {
+    min-height: 88px; border:1px solid rgba(26,26,46,0.14); border-radius:12px;
+    padding:8px; background: rgba(255,255,255,0.65);
+  }
+  .ti-pivot-item {
+    display:flex; flex-direction:column; gap:0;
+    padding:8px 10px; margin-bottom:6px; border-radius:10px;
+    border:1px solid rgba(26,26,46,0.1); background: var(--surface-1);
+    font-size:0.84rem; font-weight:700;
+  }
+  .ti-pivot-item:last-child { margin-bottom: 0; }
+  .ti-pivot-item-header { display:flex; align-items:center; gap:6px; width:100%; }
+  .ti-pivot-ord { font-size:0.72rem; color:var(--ink-muted); font-weight:600; flex-shrink:0; }
+  .ti-pivot-item-name { flex:1; font-weight:600; font-size:0.83rem; }
+  .ti-pivot-item-actions { display:flex; gap:4px; flex-shrink:0; align-items:center; }
+  .ti-pivot-item-body { padding-top:8px; border-top:1px solid rgba(26,26,46,0.1); margin-top:6px; display:none; }
+  .ti-zone-open .ti-pivot-item-body { display:block; }
+  .ti-pivot-empty { font-size:0.8rem; color:var(--ink-muted); padding:10px; text-align:center; }
+  /* Drag & drop */
+  .ti-dim-card[draggable="true"],
+  .ti-pivot-item[draggable="true"] { cursor: grab; }
+  .ti-dim-card[draggable="true"]:active,
+  .ti-pivot-item[draggable="true"]:active { cursor: grabbing; }
+  .ti-dragging { opacity: 0.35; }
+  .ti-pivot-list.ti-drag-over { background: rgba(200,71,42,0.07); border-color: var(--accent); border-style: dashed; }
+  .ti-pivot-item.ti-drag-over { border-top: 2px solid var(--accent); }
+  .ti-cfg-saved { font-size:0.72rem; color:var(--ink-muted); opacity:0; transition:opacity 0.4s; }
+  .ti-cfg-saved.show { opacity:1; }
+
   .rep-criticos-section {
     margin: 1.5rem 2rem 0;
     background: white; border-radius: var(--radius-lg);
@@ -1059,6 +1356,79 @@
   .rep-rend-pct-gray { background: rgba(0,0,0,0.06); color: var(--ink-muted); font-weight:600; border-radius:4px; padding:2px 8px; }
   #repRendimientoTable td { text-align:center; font-size:0.88rem; }
   #repRendimientoTable td:first-child { text-align:left; font-weight:600; }
+
+  /* ── CARGA DE TRABAJO ── */
+  .workload-item {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(26,26,46,0.1);
+    padding: 14px 16px;
+  }
+  .workload-item-top {
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .workload-user {
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .workload-bar {
+    margin-top:10px;
+    height:10px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 6px;
+    overflow:hidden;
+  }
+  .workload-bar-fill { height:100%; border-radius: 6px; }
+  .workload-meta {
+    margin-top:8px;
+    font-size:0.8rem;
+    color: var(--ink-muted);
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .workload-score {
+    font-weight:800;
+    font-family: 'DM Serif Display', serif;
+    font-size:1.35rem;
+    line-height:1;
+  }
+  /* ── IMPORTACIONES ── */
+  .imp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    padding: 0 0 1rem;
+  }
+  .imp-card {
+    background: white;
+    border: 1px solid rgba(26,26,46,0.1);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 16px;
+  }
+  .imp-title { font-weight: 800; color: var(--ink); margin-bottom: 6px; }
+  .imp-sub { color: var(--ink-muted); font-size: 0.82rem; margin-bottom: 12px; line-height: 1.35; }
+  .imp-actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .imp-actions input[type=file] { display:none; }
+  .imp-btn {
+    border: 1px solid rgba(26,26,46,0.16);
+    background: var(--surface-2);
+    color: var(--ink);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.82rem;
+    font-family: 'DM Sans', sans-serif;
+    cursor:pointer;
+  }
+  .imp-btn.primary { background: var(--accent); border-color: var(--accent); color:#fff; }
+  .imp-btn.primary:hover { background: var(--accent-light); }
   #repRendimientoTable tfoot td { font-weight:700; background:var(--surface-2); font-size:0.88rem; }
   .sankey-link { fill:none; opacity:0.35; }
   .sankey-link:hover { opacity:0.65; }
@@ -1141,18 +1511,16 @@
 <!-- HEADER -->
 <header>
   <div class="logo">
-    <div class="logo-mark">R</div>
+    <div class="logo-mark" style="overflow:hidden">
+      <img id="attLogoImg" alt="ATT" src="">
+    </div>
     <div>
       <div class="logo-text">ESTUDIO-ATT</div>
-      <div class="logo-sub">Panel de Gestión</div>
+      <div class="logo-sub">Asesores de Empresas</div>
     </div>
   </div>
   <div class="header-actions">
     <button class="btn-secondary" onclick="exportData()" id="btnExportar">↓ Exportar</button>
-    <label class="btn-secondary" id="btnImportar" style="cursor:pointer;display:none">
-      ↑ Importar Excel
-      <input type="file" accept=".xlsx,.xls,.csv" onchange="opsImportFile(event)" style="display:none">
-    </label>
     <button class="btn-primary" id="btnNuevoReq" onclick="openNewModal()">+ Nuevo Requerimiento</button>
     <div class="user-badge" onclick="toggleUserMenu()" id="userBadge" style="display:none">
       <div class="user-avatar" id="userAvatar">?</div>
@@ -1175,17 +1543,29 @@
   <button class="section-tab" onclick="switchSection('operaciones', this)" id="tab-operaciones">
     📋 Operaciones
   </button>
-  <button class="section-tab" onclick="switchSection('requerimientos', this)" id="tab-requerimientos">
-    ⚖️ Requerimientos
-  </button>
   <button class="section-tab" onclick="switchSection('reporteria', this)" id="tab-reporteria">
     📈 Reportería
+  </button>
+  <button class="section-tab" onclick="switchSection('mis-clientes', this)" id="tab-mis-clientes">
+    👥 Mis Clientes
+  </button>
+  <button class="section-tab" onclick="switchSection('requerimientos', this)" id="tab-requerimientos">
+    ⚖️ Requerimientos
   </button>
   <button class="section-tab" id="tab-ganancias" style="opacity:0.5;cursor:default">
     📊 Proy. Ganancias <span class="section-tag soon">Próximo</span>
   </button>
   <button class="section-tab" id="tab-balances" style="opacity:0.5;cursor:default">
     📁 Proy. Balances <span class="section-tag soon">Próximo</span>
+  </button>
+  <button class="section-tab" onclick="switchSection('tiempos', this)" id="tab-tiempos" style="display:none">
+    ⏱️ Tiempos <span class="section-tag soon">Socios</span>
+  </button>
+  <button class="section-tab" onclick="switchSection('carga-trabajo', this)" id="tab-carga-trabajo" style="display:none">
+    📌 Carga de trabajo <span class="section-tag soon">Socios</span>
+  </button>
+  <button class="section-tab" onclick="switchSection('importaciones', this)" id="tab-importaciones" style="display:none">
+    ⬆️ Importaciones <span class="section-tag soon">Admin</span>
   </button>
 </div>
 
@@ -1436,6 +1816,39 @@
 </div><!-- /panel-operaciones -->
 
 
+<!-- PANEL MIS CLIENTES -->
+<div class="section-panel" id="panel-mis-clientes">
+  <div class="clients-container">
+    <div class="clients-layout">
+      <div class="clients-box">
+        <div class="clients-list-head">
+          <input type="text" id="clientsSearchInput" placeholder="Buscar cliente..." oninput="clientsRenderList()">
+        </div>
+        <div class="clients-list" id="clientsList"></div>
+      </div>
+
+      <div class="clients-box">
+        <div class="client-form" id="clientFormWrap">
+          <div class="client-form-title">Ficha del cliente</div>
+          <div class="client-form-empty">Seleccioná un cliente para cargar su información.</div>
+        </div>
+        <div class="clients-insights">
+          <div class="clients-insights-title">Consultas rápidas</div>
+          <div class="clients-insights-actions">
+            <button class="clients-insights-clear" onclick="clientsClearInsights()">Limpiar filtros</button>
+          </div>
+          <div class="clients-insights-filters" id="clientsInsightsFilters">
+            <div class="client-form-empty" style="padding:8px">Cargando filtros...</div>
+          </div>
+          <div class="clients-insights-kpi" id="clientsInsightsKpi">0 clientes</div>
+          <div class="clients-insights-result" id="clientsInsightsResult">Sin datos todavía.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /panel-mis-clientes -->
+
+
 <!-- PANEL REPORTERÍA -->
 <div class="section-panel" id="panel-reporteria">
   <div class="rep-container">
@@ -1522,17 +1935,17 @@
     <!-- Gráficos fila 1 -->
     <div class="rep-charts-row">
       <div class="rep-chart-card">
-        <div class="rep-chart-title">Cumplimiento General</div>
+        <div class="rep-chart-title">Cumplimiento General <button class="info-btn" onclick="openInfo('rep_cumplimiento')">i</button></div>
         <div class="rep-chart-sub" id="repCumplSubtitle"></div>
         <div style="position:relative;height:220px"><canvas id="chartCumplimiento"></canvas></div>
       </div>
       <div class="rep-chart-card">
-        <div class="rep-chart-title">Carga por Usuario</div>
+        <div class="rep-chart-title">Carga por Usuario <button class="info-btn" onclick="openInfo('rep_carga_usuario')">i</button></div>
         <div class="rep-chart-sub">Total de tareas asignadas</div>
         <div style="position:relative;height:220px"><canvas id="chartCargaUsuario"></canvas></div>
       </div>
       <div class="rep-chart-card">
-        <div class="rep-chart-title">Eficiencia por Usuario</div>
+        <div class="rep-chart-title">Eficiencia por Usuario <button class="info-btn" onclick="openInfo('rep_eficiencia')">i</button></div>
         <div class="rep-chart-sub">% cumplido en fecha vs tardío</div>
         <div style="position:relative;height:220px"><canvas id="chartEficiencia"></canvas></div>
       </div>
@@ -1541,12 +1954,12 @@
     <!-- Gráficos fila 2 -->
     <div class="rep-charts-row">
       <div class="rep-chart-card rep-chart-wide">
-        <div class="rep-chart-title">Volumen por Período</div>
+        <div class="rep-chart-title">Volumen por Período <button class="info-btn" onclick="openInfo('rep_periodo')">i</button></div>
         <div class="rep-chart-sub">Cantidad de obligaciones por mes</div>
         <div style="position:relative;height:200px"><canvas id="chartPeriodo"></canvas></div>
       </div>
       <div class="rep-chart-card">
-        <div class="rep-chart-title">Top 10 Obligaciones</div>
+        <div class="rep-chart-title">Top 10 Obligaciones <button class="info-btn" onclick="openInfo('rep_obligaciones')">i</button></div>
         <div class="rep-chart-sub">Las más frecuentes</div>
         <div style="position:relative;height:280px"><canvas id="chartObligaciones"></canvas></div>
       </div>
@@ -1555,35 +1968,20 @@
     <!-- Gráfico torta por período -->
     <div class="rep-charts-row" style="grid-template-columns:1fr 1fr;margin-top:0">
       <div class="rep-chart-card">
-        <div class="rep-chart-title">Cumplimiento por Período seleccionado</div>
+        <div class="rep-chart-title">Cumplimiento por Período seleccionado <button class="info-btn" onclick="openInfo('rep_periodo_torta')">i</button></div>
         <div class="rep-chart-sub" id="repPeriodoTortaSub">Seleccioná uno o más períodos en el filtro</div>
         <div style="position:relative;height:240px"><canvas id="chartPeriodoTorta"></canvas></div>
       </div>
       <div class="rep-chart-card">
-        <div class="rep-chart-title">Cumplimiento por Usuario — Detalle</div>
+        <div class="rep-chart-title">Cumplimiento por Usuario — Detalle <button class="info-btn" onclick="openInfo('rep_usuario_detalle')">i</button></div>
         <div class="rep-chart-sub">Cantidad absoluta por estado y colaborador</div>
         <div style="position:relative;height:240px"><canvas id="chartUsuarioDetalle"></canvas></div>
       </div>
     </div>
 
-    <!-- Tabla críticos -->
-    <div class="rep-criticos-section">
-      <div class="rep-chart-title" style="padding:0 0 12px">⚠ Críticos — Vencidos y Pendientes próximos</div>
-      <div class="ops-table-wrap" style="padding:0">
-        <table class="ops-table">
-          <thead><tr>
-            <th>Usuario</th><th>Cliente</th><th>Obligación/Tarea</th>
-            <th>Período</th><th>Vencimiento</th><th>Estado</th>
-          </tr></thead>
-          <tbody id="repCriticosTbody"></tbody>
-        </table>
-        <div id="repCriticosEmpty" class="ops-empty" style="display:none">Sin críticos con los filtros actuales.</div>
-      </div>
-    </div>
-
     <!-- Tabla Rendimiento por Operador -->
     <div class="rep-criticos-section" style="margin-top:2rem">
-      <div class="rep-chart-title" style="padding:0 0 12px">👤 Rendimiento por Operador</div>
+      <div class="rep-chart-title" style="padding:0 0 12px">👤 Rendimiento por Operador <button class="info-btn" onclick="openInfo('rep_rendimiento')">i</button></div>
       <div class="ops-table-wrap" style="padding:0">
         <table class="ops-table" id="repRendimientoTable">
           <thead><tr>
@@ -1604,120 +2002,203 @@
       </div>
     </div>
 
-    <!-- Tabla Clientes → Usuarios -->
+    <!-- Relaciones Cliente ↔ Usuario -->
     <div class="rep-criticos-section" style="margin-top:2rem">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:0 0 14px;flex-wrap:wrap;gap:10px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:0 0 14px;flex-wrap:wrap;gap:10px">
         <div>
-          <div class="rep-chart-title" style="padding:0">👥 Clientes por Usuario</div>
-          <div class="rep-chart-sub" style="color:var(--ink-muted);font-size:0.8rem;margin-top:2px">Hacé clic en un cliente para ver los usuarios que lo atienden</div>
-        </div>
-        <div style="position:relative;min-width:200px">
-          <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink-muted);font-size:0.85rem">🔍</span>
-          <input type="text" id="repRelClienteBuscar" placeholder="Buscar cliente..."
-            style="width:100%;padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--ink);font-size:0.83rem;box-sizing:border-box"
-            oninput="repRelRender()">
+          <div class="rep-chart-title" style="padding:0">↔ Relaciones Cliente — Usuario <button class="info-btn" onclick="openInfo('rep_relaciones')">i</button></div>
+          <div class="rep-chart-sub" style="color:var(--ink-muted);font-size:0.8rem;margin-top:2px">Buscá por cliente o por usuario</div>
         </div>
       </div>
-      <div class="ops-table-wrap" style="padding:0;max-height:500px;overflow-y:auto">
-        <table class="ops-table" id="repRelTable">
-          <thead style="position:sticky;top:0;z-index:2">
-            <tr>
-              <th style="width:36px"></th>
-              <th>Cliente</th>
-              <th style="text-align:center">Total</th>
-              <th style="text-align:center">Usuarios</th>
-            </tr>
-          </thead>
-          <tbody id="repRelTbody"></tbody>
-        </table>
-        <div id="repRelEmpty" class="ops-empty" style="display:none">Sin datos con los filtros actuales.</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <!-- Usuarios por cliente -->
+        <div class="ops-table-wrap" style="padding:0;max-height:480px;overflow-y:auto">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:0 0 12px;gap:10px;flex-wrap:wrap">
+            <div style="font-weight:700;color:var(--ink)">Usuarios para el cliente</div>
+            <div style="position:relative;min-width:200px;max-width:260px;flex:1">
+              <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink-muted);font-size:0.85rem">🔍</span>
+              <input type="text" id="repRelClienteBuscar" placeholder="Buscar cliente..."
+                style="width:100%;padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--ink);font-size:0.83rem;box-sizing:border-box"
+                oninput="repRelRender()">
+            </div>
+          </div>
+          <table class="ops-table" id="repRelClienteTable">
+            <thead style="position:sticky;top:0;z-index:2">
+              <tr>
+                <th>Cliente</th>
+                <th style="text-align:center">Usuarios</th>
+              </tr>
+            </thead>
+            <tbody id="repRelClienteTbody"></tbody>
+          </table>
+          <div id="repRelClienteEmpty" class="ops-empty" style="display:none">Sin datos con los filtros actuales.</div>
+        </div>
+
+        <!-- Clientes por usuario -->
+        <div class="ops-table-wrap" style="padding:0;max-height:480px;overflow-y:auto">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:0 0 12px;gap:10px;flex-wrap:wrap">
+            <div style="font-weight:700;color:var(--ink)">Clientes para el usuario</div>
+            <div style="position:relative;min-width:200px;max-width:260px;flex:1">
+              <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink-muted);font-size:0.85rem">🔍</span>
+              <input type="text" id="repRelUsuarioBuscar" placeholder="Buscar usuario..."
+                style="width:100%;padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--ink);font-size:0.83rem;box-sizing:border-box"
+                oninput="repRelRender()">
+            </div>
+          </div>
+          <table class="ops-table" id="repRelUsuarioTable">
+            <thead style="position:sticky;top:0;z-index:2">
+              <tr>
+                <th>Usuario</th>
+                <th style="text-align:center">Clientes</th>
+              </tr>
+            </thead>
+            <tbody id="repRelUsuarioTbody"></tbody>
+          </table>
+          <div id="repRelUsuarioEmpty" class="ops-empty" style="display:none">Sin datos con los filtros actuales.</div>
+        </div>
       </div>
     </div>
+    <!-- (Detalle completo removido: usar sección Operaciones) -->
 
-    <!-- Tabla Detalle Filtrable -->
-    <div class="rep-criticos-section" style="margin-top:2rem">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:0 0 14px;flex-wrap:wrap;gap:10px">
-        <div>
-          <div class="rep-chart-title" style="padding:0">📋 Detalle Completo</div>
-          <div class="rep-chart-sub" style="color:var(--ink-muted);font-size:0.8rem;margin-top:2px">Todos los registros — filtrá por cliente, obligación, estado o tipo</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-          <span id="repDetalleCantidad" style="font-size:0.85rem;font-weight:700;color:var(--accent);background:var(--surface-2);padding:4px 12px;border-radius:20px">0 registros</span>
-        </div>
-      </div>
-
-      <!-- Sub-filtros del detalle -->
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center">
-        <!-- Búsqueda cliente -->
-        <div style="position:relative;flex:1;min-width:180px;max-width:260px">
-          <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink-muted);font-size:0.85rem">🔍</span>
-          <input type="text" id="repDetCliente" placeholder="Buscar cliente..."
-            style="width:100%;padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--ink);font-size:0.83rem;box-sizing:border-box"
-            oninput="repDetalleFilter()">
-        </div>
-        <!-- Búsqueda obligación -->
-        <div style="position:relative;flex:1;min-width:180px;max-width:260px">
-          <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink-muted);font-size:0.85rem">🔍</span>
-          <input type="text" id="repDetOblig" placeholder="Buscar obligación..."
-            style="width:100%;padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--ink);font-size:0.83rem;box-sizing:border-box"
-            oninput="repDetalleFilter()">
-        </div>
-        <!-- Estado -->
-        <select id="repDetEstado" onchange="repDetalleFilter()"
-          style="padding:7px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--ink);font-size:0.83rem;min-width:140px">
-          <option value="">Estado: Todos</option>
-          <option value="Cumplido">Cumplido</option>
-          <option value="Cumplido Tardio">Cumplido Tardío</option>
-          <option value="Pendiente">Pendiente</option>
-          <option value="Vencido">Vencido</option>
-        </select>
-        <!-- Tipo -->
-        <select id="repDetTipo" onchange="repDetalleFilter()"
-          style="padding:7px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--ink);font-size:0.83rem;min-width:140px">
-          <option value="">Tipo: Todos</option>
-          <option value="impuesto">Impuesto</option>
-          <option value="tarea">Tarea</option>
-        </select>
-        <button onclick="repDetalleClear()" style="padding:7px 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--ink-muted);font-size:0.83rem;cursor:pointer">✕ Limpiar</button>
-      </div>
-
-      <!-- Tabla -->
-      <div class="ops-table-wrap" style="padding:0;max-height:520px;overflow-y:auto">
-        <table class="ops-table" id="repDetalleTable">
-          <thead style="position:sticky;top:0;z-index:2">
-            <tr>
-              <th onclick="repDetalleSort('cliente')" style="cursor:pointer">Cliente <span id="repDetSortCliente"></span></th>
-              <th onclick="repDetalleSort('obligacion')" style="cursor:pointer">Obligación / Tarea <span id="repDetSortObligacion"></span></th>
-              <th onclick="repDetalleSort('usuario')" style="cursor:pointer">Usuario <span id="repDetSortUsuario"></span></th>
-              <th onclick="repDetalleSort('periodo')" style="cursor:pointer">Período <span id="repDetSortPeriodo"></span></th>
-              <th onclick="repDetalleSort('vencimiento')" style="cursor:pointer">Vencimiento <span id="repDetSortVencimiento"></span></th>
-              <th onclick="repDetalleSort('estado')" style="cursor:pointer">Estado <span id="repDetSortEstado"></span></th>
-              <th>Tipo</th>
-            </tr>
-          </thead>
-          <tbody id="repDetalleTbody"></tbody>
-        </table>
-        <div id="repDetalleEmpty" class="ops-empty" style="display:none">Sin registros con los filtros actuales.</div>
-      </div>
-      <!-- Paginación -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:0.82rem;color:var(--ink-muted)">
-        <span id="repDetPagInfo">—</span>
-        <div style="display:flex;gap:6px" id="repDetPagBtns"></div>
-      </div>
-    </div>
-
+  -->
   </div>
 </div><!-- /panel-reporteria -->
 
+<!-- PANEL TIEMPOS (privada socios) -->
+<div class="section-panel" id="panel-tiempos" style="padding:0 2rem 3rem">
+  <div class="rep-container">
+    <div class="rep-toolbar" style="position:relative;top:auto;background:transparent;border-bottom:none;padding:0 0 14px">
+      <div>
+        <div class="rep-chart-title" style="padding:0">⏱️ Tiempos</div>
+        <div class="rep-chart-sub">Seleccioná valores por dimensión y arrastrá a Filas o Columnas. Métrica: suma de minutos.</div>
+      </div>
+    </div>
+
+    <div class="rep-box" style="padding:16px 16px 10px">
+      <div style="margin-bottom:14px">
+        <div style="font-size:0.74rem;color:var(--ink-muted);margin-bottom:8px">Dimensiones — expandí para filtrar valores, luego arrastrá a Filas o Columnas</div>
+        <div id="tiDimPalette" class="ti-palette"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start">
+        <div>
+          <div style="font-size:0.74rem;color:var(--ink-muted);margin-bottom:6px">Filas <span style="opacity:0.6">(afuera → adentro)</span></div>
+          <div id="tiDropRows" class="ti-pivot-list" data-zone="row"></div>
+        </div>
+        <div>
+          <div style="font-size:0.74rem;color:var(--ink-muted);margin-bottom:6px">Columnas <span style="opacity:0.6">(externo → detalle)</span></div>
+          <div id="tiDropCols" class="ti-pivot-list" data-zone="col"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:12px">
+        <span style="font-size:0.78rem;color:var(--ink-muted)">Métrica: <b>Suma de minutos</b></span>
+        <span id="tiDebugStatus" style="font-size:0.78rem;color:var(--ink-muted)"></span>
+        <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
+          <span class="ti-cfg-saved" id="tiCfgSaved">✓ config guardada</span>
+          <button class="imp-btn" onclick="tiemposClearFilters()">Restablecer</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="rep-box" style="margin-top:14px;padding:0">
+      <div id="tiemposPivotWrap" class="ops-table-wrap" style="padding:0;max-height:520px;overflow:auto"></div>
+      <div id="tiemposPivotEmpty" class="ops-empty" style="display:none;margin:14px">Importá “Tiempos (Plan‑IN)” para ver el análisis.</div>
+    </div>
+  </div>
+</div><!-- /panel-tiempos -->
+
+<!-- PANEL CARGA DE TRABAJO (privada) -->
+<div class="section-panel" id="panel-carga-trabajo" style="padding:0 2rem 3rem">
+  <div class="rep-container">
+    <div class="rep-toolbar" style="position:relative;top:auto;background:transparent;border-bottom:none;padding:0 0 14px">
+      <div>
+        <div class="rep-chart-title" style="padding:0">
+          📌 Carga de trabajo por Usuario
+          <button class="info-btn" onclick="openInfo('workload')">i</button>
+        </div>
+        <div class="rep-chart-sub">Heurística basada en vencimiento y cadencia mensual/anual (tareas abiertas)</div>
+      </div>
+    </div>
+    <div id="workloadRows" style="display:flex;flex-direction:column;gap:12px"></div>
+    <div id="workloadEmpty" class="ops-empty" style="display:none;margin-top:10px">Sin datos para la carga de trabajo.</div>
+  </div>
+</div><!-- /panel-carga-trabajo -->
+
+<!-- PANEL IMPORTACIONES (privada Socio-Admin) -->
+<div class="section-panel" id="panel-importaciones" style="padding:0 2rem 3rem">
+  <div class="rep-container">
+    <div class="rep-toolbar" style="position:relative;top:auto;background:transparent;border-bottom:none;padding:0 0 14px">
+      <div>
+        <div class="rep-chart-title" style="padding:0">⬆️ Importaciones</div>
+        <div class="rep-chart-sub">Panel privado para administrar las cargas de datos al sistema.</div>
+      </div>
+    </div>
+
+    <div class="imp-grid">
+      <div class="imp-card">
+        <div class="imp-title">Operaciones</div>
+        <div class="imp-sub">Importa el Excel de operaciones (Usuario, Cliente, Obligación, Período, Vencimiento, Estado...).</div>
+        <div class="imp-actions">
+          <label class="imp-btn primary" style="cursor:pointer">
+            Importar Excel
+            <input type="file" accept=".xlsx,.xls,.csv" onchange="adminImportOps(event)">
+          </label>
+        </div>
+      </div>
+
+      <div class="imp-card">
+        <div class="imp-title">Clientes</div>
+        <div class="imp-sub">Importa el Excel de clientes (ID, CUIT, Tipo societario, IVA, Ganancias, etiquetas, etc.).</div>
+        <div class="imp-actions">
+          <label class="imp-btn primary" style="cursor:pointer">
+            Importar Excel
+            <input type="file" accept=".xlsx,.xls,.csv" onchange="adminImportClientes(event)">
+          </label>
+        </div>
+      </div>
+
+      <div class="imp-card">
+        <div class="imp-title">Tiempos (Plan-IN)</div>
+        <div class="imp-sub">Importa el registro de tiempos (minutos) por Usuario/Cliente/Obligación/Período para estimar complejidad y mejorar la carga de trabajo.</div>
+        <div class="imp-actions">
+          <label class="imp-btn primary" style="cursor:pointer">
+            Importar Excel
+            <input type="file" accept=".xlsx,.xls,.csv" onchange="adminImportTiempos(event)">
+          </label>
+        </div>
+      </div>
+
+      <div class="imp-card">
+        <div class="imp-title">Próximas importaciones</div>
+        <div class="imp-sub">Si más adelante agregamos otras fuentes (balances, etc.), van a aparecer acá.</div>
+        <div class="imp-actions">
+          <button class="imp-btn" onclick="showToast('Sin nuevas importaciones por ahora')">Ver</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /panel-importaciones -->
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
+
+<!-- INFO MODAL -->
+<div class="info-overlay" id="infoOverlay" onclick="closeInfo()">
+  <div class="info-modal" onclick="event.stopPropagation()">
+    <div class="info-modal-header">
+      <div class="info-modal-title" id="infoTitle">Info</div>
+      <button class="modal-close" onclick="closeInfo()">✕</button>
+    </div>
+    <div class="info-modal-body" id="infoBody"></div>
+  </div>
+</div>
 
 <!-- CONNECTION STATUS -->
 <div id="connStatus" style="position:fixed;bottom:1rem;left:1rem;z-index:999;font-size:0.75rem;padding:5px 12px;border-radius:20px;background:rgba(26,26,46,0.08);color:var(--ink-muted);transition:all 0.3s;">⏳ Conectando...</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, setDoc, getDoc, writeBatch, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -1734,19 +2215,35 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const colRef = collection(db, "requerimientos");
 const usersRef = collection(db, "usuarios");
+const clientsRef = collection(db, "clientes");
+const opsRef = collection(db, "operaciones");
+const opsImportMetaRef = doc(db, "imports", "operaciones");
+const tiemposRef = collection(db, "tiempos");
+const tiemposImportMetaRef = doc(db, "imports", "tiempos");
+const DEADLINE_ALERTS_MUTE_KEY = 'deadlineAlertsMutedKeys_v1';
+const ATT_LOGO_PATH = 'assets/att-logo.png';
 
 // Usuarios del sistema con roles
 const USUARIOS = {
-  'facundogiacoppo@outlook.com':  { nombre: 'Facundo Giacoppo', rol: 'admin' },
-  'ramirotomasjoya@outlook.com':  { nombre: 'Ramiro Joya',       rol: 'colaborador' },
-  'rosanelidaherrera@outlook.com':{ nombre: 'Rosa Herrera',      rol: 'colaborador' },
-  'marcosemanuelhinojosa@outlook.com':{ nombre: 'Marcos Hinojosa', rol: 'colaborador' },
-  'jgarzonatt@outlook.com':       { nombre: 'Jose Garzon',       rol: 'colaborador' },
+  'facundogiacoppo@outlook.com':  { nombre: 'Facundo Giacoppo', rol: 'socio-admin' },
+  'ramirotomasjoya@outlook.com':  { nombre: 'Ramiro Joya',       rol: 'socio' },
+  'rosanelidaherrera@outlook.com':{ nombre: 'Rosa Herrera',      rol: 'socio' },
+  'marcosemanuelhinojosa@outlook.com':{ nombre: 'Marcos Hinojosa', rol: 'miembro' },
+  'jgarzonatt@outlook.com':       { nombre: 'Jose Garzon',       rol: 'miembro' },
 };
 
 let currentUser = null;
 let currentUserData = null;
 let unsubscribeBoard = null;
+let unsubscribeClients = null;
+const alertedUpcomingKeys = new Set();
+
+function isSocioRole(rol) {
+  return rol === 'socio-admin' || rol === 'socio';
+}
+function isAdminRole(rol) {
+  return rol === 'socio-admin';
+}
 
 // ── STATE ──
 const STAGES = ['Recibido', 'En análisis', 'Presentado', 'Cerrado'];
@@ -1756,18 +2253,52 @@ let requirements = [];
 let currentFilter = 'todos';
 let currentDate = new Date();
 let editingId = null;
+let currentSection = 'operaciones';
+let clientsData = [];
+let selectedClientId = null;
+const CLIENT_INSIGHTS_FIELDS = [
+  { key: 'tipo_societario', label: 'Tipo societario' },
+  { key: 'mes_cierre', label: 'Mes de cierre' },
+  { key: 'iva', label: 'IVA' },
+  { key: 'ganancias', label: 'Ganancias' },
+  { key: 'tipo_iibb', label: 'Tipo IIBB' },
+  { key: 'terminacion_cuit', label: 'Terminación de CUIT' },
+  { key: 'jurisdiccion_domicilio', label: 'Jurisdicción fiscal' },
+];
+const clientsInsightsState = {};
+let clientsEtiqTypeSelected = '';
+const clientsEtiqValuesSelected = new Set();
+const DEMO_TASK = {
+  org: 'Interno',
+  desc: 'Prueba Cursor',
+  client: 'Facundo Giacoppo',
+  exp: 'SIM-2026-0327',
+  received: '2026-03-26',
+  deadline: '2026-03-27',
+  responsible: 'Facundo Giacoppo',
+  stage: 0,
+  notes: 'Tarea simulada para alertas de vencimiento próximo.',
+  org_custom: ''
+};
 
 // ── AUTH STATE ──
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     currentUser = user;
     currentUserData = USUARIOS[user.email] || { nombre: user.email, rol: 'colaborador' };
+    tiemposLoadConfig();
     showApp();
     startBoardListener();
+    startClientsListener();
+    startOpsListener();
+    startTiemposListener();
   } else {
     currentUser = null;
     currentUserData = null;
     if (unsubscribeBoard) { unsubscribeBoard(); unsubscribeBoard = null; }
+    if (unsubscribeClients) { unsubscribeClients(); unsubscribeClients = null; }
+    if (unsubscribeOps) { unsubscribeOps(); unsubscribeOps = null; }
+    if (unsubscribeTiempos) { unsubscribeTiempos(); unsubscribeTiempos = null; }
     showLogin();
   }
 });
@@ -1782,12 +2313,21 @@ function showApp() {
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('userBadge').style.display = 'flex';
   const u = currentUserData;
+  const logoImg = document.getElementById('attLogoImg');
+  if (logoImg) logoImg.src = ATT_LOGO_PATH;
   const initials = u.nombre.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   document.getElementById('userAvatar').textContent = initials;
   document.getElementById('userName').textContent = u.nombre.split(' ')[0];
-  document.getElementById('userRoleLabel').textContent = u.rol === 'admin' ? '★ Admin' : 'Colaborador';
-  if (u.rol === 'admin') document.getElementById('adminMenuItem').style.display = 'flex';
+  const roleLabelMap = { 'socio-admin': '★ Socio-Admin', 'socio': 'Socio', 'miembro': 'Miembro' };
+  document.getElementById('userRoleLabel').textContent = roleLabelMap[u.rol] || u.rol || '—';
+  if (u.rol === 'socio-admin') document.getElementById('adminMenuItem').style.display = 'flex';
   document.getElementById('sectionNav').style.display = 'flex';
+  const tabCarga = document.getElementById('tab-carga-trabajo');
+  if (tabCarga) tabCarga.style.display = isSocioRole(u.rol) ? '' : 'none';
+  const tabTiempos = document.getElementById('tab-tiempos');
+  if (tabTiempos) tabTiempos.style.display = isSocioRole(u.rol) ? '' : 'none';
+  const tabImp = document.getElementById('tab-importaciones');
+  if (tabImp) tabImp.style.display = isAdminRole(u.rol) ? '' : 'none';
   // Activar sección operaciones por defecto
   switchSection('operaciones', document.getElementById('tab-operaciones'));
   opsInit();
@@ -1799,6 +2339,7 @@ function startBoardListener() {
   unsubscribeBoard = onSnapshot(colRef, (snapshot) => {
     requirements = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     renderBoard();
+    notifyUpcomingDeadlines();
     const el = document.getElementById('connStatus');
     el.textContent = '🟢 Sincronizado';
     el.style.background = 'rgba(45,122,79,0.1)';
@@ -1807,6 +2348,499 @@ function startBoardListener() {
     const el = document.getElementById('connStatus');
     el.textContent = '🔴 Sin conexión';
     el.style.color = 'var(--accent)';
+  });
+}
+
+function startClientsListener() {
+  if (unsubscribeClients) unsubscribeClients();
+  unsubscribeClients = onSnapshot(clientsRef, (snapshot) => {
+    clientsData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es'));
+    if (selectedClientId && !clientsData.some(c => c.id === selectedClientId)) {
+      selectedClientId = null;
+    }
+    clientsRenderList();
+    clientsRenderForm();
+    clientsRenderInsights();
+  });
+}
+
+function clientsRenderList() {
+  const listEl = document.getElementById('clientsList');
+  if (!listEl) return;
+  const q = (document.getElementById('clientsSearchInput')?.value || '').trim().toLowerCase();
+  const rows = clientsData.filter(c => {
+    if (!q) return true;
+    return [c.id_cliente, c.nombre, c.tipo_societario, c.cuit, c.telefono, c.email].some(v => v && v.toLowerCase().includes(q));
+  });
+  if (!rows.length) {
+    listEl.innerHTML = `<div class="client-form-empty" style="padding:14px">Sin clientes cargados.</div>`;
+    return;
+  }
+  listEl.innerHTML = rows.map(c => `
+    <div class="client-item ${selectedClientId === c.id ? 'active' : ''}" onclick="clientsSelect('${c.id}')">
+      <div class="client-item-name">${c.nombre || 'Sin nombre'}</div>
+      <div class="client-item-meta">ID: ${c.id_cliente || '—'} · ${c.tipo_societario || '—'} · ${c.cuit || 'Sin CUIT'}</div>
+    </div>
+  `).join('');
+}
+
+function clientsSelect(id) {
+  selectedClientId = id;
+  clientsRenderList();
+  clientsRenderForm();
+}
+
+function clientsRenderAccesosRows(accesos = [], legacyClaves = '') {
+  let rows = Array.isArray(accesos) ? accesos : [];
+  if (!rows.length && legacyClaves && legacyClaves.trim()) {
+    rows = [{ organismo: 'Otro', usuario: '', clave: legacyClaves.trim() }];
+  }
+  if (!rows.length) rows = [{ organismo: '', usuario: '', clave: '' }];
+  return rows.map((a, idx) => `
+    <div class="acceso-row" data-idx="${idx}">
+      <select class="acc-org">
+        <option value="">Organismo...</option>
+        <option value="ARCA" ${a.organismo === 'ARCA' ? 'selected' : ''}>ARCA</option>
+        <option value="DGR" ${a.organismo === 'DGR' ? 'selected' : ''}>DGR</option>
+        <option value="ARBA" ${a.organismo === 'ARBA' ? 'selected' : ''}>ARBA</option>
+        <option value="AFIP" ${a.organismo === 'AFIP' ? 'selected' : ''}>AFIP</option>
+        <option value="AGIP" ${a.organismo === 'AGIP' ? 'selected' : ''}>AGIP</option>
+        <option value="Municipalidad" ${a.organismo === 'Municipalidad' ? 'selected' : ''}>Municipalidad</option>
+        <option value="Otro" ${a.organismo === 'Otro' ? 'selected' : ''}>Otro</option>
+      </select>
+      <input type="text" class="acc-user" placeholder="Usuario / CUIT" value="${(a.usuario || '').replace(/"/g, '&quot;')}">
+      <button type="button" class="acceso-mini-btn" onclick="clientsCopyField(this, 'acc-user')">Copiar</button>
+      <input type="password" class="acc-pass" placeholder="Clave" value="${(a.clave || '').replace(/"/g, '&quot;')}">
+      <button type="button" class="acceso-mini-btn" onclick="clientsCopyField(this, 'acc-pass')">Copiar</button>
+      <button type="button" class="acceso-mini-btn" onclick="clientsToggleClave(this)">👁</button>
+      <button type="button" class="acceso-mini-btn danger" onclick="clientsRemoveAcceso(this)">✕</button>
+    </div>
+  `).join('');
+}
+
+function clientsAddAcceso() {
+  const list = document.getElementById('accesosList');
+  if (!list) return;
+  list.insertAdjacentHTML('beforeend', clientsRenderAccesosRows([{ organismo: '', usuario: '', clave: '' }]));
+}
+
+function clientsRemoveAcceso(btn) {
+  const row = btn.closest('.acceso-row');
+  const list = document.getElementById('accesosList');
+  if (!row || !list) return;
+  row.remove();
+  if (!list.querySelector('.acceso-row')) clientsAddAcceso();
+}
+
+function clientsToggleClave(btn) {
+  const row = btn.closest('.acceso-row');
+  const pass = row ? row.querySelector('.acc-pass') : null;
+  if (!pass) return;
+  pass.type = pass.type === 'password' ? 'text' : 'password';
+}
+
+async function clientsCopyField(btn, cls) {
+  const row = btn.closest('.acceso-row');
+  const input = row ? row.querySelector('.' + cls) : null;
+  if (!input) return;
+  const text = input.value || '';
+  if (!text.trim()) { showToast('Campo vacío'); return; }
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+      showToast('Copiado ✓');
+      return;
+    }
+  } catch (_) {}
+
+  // Fallback clásico para navegadores restrictivos
+  input.focus();
+  input.select();
+  const ok = document.execCommand('copy');
+  if (ok) showToast('Copiado ✓');
+  else showToast('No se pudo copiar. Usá Cmd/Ctrl+C');
+}
+
+function clientsRenderForm() {
+  const wrap = document.getElementById('clientFormWrap');
+  if (!wrap) return;
+  const c = clientsData.find(x => x.id === selectedClientId);
+  if (!c) {
+    wrap.innerHTML = `
+      <div class="client-form-title">Ficha del cliente</div>
+      <div class="client-form-empty">Seleccioná un cliente para cargar su información.</div>
+    `;
+    return;
+  }
+  wrap.innerHTML = `
+    <div class="client-form-title">${c.nombre || 'Ficha del cliente'}</div>
+    <div class="field-group">
+      <div class="field">
+        <label>ID</label>
+        <input type="text" id="c_id_cliente" value="${(c.id_cliente || '').replace(/"/g, '&quot;')}">
+      </div>
+      <div class="field">
+        <label>Nombre / Razón social</label>
+        <input type="text" id="c_nombre" value="${(c.nombre || '').replace(/"/g, '&quot;')}">
+      </div>
+    </div>
+    <div class="field-group">
+      <div class="field">
+        <label>Tipo societario</label>
+        <input type="text" id="c_tipo_societario" value="${(c.tipo_societario || '').replace(/"/g, '&quot;')}">
+      </div>
+      <div class="field">
+        <label>Mes de cierre</label>
+        <input type="text" id="c_mes_cierre" value="${(c.mes_cierre || '').replace(/"/g, '&quot;')}" placeholder="Ej: 12">
+      </div>
+    </div>
+    <div class="field-group">
+      <div class="field">
+        <label>Ganancias</label>
+        <input type="text" id="c_ganancias" value="${(c.ganancias || '').replace(/"/g, '&quot;')}">
+      </div>
+      <div class="field">
+        <label>IVA</label>
+        <input type="text" id="c_iva" value="${(c.iva || '').replace(/"/g, '&quot;')}">
+      </div>
+    </div>
+    <div class="field-group">
+      <div class="field">
+        <label>Tipo IIBB</label>
+        <input type="text" id="c_tipo_iibb" value="${(c.tipo_iibb || '').replace(/"/g, '&quot;')}">
+      </div>
+      <div class="field">
+        <label>CUIT / CUIL</label>
+        <input type="text" id="c_cuit" value="${(c.cuit || '').replace(/"/g, '&quot;')}">
+      </div>
+    </div>
+    <div class="field-group">
+      <div class="field">
+        <label>Teléfono</label>
+        <input type="text" id="c_telefono" value="${(c.telefono || '').replace(/"/g, '&quot;')}">
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="text" id="c_email" value="${(c.email || '').replace(/"/g, '&quot;')}">
+      </div>
+    </div>
+    <div class="field-group full">
+      <div class="field">
+        <label>Domicilio fiscal</label>
+        <input type="text" id="c_direccion" value="${(c.direccion || '').replace(/"/g, '&quot;')}">
+      </div>
+    </div>
+    <div class="field-group full">
+      <div class="field">
+        <label>Jurisdicción domicilio fiscal</label>
+        <input type="text" id="c_jurisdiccion_domicilio" value="${(c.jurisdiccion_domicilio || '').replace(/"/g, '&quot;')}">
+      </div>
+    </div>
+    <div class="field-group full">
+      <div class="field">
+        <label>Etiquetas</label>
+        <input type="text" id="c_etiquetas" value="${(c.etiquetas || '').replace(/"/g, '&quot;')}" placeholder="Separadas por coma">
+      </div>
+    </div>
+    <div class="field-group full">
+      <div class="field">
+        <label>Accesos organismos</label>
+        <div class="accesos-wrap">
+          <div id="accesosList">
+            ${clientsRenderAccesosRows(c.accesos, c.claves || '')}
+          </div>
+          <button type="button" class="acceso-add-btn" onclick="clientsAddAcceso()">+ Agregar acceso</button>
+        </div>
+      </div>
+    </div>
+    <div class="field-group full">
+      <div class="field">
+        <label>Notas internas</label>
+        <textarea id="c_notas" placeholder="Observaciones, vencimientos, info adicional...">${c.notas || ''}</textarea>
+      </div>
+    </div>
+    <div class="client-form-actions">
+      <button class="btn-save" onclick="clientsSave('${c.id}')">Guardar ficha</button>
+    </div>
+  `;
+}
+
+async function clientsSave(id) {
+  const accesos = [...document.querySelectorAll('#accesosList .acceso-row')].map(row => ({
+    organismo: (row.querySelector('.acc-org')?.value || '').trim(),
+    usuario: (row.querySelector('.acc-user')?.value || '').trim(),
+    clave: (row.querySelector('.acc-pass')?.value || '').trim(),
+  })).filter(a => a.organismo || a.usuario || a.clave);
+
+  const payload = {
+    id_cliente: (document.getElementById('c_id_cliente')?.value || '').trim(),
+    nombre: (document.getElementById('c_nombre')?.value || '').trim(),
+    tipo_societario: (document.getElementById('c_tipo_societario')?.value || '').trim(),
+    ganancias: (document.getElementById('c_ganancias')?.value || '').trim(),
+    iva: (document.getElementById('c_iva')?.value || '').trim(),
+    cuit: (document.getElementById('c_cuit')?.value || '').trim(),
+    mes_cierre: (document.getElementById('c_mes_cierre')?.value || '').trim(),
+    tipo_iibb: (document.getElementById('c_tipo_iibb')?.value || '').trim(),
+    telefono: (document.getElementById('c_telefono')?.value || '').trim(),
+    email: (document.getElementById('c_email')?.value || '').trim(),
+    direccion: (document.getElementById('c_direccion')?.value || '').trim(),
+    jurisdiccion_domicilio: (document.getElementById('c_jurisdiccion_domicilio')?.value || '').trim(),
+    etiquetas: (document.getElementById('c_etiquetas')?.value || '').trim(),
+    accesos,
+    claves: '',
+    notas: (document.getElementById('c_notas')?.value || '').trim(),
+    updated_by: currentUserData ? currentUserData.nombre : '',
+    updated_at: serverTimestamp(),
+  };
+  if (!payload.nombre) { showToast('El nombre del cliente es obligatorio'); return; }
+  await updateDoc(doc(db, "clientes", id), payload);
+  showToast('Ficha de cliente guardada ✓');
+}
+
+function clientsGetFacetValues(fieldKey) {
+  const vals = [...new Set(clientsData.map(c => {
+    if (fieldKey === 'terminacion_cuit') return getCuitTermination(c.cuit || '');
+    return (c[fieldKey] || '').toString().trim();
+  }).filter(Boolean))];
+  if (fieldKey === 'mes_cierre') return vals.sort((a,b)=>parseInt(a,10)-parseInt(b,10));
+  if (fieldKey === 'terminacion_cuit') return vals.sort((a,b)=>parseInt(a,10)-parseInt(b,10));
+  return vals.sort((a,b)=>a.localeCompare(b, 'es'));
+}
+
+function getCuitTermination(cuitRaw) {
+  const digits = (cuitRaw || '').toString().replace(/\D/g, '');
+  if (!digits) return '';
+  return digits.slice(-1);
+}
+
+function parseEtiquetas(raw) {
+  const parts = (raw || '')
+    .toString()
+    .split(/\n|,|;/)
+    .map(x => x.trim())
+    .filter(Boolean);
+
+  const parsed = [];
+  const cleanTipo = (t) => (t || '').replace(/^[\s\-•–—]+/, '').trim();
+  const multiTagRegex = /([A-Za-z0-9ÁÉÍÓÚÜÑáéíóúüñ ./_-]+):\s*(.+?)(?=\s*-\s*[A-Za-z0-9ÁÉÍÓÚÜÑáéíóúüñ ./_-]+:\s*|$)/g;
+
+  parts.forEach((p) => {
+    const matches = [...p.matchAll(multiTagRegex)];
+    if (matches.length >= 2) {
+      matches.forEach((m) => {
+        const tipo = cleanTipo(m[1]);
+        const valor = (m[2] || '').trim();
+        if (tipo && valor) parsed.push({ tipo, valor, full: `${tipo}: ${valor}` });
+      });
+      return;
+    }
+
+    const i = p.indexOf(':');
+    if (i > -1) {
+      const tipo = cleanTipo(p.slice(0, i));
+      const valor = p.slice(i + 1).trim();
+      parsed.push({ tipo: tipo || 'General', valor: valor || p, full: p });
+      return;
+    }
+    parsed.push({ tipo: 'General', valor: p, full: p });
+  });
+
+  return parsed;
+}
+
+function getEtiquetaTypes() {
+  return [...new Set(clientsData.flatMap(c => parseEtiquetas(c.etiquetas).map(e => e.tipo)).filter(Boolean))]
+    .sort((a,b)=>a.localeCompare(b, 'es'));
+}
+
+function getEtiquetaValuesByType(tipo) {
+  if (!tipo) return [];
+  return [...new Set(
+    clientsData.flatMap(c =>
+      parseEtiquetas(c.etiquetas)
+        .filter(e => e.tipo === tipo)
+        .map(e => e.valor)
+    ).filter(Boolean)
+  )].sort((a,b)=>a.localeCompare(b, 'es'));
+}
+
+function clientsEnsureInsightsState() {
+  CLIENT_INSIGHTS_FIELDS.forEach(f => {
+    if (!clientsInsightsState[f.key]) clientsInsightsState[f.key] = new Set();
+    const allowed = new Set(clientsGetFacetValues(f.key));
+    clientsInsightsState[f.key] = new Set([...clientsInsightsState[f.key]].filter(v => allowed.has(v)));
+  });
+}
+
+function clientsToggleFacetValue(fieldKey, encodedValue) {
+  const value = decodeURIComponent(encodedValue);
+  clientsEnsureInsightsState();
+  if (!clientsInsightsState[fieldKey]) clientsInsightsState[fieldKey] = new Set();
+  if (clientsInsightsState[fieldKey].has(value)) clientsInsightsState[fieldKey].delete(value);
+  else clientsInsightsState[fieldKey].add(value);
+  clientsRenderInsights();
+}
+
+function clientsToggleFacetAll(fieldKey, checked) {
+  clientsEnsureInsightsState();
+  const values = clientsGetFacetValues(fieldKey);
+  clientsInsightsState[fieldKey] = checked ? new Set(values) : new Set();
+  clientsRenderInsights();
+}
+
+function clientsClearInsights() {
+  CLIENT_INSIGHTS_FIELDS.forEach(f => { clientsInsightsState[f.key] = new Set(); });
+  clientsEtiqTypeSelected = '';
+  clientsEtiqValuesSelected.clear();
+  clientsRenderInsights();
+}
+
+function clientsSetEtiquetaType(tipo) {
+  clientsEtiqTypeSelected = tipo || '';
+  clientsEtiqValuesSelected.clear();
+  clientsRenderInsights();
+}
+
+function clientsToggleEtiquetaValue(encodedValue) {
+  const value = decodeURIComponent(encodedValue);
+  if (clientsEtiqValuesSelected.has(value)) clientsEtiqValuesSelected.delete(value);
+  else clientsEtiqValuesSelected.add(value);
+  clientsRenderInsights();
+}
+
+function clientsToggleEtiquetaAll(checked) {
+  const values = getEtiquetaValuesByType(clientsEtiqTypeSelected);
+  clientsEtiqValuesSelected.clear();
+  if (checked) values.forEach(v => clientsEtiqValuesSelected.add(v));
+  clientsRenderInsights();
+}
+
+function clientsRenderInsights() {
+  clientsEnsureInsightsState();
+  const filtersEl = document.getElementById('clientsInsightsFilters');
+  const resultEl = document.getElementById('clientsInsightsResult');
+  const kpiEl = document.getElementById('clientsInsightsKpi');
+  if (!filtersEl || !resultEl || !kpiEl) return;
+
+  filtersEl.innerHTML = CLIENT_INSIGHTS_FIELDS.map((f) => {
+    const values = clientsGetFacetValues(f.key);
+    const selected = clientsInsightsState[f.key] || new Set();
+    const allChecked = values.length > 0 && selected.size === values.length;
+    if (!values.length) {
+      return `
+        <div class="clients-facet">
+          <div class="clients-facet-title">${f.label}</div>
+          <div class="client-form-empty" style="padding:4px 0">Sin datos</div>
+        </div>
+      `;
+    }
+    return `
+      <div class="clients-facet">
+        <div class="clients-facet-title">${f.label}</div>
+        <div class="clients-facet-list">
+          <label class="clients-facet-item">
+            <input type="checkbox" ${allChecked ? 'checked' : ''} onchange="clientsToggleFacetAll('${f.key}', this.checked)">
+            <span>Todos</span>
+          </label>
+          ${values.map(v => `
+            <label class="clients-facet-item">
+              <input type="checkbox" ${selected.has(v) ? 'checked' : ''} onchange="clientsToggleFacetValue('${f.key}', '${encodeURIComponent(v)}')">
+              <span>${v}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const etiqTypes = getEtiquetaTypes();
+  const etiqValues = getEtiquetaValuesByType(clientsEtiqTypeSelected);
+  const etiqAllChecked = etiqValues.length > 0 && clientsEtiqValuesSelected.size === etiqValues.length;
+  filtersEl.innerHTML += `
+    <div class="clients-facet">
+      <div class="clients-facet-title">Etiquetas</div>
+      <div style="margin-bottom:6px">
+        <select style="width:100%;border:1px solid rgba(26,26,46,0.14);border-radius:6px;padding:5px 7px;font-size:0.78rem"
+          onchange="clientsSetEtiquetaType(this.value)">
+          <option value="">Tipo de etiqueta...</option>
+          ${etiqTypes.map(t => `<option value="${t}" ${clientsEtiqTypeSelected===t?'selected':''}>${t}</option>`).join('')}
+        </select>
+      </div>
+      <div class="clients-facet-list">
+        ${!clientsEtiqTypeSelected ? `<div class="client-form-empty" style="padding:4px 0">Elegí un tipo</div>` : `
+          <label class="clients-facet-item">
+            <input type="checkbox" ${etiqAllChecked ? 'checked' : ''} onchange="clientsToggleEtiquetaAll(this.checked)">
+            <span>Todos</span>
+          </label>
+          ${etiqValues.map(v => `
+            <label class="clients-facet-item">
+              <input type="checkbox" ${clientsEtiqValuesSelected.has(v) ? 'checked' : ''} onchange="clientsToggleEtiquetaValue('${encodeURIComponent(v)}')">
+              <span>${v}</span>
+            </label>
+          `).join('')}
+        `}
+      </div>
+    </div>
+  `;
+
+  const filtered = clientsData.filter(c => {
+    const passBase = CLIENT_INSIGHTS_FIELDS.every(f => {
+      const selected = clientsInsightsState[f.key] || new Set();
+      if (!selected.size) return true;
+      const value = f.key === 'terminacion_cuit'
+        ? getCuitTermination(c.cuit || '')
+        : (c[f.key] || '').toString().trim();
+      return selected.has(value);
+    });
+    if (!passBase) return false;
+    if (!clientsEtiqTypeSelected || clientsEtiqValuesSelected.size === 0) return true;
+    const vals = parseEtiquetas(c.etiquetas)
+      .filter(e => e.tipo === clientsEtiqTypeSelected)
+      .map(e => e.valor);
+    return vals.some(v => clientsEtiqValuesSelected.has(v));
+  });
+
+  kpiEl.textContent = `${filtered.length} cliente${filtered.length===1?'':'s'} encontrados`;
+  if (!filtered.length) {
+    resultEl.textContent = 'Sin clientes para esos filtros.';
+    return;
+  }
+  resultEl.innerHTML = `<ul style="margin:0;padding-left:18px">${filtered.map(c => `
+    <li>${c.nombre || 'Sin nombre'} ${c.id_cliente ? `- ID ${c.id_cliente}` : ''}</li>
+  `).join('')}</ul>`;
+}
+
+function notifyUpcomingDeadlines() {
+  if (!currentUserData || !currentUserData.nombre) return;
+  const todayDate = today();
+  todayDate.setHours(0, 0, 0, 0);
+  const mutedKeys = new Set(JSON.parse(localStorage.getItem(DEADLINE_ALERTS_MUTE_KEY) || '[]'));
+
+  const upcoming = requirements.filter((r) => {
+    if (r.stage >= 3) return false;
+    if (r.responsible !== currentUserData.nombre) return false;
+    const d = parseDate(r.deadline);
+    if (!d) return false;
+    const diff = Math.ceil((d - todayDate) / 86400000);
+    return diff >= 0 && diff <= 1;
+  });
+
+  upcoming.forEach((r) => {
+    const key = `${r.id || r.desc}-${r.deadline}`;
+    if (alertedUpcomingKeys.has(key)) return;
+    if (mutedKeys.has(key)) return;
+    alertedUpcomingKeys.add(key);
+    const clientName = r.client || 'Sin cliente';
+    const keepShowing = window.confirm(
+      `Recordatorio: "${r.desc}" (${clientName}) vence el ${formatDate(r.deadline)}.\n\n` +
+      `Aceptar: mantener recordatorio\nCancelar: no volver a mostrar`
+    );
+    if (!keepShowing) {
+      mutedKeys.add(key);
+      localStorage.setItem(DEADLINE_ALERTS_MUTE_KEY, JSON.stringify([...mutedKeys]));
+      showToast('Recordatorio silenciado para esta tarea');
+    }
   });
 }
 
@@ -1874,13 +2908,14 @@ document.addEventListener('click', (e) => {
 function openAdminPanel() {
   closeUserMenu();
   const body = document.getElementById('adminPanelBody');
+  const rolePretty = (rol) => ({ 'socio-admin':'Socio-Admin', 'socio':'Socio', 'miembro':'Miembro' }[rol] || rol || '—');
   body.innerHTML = Object.entries(USUARIOS).map(([email, u]) => `
     <div class="user-list-item">
       <div class="user-list-info">
         <div class="user-list-name">${u.nombre}</div>
         <div class="user-list-email">${email}</div>
       </div>
-      <span class="role-badge ${u.rol}">${u.rol}</span>
+      <span class="role-badge ${u.rol}">${rolePretty(u.rol)}</span>
     </div>
   `).join('');
   document.getElementById('adminPanelOverlay').classList.add('open');
@@ -1902,6 +2937,7 @@ async function loadSampleData() {
     { org:'Municipalidad', desc:'Habilitación comercial vencida. Requiere renovación y planos actualizados.', client:'Restaurante El Patio', exp:'MUN-0087', received:'2026-02-10', deadline:'2026-03-15', responsible:'Jorge Pérez', stage:2, notes:'Presentado el 14/03. Esperamos resolución.', org_custom:'' },
     { org:'ANSES', desc:'Impugnación de aportes voluntarios. Período 2023.', client:'Martínez, Roberto', exp:'ANS-2231', received:'2026-01-15', deadline:'2026-03-30', responsible:'Carlos Ruiz', stage:3, notes:'Resuelto favorablemente.', org_custom:'' },
     { org:'Otro', desc:'Requerimiento de documentación ante la Dirección de Rentas Provincial por diferencias en sellos.', client:'Agro Campo SA', exp:'REN-1102', received:'2026-03-10', deadline:'2026-04-05', responsible:'María López', stage:0, notes:'', org_custom:'Rentas Provincial' },
+    DEMO_TASK,
   ];
   for (const s of samples) {
     s.created = serverTimestamp();
@@ -1909,6 +2945,20 @@ async function loadSampleData() {
   }
 }
 loadSampleData();
+
+async function ensureDemoTaskExists() {
+  const { getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+  const snap = await getDocs(colRef);
+  const exists = snap.docs.some((d) => {
+    const data = d.data();
+    return data.desc === DEMO_TASK.desc &&
+      data.responsible === DEMO_TASK.responsible &&
+      data.deadline === DEMO_TASK.deadline;
+  });
+  if (exists) return;
+  await addDoc(colRef, { ...DEMO_TASK, created: serverTimestamp() });
+}
+ensureDemoTaskExists();
 
 // ── MIGRACIÓN: remapear etapas viejas (5 etapas → 4 etapas) ──
 async function migrateStages() {
@@ -2247,11 +3297,18 @@ function exportData() {
 }
 
 // ── TOAST ──
-function showToast(msg) {
+let toastTimer = null;
+function showToast(msg, durationMs = 2500, sticky = false) {
   const t = document.getElementById('toast');
+  if (!t) return;
+  if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; }
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+  if (sticky || durationMs === 0) return;
+  toastTimer = setTimeout(() => {
+    t.classList.remove('show');
+    toastTimer = null;
+  }, durationMs);
 }
 
 
@@ -2281,7 +3338,9 @@ const USER_COLORS = {
 };
 
 function opsInit() {
-  opsData = OPS_DATA_EMBEDDED;
+  const local = opsLoadLocal ? opsLoadLocal() : [];
+  if (Array.isArray(local) && local.length > 0) opsData = local;
+  if (!Array.isArray(opsData) || opsData.length === 0) opsData = OPS_DATA_EMBEDDED;
   opsPopulateFilters();
   opsRender();
 }
@@ -2296,6 +3355,11 @@ const MS_DATA = {
   'rep-estado':  { items: ['Pendiente','Cumplido','Cumplido Tardio','Vencido'], selected: new Set(), label: 'Todos' },
   'rep-periodo': { items: [], selected: new Set(), label: 'Todos' },
   'rep-mesvenc': { items: [], selected: new Set(), label: 'Todos' },
+  'ti-usuario':  { items: [], selected: new Set(), label: 'Todos' },
+  'ti-cliente':  { items: [], selected: new Set(), label: 'Todos' },
+  'ti-oblig':    { items: [], selected: new Set(), label: 'Todas' },
+  'ti-periodo':  { items: [], selected: new Set(), label: 'Todos' },
+  'ti-tipo':     { items: [], selected: new Set(), label: 'Todos' },
 };
 
 // ── Poblar filtros de período y mes desde datos embebidos ──
@@ -2591,99 +3655,831 @@ function opsGoPage(p) {
   opsRender();
 }
 
-async function opsImportFile(event) {
+function handleImportFile(event) {
+  if (currentSection === 'mis-clientes') return clientsImportFile(event);
+  return opsImportFile(event);
+}
+
+function normalizeKey(v) {
+  return (v || '')
+    .toString()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[.\-_/\\]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+async function clientsImportFile(event) {
   const file = event.target.files[0];
   if (!file) return;
-  showToast('Importando archivo...');
-  
+  showToast('Importando clientes...');
   const { read, utils } = await import('https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs');
   const ab = await file.arrayBuffer();
   const wb = read(ab);
   const ws = wb.Sheets[wb.SheetNames[0]];
-  const raw = utils.sheet_to_json(ws, {header:1});
-  
-  // Encontrar fila de headers
+  const raw = utils.sheet_to_json(ws, { header: 1, defval: '' });
+  if (!raw.length) { showToast('Archivo vacío'); return; }
+
+  const normalizeHeaderCompact = (cell) => normalizeKey(cell).replace(/\s+/g, '');
+  const headerMatches = (cell, keys) => {
+    const raw = normalizeKey(cell);
+    const compact = normalizeHeaderCompact(cell);
+    return keys.some(k => {
+      const nk = normalizeKey(k);
+      return raw === nk || compact === nk.replace(/\s+/g, '');
+    });
+  };
+
+  const isNameHeader = (cell) => headerMatches(cell, ['cliente', 'nombre', 'razon social', 'razon_social', 'apellido y nombre']);
+  const isAnyKnownHeader = (cell) => {
+    return headerMatches(cell, [
+      'cliente','nombre','razon social','razon_social','apellido y nombre',
+      'nro cliente','nro. cliente','numero cliente','id','id cliente',
+      'tipo societario',
+      'ganancias','iva',
+      'domicilio fiscal','jurisdiccion domicilio fiscal',
+      'cuit','cuil','dni',
+      'mes de cierre',
+      'tipo iibb',
+      'etiquetas',
+      'telefono','tel','celular','movil',
+      'email','correo','mail',
+      'direccion','domicilio',
+      'claves','clave','accesos','usuario y clave',
+      'notas','observaciones','comentarios'
+    ]);
+  };
+
   let headerRow = -1;
-  for (let i=0; i<raw.length; i++) {
-    if (raw[i] && raw[i].includes('Usuario') && raw[i].includes('Cliente')) {
-      headerRow = i; break;
+  for (let i = 0; i < Math.min(raw.length, 30); i++) {
+    const row = raw[i] || [];
+    const knownCount = row.filter(isAnyKnownHeader).length;
+    if (row.some(isNameHeader) || knownCount >= 2) {
+      headerRow = i;
+      break;
     }
   }
-  if (headerRow < 0) { showToast('Formato no reconocido'); return; }
-  
-  const headers = raw[headerRow];
-  const iU = headers.indexOf('Usuario');
-  const iC = headers.indexOf('Cliente');
-  const iO = headers.findIndex(h => h && h.toString().includes('Obligacion'));
-  const iAn = headers.indexOf('Anticipo');
-  const iCu = headers.indexOf('Cuota');
-  const iPe = headers.indexOf('Período');
-  const iV = headers.indexOf('Vencimiento');
-  const iE = headers.indexOf('Estado');
-  const iPr = headers.indexOf('Presentación');
-  const iFR = headers.indexOf('Fecha Registro');
-  const iHR = headers.indexOf('Hora Registro');
 
-  const imported = [];
-  for (let i=headerRow+1; i<raw.length; i++) {
-    const row = raw[i];
-    if (!row || !row[iU]) continue;
-    
-    const parseExcelDate = (v) => {
-      if (!v) return '';
-      if (typeof v === 'number') {
-        const d = new Date(Math.round((v - 25569)*86400*1000));
-        return d.toISOString().split('T')[0];
-      }
-      if (typeof v === 'string' && v.includes('/')) {
-        const parts = v.split('/');
-        if (parts.length === 3) return `${parts[2].padStart(4,'20')}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
-      }
-      return v;
+  let imported = 0;
+  if (headerRow >= 0) {
+    const headers = (raw[headerRow] || []);
+    const idx = (keys) => headers.findIndex(h => headerMatches(h, keys));
+    const iIdCliente = idx(['nro cliente','nro. cliente','numero cliente','id','id cliente']);
+    const iNombre = idx(['cliente', 'nombre', 'razon social', 'razon_social', 'apellido y nombre']);
+    const iTipoSoc = idx(['tipo societario']);
+    const iGanancias = idx(['ganancias']);
+    const iIva = idx(['iva']);
+    const iDomicilioFiscal = idx(['domicilio fiscal','direccion','domicilio']);
+    const iJurisdiccion = idx(['jurisdiccion domicilio fiscal']);
+    const iCuit = idx(['cuit', 'cuil', 'dni']);
+    const iMesCierre = idx(['mes de cierre']);
+    const iTipoIibb = idx(['tipo iibb']);
+    const iEtiquetas = idx(['etiquetas']);
+    const iTel = idx(['telefono', 'tel', 'celular', 'movil']);
+    const iEmail = idx(['email', 'correo', 'mail']);
+    const iClaves = idx(['claves', 'clave', 'accesos', 'usuario y clave']);
+    const iNotas = idx(['notas', 'observaciones', 'comentarios']);
+
+    for (let i = headerRow + 1; i < raw.length; i++) {
+      const row = raw[i] || [];
+      const nombre = (iNombre >= 0 ? row[iNombre] : row[0])?.toString().trim() || '';
+      if (!nombre) continue;
+      const payload = {
+        id_cliente: (iIdCliente >= 0 ? row[iIdCliente] : '').toString().trim(),
+        nombre,
+        tipo_societario: (iTipoSoc >= 0 ? row[iTipoSoc] : '').toString().trim(),
+        ganancias: (iGanancias >= 0 ? row[iGanancias] : '').toString().trim(),
+        iva: (iIva >= 0 ? row[iIva] : '').toString().trim(),
+        tipo_iibb: (iTipoIibb >= 0 ? row[iTipoIibb] : '').toString().trim(),
+        cuit: (iCuit >= 0 ? row[iCuit] : '').toString().trim(),
+        mes_cierre: (iMesCierre >= 0 ? row[iMesCierre] : '').toString().trim(),
+        telefono: (iTel >= 0 ? row[iTel] : '').toString().trim(),
+        email: (iEmail >= 0 ? row[iEmail] : '').toString().trim(),
+        direccion: (iDomicilioFiscal >= 0 ? row[iDomicilioFiscal] : '').toString().trim(),
+        jurisdiccion_domicilio: (iJurisdiccion >= 0 ? row[iJurisdiccion] : '').toString().trim(),
+        etiquetas: (iEtiquetas >= 0 ? row[iEtiquetas] : '').toString().trim(),
+        claves: (iClaves >= 0 ? row[iClaves] : '').toString().trim(),
+        notas: (iNotas >= 0 ? row[iNotas] : '').toString().trim(),
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp(),
+        updated_by: currentUserData ? currentUserData.nombre : '',
+      };
+      const docId = nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 80) || `cliente-${Date.now()}-${i}`;
+      await setDoc(doc(db, "clientes", docId), payload, { merge: true });
+      imported++;
+    }
+  } else {
+    for (let i = 0; i < raw.length; i++) {
+      const row = raw[i] || [];
+      const nombre = (row[0] || '').toString().trim();
+      if (!nombre) continue;
+      if (normalizeKey(nombre) === 'cliente') continue;
+      if (/^\d+$/.test(nombre)) continue;
+      if (nombre.length < 3) continue;
+      const payload = {
+        id_cliente: '',
+        nombre,
+        tipo_societario: '',
+        ganancias: '',
+        iva: '',
+        tipo_iibb: '',
+        cuit: '',
+        mes_cierre: '',
+        telefono: '',
+        email: '',
+        direccion: '',
+        jurisdiccion_domicilio: '',
+        etiquetas: '',
+        claves: '',
+        notas: '',
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp(),
+        updated_by: currentUserData ? currentUserData.nombre : '',
+      };
+      const docId = nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 80) || `cliente-${Date.now()}-${i}`;
+      await setDoc(doc(db, "clientes", docId), payload, { merge: true });
+      imported++;
+    }
+  }
+
+  if (imported === 0) {
+    showToast('No se pudieron detectar clientes en el archivo');
+    event.target.value = '';
+    return;
+  }
+
+  if (headerRow >= 0) {
+    const firstImported = clientsData.find(c => c.nombre);
+    if (!selectedClientId && firstImported) selectedClientId = firstImported.id;
+  }
+
+  showToast(`${imported} clientes importados ✓`);
+  event.target.value = '';
+}
+
+async function opsImportFile(event) {
+  const inputEl = event && event.target ? event.target : null;
+  const file = inputEl && inputEl.files ? inputEl.files[0] : null;
+  // Resetear rápido para permitir reimportar el mismo archivo
+  if (inputEl) inputEl.value = '';
+  if (!file) { showToast('No se seleccionó archivo'); return; }
+  showToast('Importando archivo... (leyendo)', 0, true);
+
+  try {
+    const withTimeout = (promise, ms, label) => {
+      let timer = null;
+      const timeout = new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`Timeout ${label || ''}`.trim())), ms);
+      });
+      return Promise.race([promise, timeout]).finally(() => { if (timer) clearTimeout(timer); });
     };
 
-    imported.push({
-      usuario: row[iU] || '',
-      cliente: row[iC] || '',
-      obligacion: row[iO] || '',
-      anticipo: row[iAn] || '',
-      cuota: row[iCu] || '',
-      periodo: row[iPe] || '',
-      vencimiento: parseExcelDate(row[iV]),
-      estado: row[iE] || '',
-      presentacion: parseExcelDate(row[iPr]),
-      fecha_registro: parseExcelDate(row[iFR]),
-      hora_registro: row[iHR] || '',
-    });
+    const { read, utils } = await import('https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs');
+    const ab = await file.arrayBuffer();
+    const wb = read(ab);
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const raw = utils.sheet_to_json(ws, {header:1});
+  
+    // Encontrar fila de headers
+    let headerRow = -1;
+    for (let i=0; i<raw.length; i++) {
+      if (raw[i] && raw[i].includes('Usuario') && raw[i].includes('Cliente')) {
+        headerRow = i; break;
+      }
+    }
+    if (headerRow < 0) { showToast('Formato no reconocido (no encuentro columnas Usuario/Cliente)'); return; }
+  
+    const headers = raw[headerRow];
+    const iU = headers.indexOf('Usuario');
+    const iC = headers.indexOf('Cliente');
+    const iO = headers.findIndex(h => h && h.toString().includes('Obligacion'));
+    const iAn = headers.indexOf('Anticipo');
+    const iCu = headers.indexOf('Cuota');
+    const iPe = headers.indexOf('Período');
+    const iV = headers.indexOf('Vencimiento');
+    const iE = headers.indexOf('Estado');
+    const iPr = headers.indexOf('Presentación');
+    const iFR = headers.indexOf('Fecha Registro');
+    const iHR = headers.indexOf('Hora Registro');
+
+    const imported = [];
+    for (let i=headerRow+1; i<raw.length; i++) {
+      const row = raw[i];
+      if (!row || !row[iU]) continue;
+      
+      const parseExcelDate = (v) => {
+        if (!v) return '';
+        if (typeof v === 'number') {
+          const d = new Date(Math.round((v - 25569)*86400*1000));
+          return d.toISOString().split('T')[0];
+        }
+        if (typeof v === 'string' && v.includes('/')) {
+          const parts = v.split('/');
+          if (parts.length === 3) return `${parts[2].padStart(4,'20')}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+        }
+        return v;
+      };
+
+      imported.push({
+        usuario: row[iU] || '',
+        cliente: row[iC] || '',
+        obligacion: row[iO] || '',
+        anticipo: row[iAn] || '',
+        cuota: row[iCu] || '',
+        periodo: row[iPe] || '',
+        vencimiento: parseExcelDate(row[iV]),
+        estado: row[iE] || '',
+        presentacion: parseExcelDate(row[iPr]),
+        fecha_registro: parseExcelDate(row[iFR]),
+        hora_registro: row[iHR] || '',
+      });
+    }
+
+    if (imported.length === 0) { showToast('No se detectaron filas para importar'); return; }
+    showToast(`Importando... (parseado ${imported.length} filas)`, 0, true);
+  
+    // Persistir en Firestore para que quede guardado al refrescar
+    const importId = 'ops_' + Date.now().toString(36);
+    let persisted = false;
+    try {
+      showToast('Importando... (guardando en la nube)', 0, true);
+      await withTimeout(setDoc(opsImportMetaRef, {
+        current_import_id: importId,
+        updated_at: serverTimestamp(),
+        updated_by: currentUserData ? currentUserData.nombre : ''
+      }, { merge: true }), 20000, 'setDoc meta');
+
+      const CHUNK = 250;
+      let batch = writeBatch(db);
+      let inBatch = 0;
+      let cloudAborted = false;
+      for (let i = 0; i < imported.length; i++) {
+        const r = imported[i];
+        const ref = doc(db, "operaciones", `${importId}_${i}`);
+        batch.set(ref, {
+          ...r,
+          import_id: importId,
+          created_at: serverTimestamp(),
+          updated_at: serverTimestamp(),
+          updated_by: currentUserData ? currentUserData.nombre : ''
+        }, { merge: true });
+        inBatch++;
+        if (inBatch >= CHUNK) {
+          try {
+            await withTimeout(batch.commit(), 20000, 'batch.commit');
+          } catch (e) {
+            cloudAborted = true;
+            console.error('Commit Firestore demoró demasiado, corto nube:', e);
+            showToast('La nube está lenta: termino con guardado local', 2200);
+            break;
+          }
+          const pct = Math.max(1, Math.min(99, Math.round(((i + 1) / imported.length) * 100)));
+          showToast(`Importando... (guardando ${pct}%)`, 0, true);
+          batch = writeBatch(db);
+          inBatch = 0;
+          // Dejar respirar el UI en imports grandes
+          await new Promise(r => setTimeout(r, 0));
+        }
+      }
+      if (!cloudAborted && inBatch > 0) {
+        try {
+          await withTimeout(batch.commit(), 20000, 'batch.commit final');
+          showToast('Importando... (guardando 99%)', 0, true);
+          persisted = true;
+        } catch (e) {
+          console.error('Commit final Firestore demoró demasiado:', e);
+        }
+      } else if (!cloudAborted) {
+        persisted = true;
+      }
+    } catch (e) {
+      console.error('No se pudo persistir operaciones en Firestore:', e);
+    }
+
+    opsData = imported;
+    opsPage = 1;
+    opsSaveLocal(imported, { import_id: importId, saved_at: Date.now(), source: persisted ? 'firestore+local' : 'local' });
+  
+    // Repoblar multiselect
+    const newObligs = [...new Set(imported.map(r=>r.obligacion))].sort();
+    const newClientes = [...new Set(imported.map(r=>r.cliente))].sort();
+    MS_DATA.oblig.items = newObligs; MS_DATA.oblig.selected.clear(); msUpdateBtn('oblig'); msRenderList('oblig','');
+    MS_DATA.cliente.items = newClientes; MS_DATA.cliente.selected.clear(); msUpdateBtn('cliente'); msRenderList('cliente','');
+  
+    opsRender();
+    repInit();
+    repRender();
+    showToast(`${imported.length} registros importados ✓ (${persisted ? 'guardado' : 'guardado local'})`, 3500);
+  } catch (e) {
+    console.error('Error importando operaciones:', e);
+    showToast('Error al importar (ver consola)');
   }
-  
-  opsData = imported;
-  opsPage = 1;
-  
-  // Repoblar multiselect
-  const newObligs = [...new Set(imported.map(r=>r.obligacion))].sort();
-  const newClientes = [...new Set(imported.map(r=>r.cliente))].sort();
-  MS_DATA.oblig.items = newObligs; MS_DATA.oblig.selected.clear(); msUpdateBtn('oblig'); msRenderList('oblig','');
-  MS_DATA.cliente.items = newClientes; MS_DATA.cliente.selected.clear(); msUpdateBtn('cliente'); msRenderList('cliente','');
-  
-  opsRender();
-  repInit();
-  repRender();
-  showToast(`${imported.length} registros importados ✓`);
-  event.target.value = '';
+}
+
+async function tiemposImportFile(event) {
+  const inputEl = event && event.target ? event.target : null;
+  const file = inputEl && inputEl.files ? inputEl.files[0] : null;
+  if (inputEl) inputEl.value = '';
+  if (!file) { showToast('No se seleccionó archivo'); return; }
+  showToast('Importando tiempos... (leyendo)', 0, true);
+
+  try {
+    const withTimeout = (promise, ms, label) => {
+      let timer = null;
+      const timeout = new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`Timeout ${label || ''}`.trim())), ms);
+      });
+      return Promise.race([promise, timeout]).finally(() => { if (timer) clearTimeout(timer); });
+    };
+
+    const normText = (v) => (v ?? '').toString().trim().replace(/\s+/g,' ');
+    const normKey = (v) => normText(v).toLowerCase();
+    const normPeriodo = (p) => {
+      const s = normText(p);
+      if (!s) return '';
+      // Aceptar "YYYY - MM" / "YYYY - M"
+      const m1 = s.match(/^(\d{4})\s*[-/]\s*(\d{1,2})$/);
+      if (m1) return `${m1[1]}-${m1[2].padStart(2,'0')}`;
+      // Aceptar "YYYY-MM"
+      const m2 = s.match(/^(\d{4})-(\d{2})$/);
+      if (m2) return s;
+      // Aceptar anual "YYYY"
+      const y = s.match(/^(\d{4})$/);
+      if (y) return y[1];
+      return s;
+    };
+
+    const { read, utils } = await import('https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs');
+    const ab = await file.arrayBuffer();
+    const wb = read(ab);
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const raw = utils.sheet_to_json(ws, { header: 1 });
+
+    let headerRow = -1;
+    for (let i = 0; i < Math.min(raw.length, 40); i++) {
+      const row = raw[i] || [];
+      const joined = row.map(c => (c ?? '').toString()).join(' | ').toLowerCase();
+      if (joined.includes('usuario') && joined.includes('cliente') && (joined.includes('oblig') || joined.includes('tarea'))) {
+        headerRow = i; break;
+      }
+    }
+    if (headerRow < 0) { showToast('Formato no reconocido (tiempos): faltan Usuario/Cliente/Obligación', 3200); return; }
+
+    const headers = raw[headerRow].map(h => (h ?? '').toString());
+    const idxOf = (names) => headers.findIndex(h => names.some(n => normKey(h) === n));
+    const iUsuario = idxOf(['usuario']);
+    const iCliente = idxOf(['cliente']);
+    let iOblig = headers.findIndex(h => normKey(h).includes('obligacion') || normKey(h).includes('obligación') || normKey(h).includes('obligacion_o_tarea') || normKey(h).includes('obligacionotarea') || normKey(h).includes('obligacion o tarea') || normKey(h).includes('obligacion/tarea') || normKey(h).includes('tarea'));
+    const iPeriodo = headers.findIndex(h => normKey(h) === 'periodo' || normKey(h) === 'período' || normKey(h).includes('periodo'));
+    const iTot = headers.findIndex(h => normKey(h).includes('totales') || normKey(h).includes('total') || normKey(h).includes('minuto') || normKey(h).includes('minutos'));
+    const iFecha = headers.findIndex(h => normKey(h).includes('fecha') && normKey(h).includes('registro'));
+    const iTipo = headers.findIndex(h => normKey(h) === 'tipo' || normKey(h).includes('tipo'));
+    const iAnioReg = headers.findIndex(h => normKey(h).includes('año_registro') || normKey(h).includes('ano_registro') || (normKey(h).includes('año') && normKey(h).includes('registro')) || (normKey(h).includes('ano') && normKey(h).includes('registro')));
+    const iMesReg = headers.findIndex(h => normKey(h).includes('mes_registro') || (normKey(h).includes('mes') && normKey(h).includes('registro')));
+    const iDiaReg = headers.findIndex(h => normKey(h).includes('dia_registro') || (normKey(h).includes('día') && normKey(h).includes('registro')) || (normKey(h).includes('dia') && normKey(h).includes('registro')));
+
+    if (iUsuario < 0 || iCliente < 0 || iOblig < 0 || iPeriodo < 0 || iTot < 0) {
+      showToast('Formato no reconocido (tiempos): columnas mínimas no encontradas', 3500);
+      return;
+    }
+
+    const parseMinutes = (v) => {
+      // Excel a veces exporta duraciones como fracción de día (ej: 0.0625 = 90 min)
+      if (typeof v === 'number') {
+        if (v > 0 && v < 1) return v * 24 * 60;
+        return v;
+      }
+      if (v instanceof Date) {
+        const mins = v.getHours() * 60 + v.getMinutes() + (v.getSeconds() / 60);
+        return mins;
+      }
+      const s0 = (v ?? '').toString().trim();
+      if (!s0) return NaN;
+      // Convert "HH:MM" or "HH:MM:SS" to minutes
+      const t = s0.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+      if (t) {
+        const hh = parseInt(t[1], 10);
+        const mm = parseInt(t[2], 10);
+        const ss = t[3] ? parseInt(t[3], 10) : 0;
+        const mins = hh * 60 + mm + (ss / 60);
+        return mins;
+      }
+      // Accept decimal comma
+      const s = s0.replace(',', '.');
+      const n = parseFloat(s);
+      if (Number.isFinite(n) && n > 0 && n < 1) return n * 24 * 60;
+      return n;
+    };
+
+    const imported = [];
+    let lastUsuario = '';
+    let lastCliente = '';
+    let lastOblig = '';
+    let lastPeriodo = '';
+    let lastTipo = '';
+    let lastAnio = '';
+    let lastMes = '';
+    let lastDia = '';
+    for (let i = headerRow + 1; i < raw.length; i++) {
+      const row = raw[i] || [];
+      // Export con celdas combinadas: forward-fill de valores vacíos
+      const usuario0 = normText(row[iUsuario]);
+      const cliente0 = normText(row[iCliente]);
+      const oblig0 = normText(row[iOblig]);
+      const periodo0 = normPeriodo(row[iPeriodo]);
+      const tipo0 = iTipo >= 0 ? normText(row[iTipo]) : '';
+      const anio0 = iAnioReg >= 0 ? normText(row[iAnioReg]) : '';
+      const mes0 = iMesReg >= 0 ? normText(row[iMesReg]) : '';
+      const dia0 = iDiaReg >= 0 ? normText(row[iDiaReg]) : '';
+
+      const usuario = usuario0 || lastUsuario;
+      const cliente = cliente0 || lastCliente;
+      const obligacion = oblig0 || lastOblig;
+      const periodo = periodo0 || lastPeriodo;
+      const tipo = tipo0 || lastTipo;
+      const anio_registro = anio0 || lastAnio;
+      const mes_registro = mes0 || lastMes;
+      const dia_registro = dia0 || lastDia;
+
+      if (usuario0) lastUsuario = usuario0;
+      if (cliente0) lastCliente = cliente0;
+      if (oblig0) lastOblig = oblig0;
+      if (periodo0) lastPeriodo = periodo0;
+      if (tipo0) lastTipo = tipo0;
+      if (anio0) lastAnio = anio0;
+      if (mes0) lastMes = mes0;
+      if (dia0) lastDia = dia0;
+
+      const minutosRaw = row[iTot];
+      const minutos = parseMinutes(minutosRaw);
+      if (!usuario || !cliente || !obligacion || !periodo) continue;
+      if (!Number.isFinite(minutos) || minutos <= 0) continue;
+
+      const fecha_registro = iFecha >= 0 ? (row[iFecha] ?? '') : '';
+      imported.push({
+        usuario,
+        cliente,
+        obligacion,
+        periodo,
+        tipo,
+        anio_registro,
+        mes_registro,
+        dia_registro,
+        minutos,
+        fecha_registro: fecha_registro ? fecha_registro.toString() : ''
+      });
+    }
+
+    if (imported.length === 0) { showToast('No se detectaron filas de tiempos para importar', 3200); return; }
+    showToast(`Importando tiempos... (parseado ${imported.length} filas)`, 0, true);
+
+    const importId = 'tiempos_' + Date.now().toString(36);
+    let persisted = false;
+    try {
+      showToast('Importando tiempos... (guardando en la nube)', 0, true);
+      await withTimeout(setDoc(tiemposImportMetaRef, {
+        current_import_id: importId,
+        updated_at: serverTimestamp(),
+        updated_by: currentUserData ? currentUserData.nombre : ''
+      }, { merge: true }), 20000, 'setDoc tiempos meta');
+
+      const CHUNK = 250;
+      let batch = writeBatch(db);
+      let inBatch = 0;
+      let cloudAborted = false;
+      for (let i = 0; i < imported.length; i++) {
+        const r = imported[i];
+        const ref = doc(db, "tiempos", `${importId}_${i}`);
+        batch.set(ref, {
+          ...r,
+          import_id: importId,
+          created_at: serverTimestamp(),
+          updated_at: serverTimestamp(),
+          updated_by: currentUserData ? currentUserData.nombre : ''
+        }, { merge: true });
+        inBatch++;
+        if (inBatch >= CHUNK) {
+          try {
+            await withTimeout(batch.commit(), 20000, 'batch.commit tiempos');
+          } catch (e) {
+            cloudAborted = true;
+            console.error('Commit tiempos demoró demasiado, corto nube:', e);
+            showToast('La nube está lenta: termino con guardado local (tiempos)', 2200);
+            break;
+          }
+          const pct = Math.max(1, Math.min(99, Math.round(((i + 1) / imported.length) * 100)));
+          showToast(`Importando tiempos... (guardando ${pct}%)`, 0, true);
+          batch = writeBatch(db);
+          inBatch = 0;
+          await new Promise(r => setTimeout(r, 0));
+        }
+      }
+      if (!cloudAborted && inBatch > 0) {
+        try {
+          await withTimeout(batch.commit(), 20000, 'batch.commit tiempos final');
+          showToast('Importando tiempos... (guardando 99%)', 0, true);
+          persisted = true;
+        } catch (e) {
+          console.error('Commit final tiempos demoró demasiado:', e);
+        }
+      } else if (!cloudAborted) {
+        persisted = true;
+      }
+    } catch (e) {
+      console.error('No se pudo persistir tiempos en Firestore:', e);
+    }
+
+    tiemposData = imported;
+    tiemposSaveLocal(imported, { import_id: importId, saved_at: Date.now(), source: persisted ? 'firestore+local' : 'local' });
+    computeComplexityMapFromTiempos();
+    // refrescar pivot si está abierto
+    if (currentSection === 'tiempos') {
+      tiemposRender._filtersInitedFor = null;
+      tiemposRender();
+    }
+    if (currentSection === 'carga-trabajo') workloadRender();
+    showToast(`${imported.length} tiempos importados ✓ (${persisted ? 'guardado' : 'guardado local'})`, 3500);
+  } catch (e) {
+    console.error('Error importando tiempos:', e);
+    showToast('Error al importar tiempos (ver consola)', 3200);
+  }
 }
 
 // ── NAVEGACIÓN POR SECCIONES ──
 function switchSection(section, btn) {
+  if (section === 'carga-trabajo' && currentUserData && !isSocioRole(currentUserData.rol)) {
+    showToast('Sección privada para socios');
+    return;
+  }
+  if (section === 'tiempos' && currentUserData && !isSocioRole(currentUserData.rol)) {
+    showToast('Sección privada para socios');
+    return;
+  }
+  if (section === 'importaciones' && currentUserData && !isAdminRole(currentUserData.rol)) {
+    showToast('Sección privada para administrador');
+    return;
+  }
+  currentSection = section;
   document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('panel-' + section).classList.add('active');
-  if (section === 'reporteria') repRender();
+  if (section === 'reporteria') { repInit(); repRender(); }
+  if (section === 'tiempos') tiemposRender();
+  if (section === 'carga-trabajo') workloadRender();
+  if (section === 'mis-clientes') {
+    clientsRenderList();
+    clientsRenderForm();
+    clientsRenderInsights();
+  }
   if (btn) btn.classList.add('active');
   // Mostrar/ocultar botón nuevo requerimiento
   document.getElementById('btnNuevoReq').style.display = section === 'requerimientos' ? '' : 'none';
-  document.getElementById('btnImportar').style.display = section === 'operaciones' ? 'inline-flex' : 'none';
   document.getElementById('btnExportar').style.display = section === 'requerimientos' ? '' : 'none';
+}
+
+function adminImportOps(event) {
+  if (currentUserData && !isAdminRole(currentUserData.rol)) { showToast('No autorizado'); event.target.value=''; return; }
+  return opsImportFile(event);
+}
+function adminImportClientes(event) {
+  if (currentUserData && !isAdminRole(currentUserData.rol)) { showToast('No autorizado'); event.target.value=''; return; }
+  return clientsImportFile(event);
+}
+
+function adminImportTiempos(event) {
+  if (currentUserData && !isAdminRole(currentUserData.rol)) { showToast('No autorizado'); if (event && event.target) event.target.value=''; return; }
+  return tiemposImportFile(event);
+}
+
+const INFO_CONTENT = {
+  workload: {
+    title: 'Cómo leer “Carga de trabajo”',
+    body: `
+      <div style="color:var(--ink-muted);margin-bottom:10px">Este panel es una <b>medida comparativa</b> para ayudarte a asignar tareas.</div>
+      <ul>
+        <li><b>Abiertas (ventana 30d)</b>: total operativo de tareas <b>Pendiente/Vencido</b> cuya fecha entra en la ventana <b>[vencidas + próximos 30 días]</b>.</li>
+        <li><b>Próx. 30d</b>: subgrupo de “Abiertas” con vencimiento entre <b>hoy y +30 días</b> (<code>0..30</code>).</li>
+        <li><b>Vencidas</b>: subgrupo de “Abiertas” con vencimiento anterior a hoy (<code>&lt;0</code>).</li>
+        <li><b>Relación</b>: <b>Abiertas = Próx. 30d + Vencidas</b>.</li>
+        <li><b>Mensuales / Anuales</b>: clasificación inferida desde <b>Período</b> (mensual tipo <code>Mar-2026</code>; anual tipo <code>2026</code> o “anual”).</li>
+        <li><b>Complejidad</b>: se estima automáticamente con el Excel <b>Tiempos (Plan‑IN)</b>. Para cada <b>Obligación</b> calcula minutos promedio históricos y la clasifica en <b>Baja/Media/Alta</b>.</li>
+        <li><b>Puntaje</b>: suma ponderada por <b>urgencia</b> (vencidas/próximas), por <b>cadencia</b> (mensual vs anual) y por <b>complejidad</b>. Más alto = más carga.</li>
+      </ul>
+      <div style="margin-top:10px;color:var(--ink-muted);font-size:0.85rem">
+        Nota: si una obligación todavía no tiene tiempos importados, la complejidad queda por defecto en <b>Media</b>.
+      </div>
+    `
+  },
+  rep_cumplimiento: { title: 'Cumplimiento General', body: 'Distribución de estados (Cumplido, Cumplido tardío, Pendiente, Vencido) para el conjunto filtrado.' },
+  rep_carga_usuario: { title: 'Carga por Usuario', body: 'Cantidad de registros asignados a cada usuario dentro del filtro actual.' },
+  rep_eficiencia: { title: 'Eficiencia por Usuario', body: 'Porcentaje por usuario: cumplido en fecha vs tardío vs vencido (según estados).' },
+  rep_periodo: { title: 'Volumen por Período', body: 'Cantidad de registros por período. Útil para ver estacionalidad/carga mensual.' },
+  rep_obligaciones: { title: 'Top 10 Obligaciones', body: 'Las obligaciones/tareas más repetidas en el set filtrado.' },
+  rep_periodo_torta: { title: 'Cumplimiento por Período', body: 'Cumplimiento para los períodos seleccionados en filtros (si hay más de uno, consolida).' },
+  rep_usuario_detalle: { title: 'Cumplimiento por Usuario — Detalle', body: 'Barras por usuario con conteos absolutos por estado.' },
+  rep_rendimiento: { title: 'Rendimiento por Operador', body: 'Tabla resumen por operador: totales y distribución por estado.' },
+  rep_relaciones: { title: 'Relaciones Cliente ↔ Usuario', body: 'Permite ver usuarios asociados a un cliente, o clientes asociados a un usuario, según los registros filtrados.' },
+};
+
+function openInfo(key) {
+  const overlay = document.getElementById('infoOverlay');
+  const titleEl = document.getElementById('infoTitle');
+  const bodyEl = document.getElementById('infoBody');
+  if (!overlay || !titleEl || !bodyEl) return;
+  const item = INFO_CONTENT[key] || { title: 'Info', body: 'Sin descripción.' };
+  titleEl.textContent = item.title || 'Info';
+  bodyEl.innerHTML = item.body || '';
+  overlay.classList.add('open');
+}
+
+function closeInfo() {
+  const overlay = document.getElementById('infoOverlay');
+  if (overlay) overlay.classList.remove('open');
+}
+
+function workloadCadenceWeight(periodo) {
+  const p = (periodo || '').toString().trim();
+  if (!p) return 0.8;
+  // Ej: Mar-2026
+  if (/^[A-Za-z]{3}\s*-\s*\d{4}$/i.test(p)) return 1;
+  // Ej: 2026 (anual)
+  if (/^\d{4}$/.test(p)) return 0.6;
+  if (/anual|año/i.test(p)) return 0.6;
+  return 0.8;
+}
+
+function workloadTimeWeight(diffDays) {
+  if (diffDays === null || diffDays === undefined || Number.isNaN(diffDays)) return 0.8;
+  if (diffDays < 0) return 1.6; // vencido
+  if (diffDays <= 5) return 1.3; // próximo
+  if (diffDays <= 30) return 1.1; // en 30 días
+  return 0.8;
+}
+
+function isMonthlyPeriodo(periodo) {
+  const p = (periodo || '').toString().trim();
+  return /^[A-Za-z]{3}\s*-\s*\d{4}$/i.test(p);
+}
+
+function isAnnualPeriodo(periodo) {
+  const p = (periodo || '').toString().trim();
+  return /^\d{4}$/.test(p) || /anual|año/i.test(p);
+}
+
+function workloadRender() {
+  const rowsEl = document.getElementById('workloadRows');
+  const emptyEl = document.getElementById('workloadEmpty');
+  if (!rowsEl || !emptyEl) return;
+  if (!Array.isArray(opsData)) { rowsEl.innerHTML = ''; emptyEl.style.display = 'block'; return; }
+
+  const normU = (v) => (v ?? '').toString().trim().replace(/\s+/g,' ').toLowerCase();
+  // Usuarios: derivar desde datos para evitar fallas por espacios/variantes
+  const canonicalUsers = ['Facundo Giacoppo','Ramiro Joya','Rosa Herrera','Marcos Hinojosa','Jose Garzon'];
+  const canonMap = new Map(canonicalUsers.map(n => [normU(n), n]));
+  const usuarios = [...new Set(
+    opsData
+      .map(r => canonMap.get(normU(r.usuario)) || (r.usuario ?? '').toString().trim())
+      .filter(Boolean)
+  )].sort((a,b) => a.localeCompare(b, 'es'));
+  const openStates = new Set(['Pendiente', 'Vencido']);
+  const coloresUsuario = {
+    'Facundo Giacoppo': '#4F7CFF',
+    'Ramiro Joya': '#FF6B35',
+    'Rosa Herrera': '#10B981',
+    'Marcos Hinojosa': '#F59E0B',
+    'Jose Garzon': '#8B5CF6'
+  };
+
+  const todayDate = today();
+  todayDate.setHours(0,0,0,0);
+
+  const parsed = usuarios.map((u) => {
+    const uKey = normU(u);
+    const open = opsData.filter(r => {
+      if (normU(r.usuario) !== uKey) return false;
+      if (!openStates.has(r.estado)) return false;
+      const d = r.vencimiento ? parseDate(r.vencimiento) : null;
+      if (!d) return false; // sin vencimiento no entra en la ventana operativa
+      const diffDays = Math.ceil((d - todayDate) / 86400000);
+      return diffDays <= 30; // incluye vencidas (<0) + próximos 30 días
+    });
+    let score = 0;
+    let monthlyCnt = 0;
+    let annualCnt = 0;
+    let overdueCnt = 0;
+    let next30Cnt = 0;
+
+    open.forEach(r => {
+      const pesoCadencia = workloadCadenceWeight(r.periodo);
+      const d = r.vencimiento ? parseDate(r.vencimiento) : null;
+      const diffDays = d ? Math.ceil((d - todayDate) / 86400000) : null;
+
+      const pesoTiempo = workloadTimeWeight(diffDays);
+      const obligKey = normObligKey(r.obligacion);
+      const comp = complexityByOblig && obligKey ? complexityByOblig[obligKey] : null;
+      const pesoComplejidad = comp ? comp.peso : 1.25; // default: Media
+      score += pesoCadencia * pesoTiempo * pesoComplejidad;
+
+      if (isMonthlyPeriodo(r.periodo)) monthlyCnt++;
+      if (isAnnualPeriodo(r.periodo)) annualCnt++;
+      if (diffDays !== null && diffDays < 0) overdueCnt++;
+      if (diffDays !== null && diffDays >= 0 && diffDays <= 30) next30Cnt++;
+    });
+
+    const openSorted = [...open].sort((a,b) => {
+      const da = a.vencimiento ? parseDate(a.vencimiento) : null;
+      const db = b.vencimiento ? parseDate(b.vencimiento) : null;
+      if (!da && !db) return 0;
+      if (!da) return 1;
+      if (!db) return -1;
+      return da - db;
+    });
+    return { u, openCount: open.length, score, monthlyCnt, annualCnt, overdueCnt, next30Cnt, open: openSorted };
+  }).sort((a,b) => b.score - a.score);
+
+  const maxScore = parsed.length ? Math.max(...parsed.map(x => x.score)) : 0;
+  if (!parsed.length || maxScore === 0) {
+    rowsEl.innerHTML = '';
+    emptyEl.style.display = 'block';
+    return;
+  }
+  emptyEl.style.display = 'none';
+
+  rowsEl.innerHTML = parsed.map((x) => {
+    const pct = maxScore ? Math.round((x.score / maxScore) * 100) : 0;
+    const color = coloresUsuario[x.u] || 'var(--accent)';
+    const initials = x.u.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+    const safeUser = encodeURIComponent(x.u);
+    return `
+      <div class="workload-item">
+        <div class="workload-item-top" style="cursor:pointer" onclick="workloadToggle('${safeUser}')">
+          <div class="workload-user">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:${color};color:#fff;font-weight:800;font-size:0.8rem;flex-shrink:0">${initials}</span>
+            <div>
+              <div style="font-weight:800;color:var(--ink);font-size:1rem">${escapeHtml ? escapeHtml(x.u) : x.u}</div>
+              <div style="color:var(--ink-muted);font-size:0.82rem;margin-top:3px">Abiertas: <b style="color:var(--ink)">${x.openCount}</b> · Próx. 30d: <b style="color:var(--ink)">${x.next30Cnt}</b> · Vencidas: <b style="color:var(--accent)">${x.overdueCnt}</b></div>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div class="workload-score" style="color:${color}">${Math.round(x.score*10)/10}</div>
+            <div style="color:var(--ink-muted);font-size:0.78rem;margin-top:2px">Mensuales: ${x.monthlyCnt} · Anuales: ${x.annualCnt}</div>
+          </div>
+        </div>
+        <div class="workload-bar">
+          <div class="workload-bar-fill" style="width:${pct}%;background:${color}"></div>
+        </div>
+        <div id="workloadDetail-${safeUser}" style="display:none;margin-top:10px">
+          <div style="font-weight:700;color:var(--ink);margin-bottom:8px">Desglose (abiertas)</div>
+          <div class="ops-table-wrap" style="padding:0;max-height:260px;overflow-y:auto">
+            <table class="ops-table">
+              <thead style="position:sticky;top:0;z-index:2">
+                <tr>
+                  <th>Cliente</th>
+                  <th>Obligación/Tarea</th>
+                  <th>Complejidad</th>
+                  <th>Período</th>
+                  <th>Vencimiento</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${x.open.map(r => {
+                  const venc = r.vencimiento ? r.vencimiento.split('-').reverse().join('/') : '—';
+                  const estadoClass = (r.estado || '').replace(/\s/g,'');
+                  const obligKey = normObligKey(r.obligacion);
+                  const comp = complexityByOblig && obligKey ? complexityByOblig[obligKey] : null;
+                  const compLabel = comp ? (comp.categoria[0].toUpperCase() + comp.categoria.slice(1)) : 'Media';
+                  const compHint = comp ? `Prom: ${Math.round(comp.avgMin)}m · n=${comp.n}` : 'Default: Media';
+                  return `<tr>
+                    <td>${(r.cliente||'—')}</td>
+                    <td>${(r.obligacion||'—')}</td>
+                    <td style="white-space:nowrap" title="${compHint}">${compLabel}</td>
+                    <td style="white-space:nowrap">${(r.periodo||'—')}</td>
+                    <td style="white-space:nowrap">${venc}</td>
+                    <td><span class="ops-estado-badge ${estadoClass}">${r.estado||'—'}</span></td>
+                  </tr>`;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+          <div style="color:var(--ink-muted);font-size:0.78rem;margin-top:8px">
+            Nota: la clasificación mensual/anual hoy se infiere por el formato del período. Si hay “semanales” u otros casos, lo agregamos con una regla/selector.
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+const workloadExpanded = new Set();
+function workloadToggle(encodedUser) {
+  const user = decodeURIComponent(encodedUser);
+  if (workloadExpanded.has(user)) workloadExpanded.delete(user);
+  else workloadExpanded.add(user);
+  const el = document.getElementById('workloadDetail-' + encodedUser);
+  if (el) el.style.display = workloadExpanded.has(user) ? 'block' : 'none';
 }
 
 
@@ -2695,11 +4491,1099 @@ let repCharts = {};
 
 // MS keys para reportería
 const REP_MS_KEYS = ['rep-usuario','rep-periodo','rep-estado','rep-mesvenc'];
+const TI_MS_KEYS = ['ti-usuario','ti-cliente','ti-oblig','ti-periodo','ti-tipo'];
+
+function tiemposClearFilters() {
+  // null = "Todos"; Set() vacío = "Ninguno"; Set(con valores) = selección explícita
+  TI_DIMS.forEach(d => { tiDimFilters[d.key] = null; });
+  tiRowDims = ['obligacion'];
+  tiColDims = ['usuario'];
+  tiDimExpanded.clear();
+  tiZoneExpanded.clear();
+  tiDimSearchQuery = {};
+  tiDimNoneExplicit.clear();
+  tiemposRender._didAutoFixOnce = false;
+  tiemposSaveConfig();
+  tiemposRender();
+}
+
+function tiemposGetField(r, key) {
+  if (!r) return '';
+  if (key === 'usuario') return (r.usuario || '').toString().trim();
+  if (key === 'cliente') return (r.cliente || '').toString().trim();
+  if (key === 'obligacion') return (r.obligacion || '').toString().trim();
+  if (key === 'periodo') return (r.periodo || '').toString().trim();
+  if (key === 'tipo') return (r.tipo || '').toString().trim();
+  if (key === 'anio_registro') return (r.anio_registro || '').toString().trim();
+  if (key === 'mes_registro') return (r.mes_registro || '').toString().trim();
+  if (key === 'dia_registro') return (r.dia_registro || '').toString().trim();
+  return '';
+}
+
+function tiemposNormVal(key, v) {
+  const s0 = (v ?? '').toString().trim().replace(/\s+/g, ' ');
+  if (!s0) return '';
+  if (key === 'periodo') {
+    // Canonicalizar a YYYY-MM cuando sea posible
+    if (/^\d{4}-\d{2}$/.test(s0)) return s0;
+    const m1 = s0.match(/^(\d{4})\s*[-/]\s*(\d{1,2})$/);
+    if (m1) return `${m1[1]}-${String(m1[2]).padStart(2,'0')}`;
+    const m3 = s0.match(/^([A-Za-zÁÉÍÓÚÑáéíóúñ]{3})-?(\d{4})$/);
+    if (m3) {
+      const meses = {'Ene':1,'Feb':2,'Mar':3,'Abr':4,'May':5,'Jun':6,'Jul':7,'Ago':8,'Sep':9,'Oct':10,'Nov':11,'Dic':12};
+      const mon = m3[1].slice(0,3);
+      const mm = meses[mon[0].toUpperCase() + mon.slice(1).toLowerCase()];
+      if (mm) return `${m3[2]}-${String(mm).padStart(2,'0')}`;
+    }
+    const y = s0.match(/^(\d{4})$/);
+    if (y) return y[1];
+    return s0;
+  }
+  // Comparación case-insensitive para evitar problemas por mayúsculas
+  return s0.toLowerCase();
+}
+
+function tiemposGetFiltered() {
+  if (!Array.isArray(tiemposData) || tiemposData.length === 0) return [];
+  // Cache de sets normalizados por dimensión para esta pasada
+  const normSets = {};
+  for (const d of TI_DIMS) {
+    const sel = tiDimFilters[d.key];
+    if (sel instanceof Set) {
+      normSets[d.key] = new Set([...sel].map(v => tiemposNormVal(d.key, v)).filter(Boolean));
+    }
+  }
+  return tiemposData.filter(r => {
+    for (const d of TI_DIMS) {
+      const sel = tiDimFilters[d.key];
+      if (sel instanceof Set) {
+        // Set vacío => "Ninguno"
+        if (sel.size === 0) {
+          // Si no fue elegido explícitamente, lo tratamos como "Todos" para no matar datos por config vieja/accidental.
+          if (tiDimNoneExplicit && tiDimNoneExplicit.has(d.key)) return false;
+          continue;
+        }
+        const fv = tiemposNormVal(d.key, tiemposGetField(r, d.key));
+        const sset = normSets[d.key];
+        if (!fv) return false;
+        if (!sset || !sset.has(fv)) return false;
+      }
+    }
+    return true;
+  });
+}
+
+const TI_DIMS = [
+    { key: 'cliente', label: 'Cliente' },
+    { key: 'usuario', label: 'Usuario' },
+    { key: 'obligacion', label: 'Obligación/Tarea' },
+    { key: 'periodo', label: 'Período (YYYY-MM / YYYY)' },
+    { key: 'tipo', label: 'Tipo' },
+    { key: 'anio_registro', label: 'Año registro' },
+    { key: 'mes_registro', label: 'Mes registro' },
+    { key: 'dia_registro', label: 'Día registro' },
+];
+
+let tiRowDims = ['obligacion'];
+let tiColDims = ['usuario'];
+let tiDragState = null;
+let tiDragDropBound = false;
+let tiDimValues = {};   // key -> sorted array of unique values from data
+let tiDimFilters = {};  // key -> Set of selected values (empty Set = show all)
+let tiDimExpanded = new Set(); // palette cards currently expanded
+let tiZoneExpanded = new Set(); // zone items currently expanded
+let tiDimSearchQuery = {}; // key -> current search string in card body
+let tiDimNoneExplicit = new Set(); // keys where user explicitly chose "Ninguno"
+
+// ── Config save/load (localStorage por usuario) ──
+function tiemposSaveConfig() {
+  if (!currentUser) return;
+  try {
+    const filtersSerial = {};
+    Object.entries(tiDimFilters).forEach(([k,v]) => {
+      if (v === null) filtersSerial[k] = null;
+      else if (v instanceof Set) filtersSerial[k] = [...v];
+      else filtersSerial[k] = null;
+    });
+    // v=2: [] significa "Ninguno" (Set vacío). En v=1 (viejo), [] se interpretaba como "Todos".
+    localStorage.setItem('ti_cfg_' + currentUser.uid, JSON.stringify({
+      v: 2,
+      r: tiRowDims,
+      c: tiColDims,
+      f: filtersSerial,
+      n: [...(tiDimNoneExplicit || new Set())], // dimensiones donde "Ninguno" fue elegido explícitamente
+    }));
+    const el = document.getElementById('tiCfgSaved');
+    if (el) {
+      el.classList.add('show');
+      clearTimeout(el._hideTimer);
+      el._hideTimer = setTimeout(() => el.classList.remove('show'), 1800);
+    }
+  } catch (_) {}
+}
+
+function tiemposLoadConfig() {
+  if (!currentUser) return;
+  try {
+    const raw = localStorage.getItem('ti_cfg_' + currentUser.uid);
+    if (!raw) return;
+    const cfg = JSON.parse(raw);
+    const cfgVer = (cfg && typeof cfg.v === 'number') ? cfg.v : 1;
+    const valid = new Set(TI_DIMS.map(d => d.key));
+    // cargar set de "Ninguno" explícito (si existe)
+    tiDimNoneExplicit = new Set(
+      Array.isArray(cfg.n) ? cfg.n.filter(k => valid.has(k)) : []
+    );
+    if (Array.isArray(cfg.r) && cfg.r.length) tiRowDims = cfg.r.filter(k => valid.has(k));
+    if (Array.isArray(cfg.c) && cfg.c.length) tiColDims = cfg.c.filter(k => valid.has(k));
+    if (!tiRowDims.length) tiRowDims = ['obligacion'];
+    if (!tiColDims.length) tiColDims = ['usuario'];
+    if (cfg.f && typeof cfg.f === 'object') {
+      Object.entries(cfg.f).forEach(([k, v]) => {
+        if (!valid.has(k)) return;
+        if (v === null) { tiDimFilters[k] = null; return; }
+        if (Array.isArray(v)) {
+          if (v.length === 0) {
+            // Back-compat: v1 => [] era "Todos". v2 => [] es "Ninguno".
+            if (cfgVer >= 2) {
+              // solo respetar "Ninguno" si fue explícito
+              tiDimFilters[k] = (tiDimNoneExplicit && tiDimNoneExplicit.has(k)) ? new Set() : null;
+            } else {
+              tiDimFilters[k] = null;
+            }
+            return;
+          }
+          tiDimFilters[k] = new Set(v);
+          return;
+        }
+      });
+    }
+  } catch (_) {}
+}
+
+// ── Drag & Drop pivot ──
+function tiemposDropAt(from, key, srcIdx, targetZone, targetIdx) {
+  tiemposRemoveKeyEverywhere(key);
+  const arr = targetZone === 'row' ? tiRowDims : tiColDims;
+  if (targetIdx < 0) {
+    arr.push(key);
+  } else {
+    let insertAt = targetIdx;
+    if (from === targetZone && srcIdx < targetIdx) insertAt--;
+    arr.splice(Math.max(0, Math.min(insertAt, arr.length)), 0, key);
+  }
+  tiemposSaveConfig();
+  tiemposRender();
+}
+
+function tiemposBindDragDrop() {
+  if (tiDragDropBound) return;
+  const panel = document.getElementById('panel-tiempos');
+  if (!panel) return;
+  tiDragDropBound = true;
+
+  document.addEventListener('dragstart', (e) => {
+    const item = e.target.closest('[data-ti-drag-from]');
+    if (!item || !panel.contains(item)) return;
+    tiDragState = {
+      from: item.getAttribute('data-ti-drag-from'),
+      key:  item.getAttribute('data-ti-drag-key'),
+      idx:  parseInt(item.getAttribute('data-ti-drag-idx') ?? '-1', 10)
+    };
+    e.dataTransfer.setData('text/plain', tiDragState.key);
+    e.dataTransfer.effectAllowed = 'move';
+    item.classList.add('ti-dragging');
+  });
+
+  document.addEventListener('dragend', () => {
+    tiDragState = null;
+    panel.querySelectorAll('.ti-dragging, .ti-drag-over').forEach(el =>
+      el.classList.remove('ti-dragging', 'ti-drag-over'));
+  });
+
+  document.addEventListener('dragover', (e) => {
+    if (!tiDragState) return;
+    const zoneEl = e.target.closest('.ti-pivot-list');
+    if (!zoneEl || !panel.contains(zoneEl)) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    panel.querySelectorAll('.ti-pivot-list.ti-drag-over, .ti-pivot-item.ti-drag-over')
+      .forEach(el => el.classList.remove('ti-drag-over'));
+    const itemEl = e.target.closest('.ti-pivot-item');
+    (itemEl || zoneEl).classList.add('ti-drag-over');
+  });
+
+  document.addEventListener('dragleave', (e) => {
+    if (!tiDragState) return;
+    const itemEl = e.target.closest('.ti-pivot-item');
+    const zoneEl = e.target.closest('.ti-pivot-list');
+    if (itemEl) itemEl.classList.remove('ti-drag-over');
+    if (zoneEl && !zoneEl.contains(e.relatedTarget)) zoneEl.classList.remove('ti-drag-over');
+  });
+
+  document.addEventListener('drop', (e) => {
+    if (!tiDragState) return;
+    const zoneEl = e.target.closest('.ti-pivot-list');
+    if (!zoneEl || !panel.contains(zoneEl)) return;
+    e.preventDefault();
+    panel.querySelectorAll('.ti-drag-over').forEach(el => el.classList.remove('ti-drag-over'));
+    const itemEl = e.target.closest('[data-ti-drag-idx]');
+    const targetIdx = itemEl ? parseInt(itemEl.getAttribute('data-ti-drag-idx'), 10) : -1;
+    const targetZone = zoneEl.getAttribute('data-zone');
+    const { from, key, idx } = tiDragState;
+    tiDragState = null;
+    tiemposDropAt(from, key, idx, targetZone, targetIdx);
+  });
+}
+
+function tiemposDimLabel(k) {
+  return (TI_DIMS.find(d => d.key === k)?.label) || k;
+}
+
+function tiemposRemoveKeyEverywhere(key) {
+  tiRowDims = tiRowDims.filter(x => x !== key);
+  tiColDims = tiColDims.filter(x => x !== key);
+}
+
+// ── Dimension card interactions ──
+function tiemposToggleDimExpand(key) {
+  if (tiDimExpanded.has(key)) tiDimExpanded.delete(key);
+  else { tiDimExpanded.add(key); if (!tiDimValues[key]) tiemposPopulateFilters(); }
+  tiemposEnsureUi();
+}
+
+function tiemposToggleZoneExpand(key) {
+  if (tiZoneExpanded.has(key)) tiZoneExpanded.delete(key);
+  else { tiZoneExpanded.add(key); if (!tiDimValues[key]) tiemposPopulateFilters(); }
+  tiemposEnsureUi();
+}
+
+function tiemposToggleDimValue(key, val, checked) {
+  const allVals = tiDimValues[key] || [];
+  let sel = tiDimFilters[key];
+  if (!(sel instanceof Set) && sel !== null) sel = null;
+
+  // Si estaba en "Todos" (null) y seleccionan un valor, pasamos a selección explícita (arranca desde vacío).
+  if (sel === null) {
+    if (!checked) return;
+    const next = new Set([val]);
+    tiDimFilters[key] = next;
+    tiDimNoneExplicit.delete(key);
+  } else {
+    // Set explícito (puede estar vacío = Ninguno)
+    if (checked) sel.add(val);
+    else sel.delete(val);
+    // Si quedaron todos seleccionados, volvemos a "Todos" (null)
+    if (sel.size === allVals.length) tiDimFilters[key] = null;
+    else if (sel.size === 0) {
+      // No permitir "Ninguno" por accidente: sólo vía botón ✕ Ninguno
+      if (!tiDimNoneExplicit.has(key)) {
+        // Revertir: no dejar vacío
+        sel.add(val);
+        try { showToast('Para dejar vacío usá “✕ Ninguno”', 1600); } catch (_) {}
+      } else {
+        tiDimFilters[key] = sel;
+      }
+    } else {
+      tiDimFilters[key] = sel;
+      tiDimNoneExplicit.delete(key);
+    }
+  }
+  tiemposSaveConfig();
+  tiemposRender();
+}
+
+function tiemposToggleAllDim(key, checked) {
+  // checked=true => TODOS (null)
+  // checked=false => NINGUNO (Set vacío)
+  tiDimFilters[key] = checked ? null : new Set();
+  if (checked) tiDimNoneExplicit.delete(key);
+  else tiDimNoneExplicit.add(key);
+  tiemposSaveConfig();
+  tiemposRender();
+}
+
+function tiemposDimFilterSearch(key, elOrValue) {
+  const el = (elOrValue && typeof elOrValue === 'object' && 'value' in elOrValue) ? elOrValue : null;
+  const value = el ? el.value : (elOrValue || '');
+  const selStart = el && typeof el.selectionStart === 'number' ? el.selectionStart : null;
+  const selEnd = el && typeof el.selectionEnd === 'number' ? el.selectionEnd : null;
+
+  tiDimSearchQuery[key] = value;
+  tiemposEnsureUi();
+
+  // Re-enfocar para que se pueda tipear seguido (evita perder foco por re-render con innerHTML).
+  requestAnimationFrame(() => {
+    const next = document.querySelector(`.ti-dim-search-input[data-ti-search-key="${CSS.escape(key)}"]`);
+    if (!next) return;
+    next.focus({ preventScroll: true });
+    if (selStart != null && selEnd != null) {
+      try { next.setSelectionRange(selStart, selEnd); } catch (_) {}
+    }
+  });
+}
+
+function tiemposConfirmDim(key) {
+  // “Listo” explícito: guarda y cierra la dimensión para que el usuario sienta confirmación.
+  tiemposSaveConfig();
+  if (tiDimExpanded.has(key)) tiDimExpanded.delete(key);
+  tiemposRender();
+  try { showToast('Filtro aplicado', 1200); } catch (_) {}
+}
+
+function tiemposResetDim(key) {
+  // Volver a “Todos” (sin filtro)
+  tiDimFilters[key] = null;
+  tiDimNoneExplicit.delete(key);
+  tiemposSaveConfig();
+  tiemposRender();
+}
+
+function tiemposSelectAllDim(key) {
+  tiDimFilters[key] = null; // TODOS
+  tiDimNoneExplicit.delete(key);
+  tiemposSaveConfig();
+  tiemposRender();
+}
+
+function tiemposSelectNoneDim(key) {
+  tiDimFilters[key] = new Set(); // NINGUNO
+  tiDimNoneExplicit.add(key);
+  tiemposSaveConfig();
+  tiemposRender();
+}
+
+/** Pivot Tiempos: controles por botones + drag & drop. */
+function tiemposAddFromPalette(zone, key) {
+  if (zone !== 'row' && zone !== 'col') return;
+  tiemposRemoveKeyEverywhere(key);
+  const arr = zone === 'row' ? tiRowDims : tiColDims;
+  arr.push(key);
+  tiemposSaveConfig();
+  tiemposRender();
+}
+
+function tiemposMoveDim(zone, idx, delta) {
+  if (zone !== 'row' && zone !== 'col') return;
+  const arr = zone === 'row' ? tiRowDims : tiColDims;
+  const j = idx + delta;
+  if (j < 0 || j >= arr.length) return;
+  const tmp = arr[idx];
+  arr[idx] = arr[j];
+  arr[j] = tmp;
+  tiemposSaveConfig();
+  tiemposRender();
+}
+
+/** Delegación en document (capture): el clic en texto del botón no tiene .closest; el panel puede estar tapado. */
+let tiemposPivotControlsBound = false;
+function tiemposClickTargetEl(e) {
+  const t = e.target;
+  if (!t) return null;
+  if (t.nodeType === 1) return t;
+  if (t.nodeType === 3 && t.parentElement) return t.parentElement;
+  return null;
+}
+function tiemposBindPivotControls() {
+  if (tiemposPivotControlsBound) return;
+  const panel = document.getElementById('panel-tiempos');
+  if (!panel) return;
+  tiemposPivotControlsBound = true;
+  document.addEventListener('click', (e) => {
+    const el = tiemposClickTargetEl(e);
+    if (!el || typeof el.closest !== 'function') return;
+    const btn = el.closest('button[data-ti-action]');
+    if (!btn || !panel.contains(btn)) return;
+    if (btn.disabled) return;
+    e.preventDefault();
+    const act = btn.getAttribute('data-ti-action');
+    if (act === 'add') {
+      const zone = btn.getAttribute('data-ti-zone');
+      const key = btn.getAttribute('data-ti-key');
+      if (zone && key) tiemposAddFromPalette(zone, key);
+      return;
+    }
+    if (act === 'move') {
+      const zone = btn.getAttribute('data-ti-zone');
+      const idx = parseInt(btn.getAttribute('data-ti-idx'), 10);
+      const delta = parseInt(btn.getAttribute('data-ti-delta'), 10);
+      if (zone && !Number.isNaN(idx) && !Number.isNaN(delta)) tiemposMoveDim(zone, idx, delta);
+      return;
+    }
+    if (act === 'remove') {
+      const zone = btn.getAttribute('data-ti-zone');
+      const idx = parseInt(btn.getAttribute('data-ti-idx'), 10);
+      if (zone && !Number.isNaN(idx)) tiemposRemoveAt(zone, idx);
+    }
+  }, true);
+
+  // Delegación para checkboxes de filtros (evita depender de onchange inline).
+  document.addEventListener('change', (e) => {
+    const t = e.target;
+    if (!t || t.nodeType !== 1) return;
+    if (!(t instanceof HTMLInputElement)) return;
+    if (t.type !== 'checkbox') return;
+    if (!t.hasAttribute('data-ti-dim-key')) return;
+    if (!panel.contains(t)) return;
+    const key = t.getAttribute('data-ti-dim-key');
+    const raw = t.getAttribute('data-ti-dim-val');
+    if (!key) return;
+    const val = raw == null ? '' : raw;
+    tiemposToggleDimValue(key, val, t.checked);
+  }, true);
+}
+
+function tiemposEnsureUi() {
+  const pal = document.getElementById('tiDimPalette');
+  const rowZone = document.getElementById('tiDropRows');
+  const colZone = document.getElementById('tiDropCols');
+  if (!pal || !rowZone || !colZone) return;
+
+  const inUse = new Set([...tiRowDims, ...tiColDims]);
+
+  // ── Helper: render the expandable body (checkboxes) for a dimension ──
+  const renderDimBody = (key) => {
+    const vals = tiDimValues[key] || [];
+    const sel = (tiDimFilters[key] === undefined) ? null : tiDimFilters[key];
+    const allSelected = sel === null;
+    const query = (tiDimSearchQuery[key] || '').toLowerCase();
+    const filtered = query ? vals.filter(v => v.toLowerCase().includes(query)) : vals;
+    const escV = v => escapeHtml(v);
+    const modeLabel = (sel === null) ? 'TODOS' : (sel instanceof Set && sel.size === 0) ? 'NINGUNO' : `${(sel instanceof Set ? sel.size : 0)} seleccionados`;
+    return `
+      <div class="ti-dim-card-body" ondragstart="event.stopPropagation()">
+        <input type="text" class="ti-dim-search-input" data-ti-search-key="${key}" placeholder="Buscar..." value="${escapeHtml(query)}"
+          oninput="tiemposDimFilterSearch('${key}', this)">
+        <div class="ti-dim-modebar">
+          <div class="ti-dim-mode">Modo: <strong>${modeLabel}</strong></div>
+        </div>
+        <div class="ti-dim-options">
+          ${filtered.map(v => `
+            <label class="ti-dim-option">
+              <input type="checkbox" value="${escV(v)}" data-ti-dim-key="${key}" data-ti-dim-val="${escapeHtml(String(v))}"
+                ${(sel instanceof Set && sel.has(v)) ? 'checked' : ''}>
+              <span title="${escV(v)}">${escV(v)}</span>
+            </label>`).join('')}
+          ${!filtered.length ? '<span style="font-size:0.75rem;color:var(--ink-muted);padding:4px">Sin resultados</span>' : ''}
+        </div>
+        <div class="ti-dim-footer">
+          <span class="ti-dim-foot-note" id="tiDimNote-${key}">Cambios se aplican al instante.</span>
+          <button type="button" class="imp-btn" onclick="tiemposSelectAllDim('${key}')" title="Seleccionar TODOS">✓ Todos</button>
+          <button type="button" class="imp-btn" onclick="tiemposSelectNoneDim('${key}')" title="Seleccionar NINGUNO">✕ Ninguno</button>
+          <button type="button" class="imp-btn" onclick="tiemposResetDim('${key}')" title="Quitar filtro (Todos)">Reset</button>
+          <button type="button" class="imp-btn" onclick="tiemposConfirmDim('${key}')" title="Cerrar y confirmar">Listo</button>
+        </div>
+      </div>`;
+  };
+
+  // ── Palette: dimensions NOT in any zone ──
+  pal.innerHTML = TI_DIMS.filter(d => !inUse.has(d.key)).map(d => {
+    const sel = (tiDimFilters[d.key] === undefined) ? null : tiDimFilters[d.key];
+    const isOpen = tiDimExpanded.has(d.key);
+    const badge = (sel instanceof Set && sel.size > 0) ? `<span class="ti-dim-badge">${sel.size}</span>` : '';
+    return `
+      <div class="ti-dim-card${isOpen ? ' ti-dim-open' : ''}" draggable="true"
+          data-ti-drag-from="palette" data-ti-drag-key="${d.key}">
+        <div class="ti-dim-card-header" onclick="tiemposToggleDimExpand('${d.key}')"
+            ondragstart="event.stopPropagation()" ondragend="event.stopPropagation()">
+          <span class="ti-dim-handle" draggable="true" data-ti-drag-from="palette" data-ti-drag-key="${d.key}"
+              title="Arrastrá a Filas o Columnas">⠿</span>
+          <span class="ti-dim-card-name">${escapeHtml(d.label)}</span>
+          ${badge}
+          <span class="ti-dim-chevron">▼</span>
+        </div>
+        ${isOpen ? renderDimBody(d.key) : ''}
+      </div>`;
+  }).join('');
+
+  // ── Zone: render items (no ↑↓ buttons, just × and expandable body) ──
+  const renderZone = (dims, zone) => {
+    if (!dims.length) {
+      return '<div class="ti-pivot-empty">Arrastrá una dimensión acá.</div>';
+    }
+    return dims.map((k, idx) => {
+      const d = TI_DIMS.find(x => x.key === k);
+      const label = d ? d.label : k;
+      const sel = (tiDimFilters[k] === undefined) ? null : tiDimFilters[k];
+      const badge = (sel instanceof Set && sel.size > 0) ? `<span class="ti-dim-badge">${sel.size}</span>` : '';
+      const isOpen = tiZoneExpanded.has(k);
+      return `
+        <div class="ti-pivot-item${isOpen ? ' ti-zone-open' : ''}" draggable="true"
+            data-ti-drag-from="${zone}" data-ti-drag-key="${k}" data-ti-drag-idx="${idx}">
+          <div class="ti-pivot-item-header">
+            <span class="ti-dim-handle">⠿</span>
+            <span class="ti-pivot-ord">${idx + 1}.</span>
+            <span class="ti-pivot-item-name">${escapeHtml(label)}</span>
+            ${badge}
+            <div class="ti-pivot-item-actions">
+              <button type="button" class="imp-btn" style="padding:3px 7px;font-size:0.75rem"
+                onclick="tiemposToggleZoneExpand('${k}')">${isOpen ? '▲' : '▼'}</button>
+              <button type="button" class="imp-btn" data-ti-action="remove" data-ti-zone="${zone}"
+                data-ti-idx="${idx}" title="Quitar" style="padding:3px 7px">✕</button>
+            </div>
+          </div>
+          ${isOpen ? renderDimBody(k) : ''}
+        </div>`;
+    }).join('');
+  };
+
+  rowZone.innerHTML = renderZone(tiRowDims, 'row');
+  colZone.innerHTML = renderZone(tiColDims, 'col');
+}
+
+function tiemposRemoveAt(zone, idx) {
+  const arr = zone === 'row' ? tiRowDims : tiColDims;
+  arr.splice(idx, 1);
+  tiemposSaveConfig();
+  tiemposRender();
+}
+
+function tiemposPopulateFilters() {
+  if (!Array.isArray(tiemposData)) return;
+  const uniq = (arr) => [...new Set(arr.filter(Boolean))].sort((a,b) => a.localeCompare(b,'es'));
+  const perSort = (p) => {
+    const s = (p||'').toString().trim();
+    const m = s.match(/^(\d{4})-(\d{2})$/);
+    if (m) return parseInt(m[1],10)*100 + parseInt(m[2],10);
+    const y = s.match(/^(\d{4})$/);
+    if (y) return parseInt(y[1],10)*100 + 13;
+    return 999999;
+  };
+  TI_DIMS.forEach(d => {
+    const raw = tiemposData.map(r => tiemposGetField(r, d.key)).filter(Boolean);
+    if (d.key === 'periodo') {
+      // Mostrar en UI en formato canónico cuando se pueda
+      const vals = [...new Set(raw.map(v => tiemposNormVal('periodo', v) || v))].filter(Boolean);
+      tiDimValues[d.key] = vals.sort((a,b) => perSort(a) - perSort(b) || a.localeCompare(b,'es'));
+    } else {
+      tiDimValues[d.key] = uniq(raw);
+    }
+    if (!(d.key in tiDimFilters)) tiDimFilters[d.key] = null;
+  });
+}
+
+function tiemposRender() {
+  tiemposEnsureUi();
+  const wrap = document.getElementById('tiemposPivotWrap');
+  const empty = document.getElementById('tiemposPivotEmpty');
+  const dbg = document.getElementById('tiDebugStatus');
+  if (!wrap || !empty) return;
+  if (!Array.isArray(tiemposData) || tiemposData.length === 0) {
+    wrap.innerHTML = '';
+    empty.style.display = 'block';
+    if (dbg) dbg.textContent = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  // Asegurar filtros una vez por dataset (evita resetear selecciones en cada render)
+  if (!tiemposRender._filtersInitedFor || tiemposRender._filtersInitedFor !== (tiemposData.length + '')) {
+    tiemposPopulateFilters();
+    tiemposRender._filtersInitedFor = (tiemposData.length + '');
+  }
+  let data = tiemposGetFiltered();
+
+  // Feedback UX: si queda 0 filas, mostrar aviso en dimensiones abiertas (no sólo en la métrica).
+  if (data.length === 0) {
+    for (const k of tiDimExpanded) {
+      const note = document.getElementById('tiDimNote-' + k);
+      if (note) {
+        note.textContent = 'Sin datos con esta selección. Probá ✓ Todos o revisá el valor.';
+        note.classList.add('warn');
+      }
+    }
+  }
+
+  // Auto-reparación: si el filtro deja 0 filas por mismatch, intersectar contra valores reales.
+  // Evita quedar "muerto" por diferencias de formato/espacios/mayúsculas.
+  if (data.length === 0 && !tiemposRender._didAutoFixOnce) {
+    try {
+      tiemposPopulateFilters();
+      const fixedDims = [];
+      for (const d of TI_DIMS) {
+        const sel = tiDimFilters[d.key];
+        if (!(sel instanceof Set) || sel.size === 0) continue;
+        const avail = new Set((tiDimValues[d.key] || []).map(v => tiemposNormVal(d.key, v)).filter(Boolean));
+        const want = new Set([...sel].map(v => tiemposNormVal(d.key, v)).filter(Boolean));
+        const inter = [...want].filter(v => avail.has(v));
+        if (inter.length === 0) {
+          tiDimFilters[d.key] = null; // reset a Todos si no existe ninguno
+          if (tiDimNoneExplicit) tiDimNoneExplicit.delete(d.key);
+          fixedDims.push(d.label);
+        } else if (inter.length !== want.size) {
+          // recortar a los que existen
+          tiDimFilters[d.key] = new Set(inter);
+          if (tiDimNoneExplicit) tiDimNoneExplicit.delete(d.key);
+          fixedDims.push(d.label);
+        }
+      }
+      if (fixedDims.length) {
+        tiemposRender._didAutoFixOnce = true;
+        tiemposSaveConfig();
+        data = tiemposGetFiltered();
+        showToast(`Ajusté filtros con valores reales: ${fixedDims.slice(0,3).join(', ')}${fixedDims.length>3?'…':''}`, 2600);
+      }
+    } catch (_) {}
+  }
+  // Estado visible para entender por qué da 0
+  let parseOk = 0;
+  let parseBad = 0;
+  let sumAll = 0;
+  const rawTypeCount = { undefined: 0, number: 0, string: 0, date: 0, other: 0 };
+  let rawExample = null;
+  let keysExample = null;
+  const pickMinutosRaw = (r) => {
+    if (!r || typeof r !== 'object') return r;
+    // tolerar distintas claves históricas / importadas
+    return (
+      r.minutos ?? r.Minutos ??
+      r.total ?? r.totales ?? r.Totales ?? r.TOTALES ??
+      r.minuto ?? r.minutos_total ?? r.minutos_totales
+    );
+  };
+  const parseMinutesDbg = (v) => {
+    // usar la misma lógica que el pivot (ver parseMinutes más abajo), pero simple para status
+    if (typeof v === 'number') {
+      const mv = (v > 0 && v < 1) ? v * 24 * 60 : v;
+      return mv;
+    }
+    if (v instanceof Date) return v.getHours() * 60 + v.getMinutes() + (v.getSeconds() / 60);
+    const s0 = (v ?? '').toString().trim();
+    if (!s0) return NaN;
+    const t = s0.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+    if (t) return parseInt(t[1], 10) * 60 + parseInt(t[2], 10) + ((t[3] ? parseInt(t[3], 10) : 0) / 60);
+    const n = parseFloat(s0.replace(',', '.'));
+    if (Number.isFinite(n) && n > 0 && n < 1) return n * 24 * 60;
+    return n;
+  };
+  for (const r of data) {
+    const raw = pickMinutosRaw(r);
+    if (rawExample == null && raw != null) rawExample = raw;
+    const t = raw === undefined ? 'undefined' : (raw instanceof Date ? 'date' : typeof raw);
+    if (t === 'number') rawTypeCount.number++;
+    else if (t === 'string') rawTypeCount.string++;
+    else if (t === 'date') rawTypeCount.date++;
+    else if (t === 'undefined') rawTypeCount.undefined++;
+    else rawTypeCount.other++;
+    const m = parseMinutesDbg(raw);
+    if (Number.isFinite(m) && m > 0) { parseOk++; sumAll += m; }
+    else parseBad++;
+  }
+  if (!keysExample && tiemposData && tiemposData[0] && typeof tiemposData[0] === 'object') {
+    keysExample = Object.keys(tiemposData[0]).slice(0, 14).join(', ');
+  }
+
+  // Si hay filas filtradas pero ningún minuto parseable, mostrar diagnóstico en el tablero.
+  if (data.length > 0 && parseOk === 0) {
+    const sample = data.slice(0, 3).map((r, i) => {
+      const keys = Object.keys(r || {}).filter(k => /min|tot|tiem/i.test(k)).slice(0, 10);
+      const raw = pickMinutosRaw(r);
+      const t = raw === undefined ? 'undefined' : (raw instanceof Date ? 'date' : typeof raw);
+      return `<div style="margin-top:8px">
+        <div style="font-weight:800">Ejemplo #${i + 1}</div>
+        <div style="color:var(--ink-muted);font-size:0.8rem">keys(min/tot/tiem): ${escapeHtml(keys.join(', ') || '—')}</div>
+        <div style="color:var(--ink-muted);font-size:0.8rem">raw minutos detectado: <b>${escapeHtml(String(raw))}</b> <span style="opacity:0.85">(${t})</span></div>
+      </div>`;
+    }).join('');
+    wrap.innerHTML = `
+      <div class="ops-empty" style="display:block;margin:14px;border:1px dashed rgba(200,71,42,0.35);background:rgba(200,71,42,0.06);color:var(--ink);text-align:left">
+        <div style="font-weight:900;margin-bottom:6px">No se detectan minutos en los datos filtrados.</div>
+        <div style="color:var(--ink-muted);font-size:0.85rem;line-height:1.35">
+          Esto significa que el campo de minutos no está en <code>minutos</code> (ni en las claves comunes) o viene en un formato distinto.
+          Abajo te muestro ejemplos reales de lo que llega.
+        </div>
+        ${sample}
+      </div>
+    `;
+    return;
+  }
+  if (dbg) {
+    const noneDims = TI_DIMS.filter(d => (tiDimFilters[d.key] instanceof Set) && tiDimFilters[d.key].size === 0).map(d => d.label);
+    const noneTxt = noneDims.length ? ` · “Ninguno” en: ${noneDims.join(', ')}` : '';
+    const fmtSel = (k) => {
+      const f = tiDimFilters[k];
+      if (f === null || f === undefined) return 'Todos';
+      if (f instanceof Set) {
+        if (f.size === 0) return 'Ninguno';
+        const first = [...f].slice(0, 2).map(x => `"${x}"`).join(', ');
+        return `${f.size} (${first}${f.size > 2 ? ', …' : ''})`;
+      }
+      return '—';
+    };
+    const extra = ` · Filtro Obligación: ${fmtSel('obligacion')} · Filtro Período: ${fmtSel('periodo')}`;
+    // Si quedó en 0, mostrar cuál filtro "rompe" (match contra dataset completo, por dimensión)
+    let zeroExplain = '';
+    if (data.length === 0) {
+      const parts = [];
+      for (const d of TI_DIMS) {
+        const sel = tiDimFilters[d.key];
+        if (!(sel instanceof Set) || sel.size === 0) continue;
+        const sset = new Set([...sel].map(v => tiemposNormVal(d.key, v)).filter(Boolean));
+        if (sset.size === 0) continue;
+        let m = 0;
+        for (const r of tiemposData) {
+          const fv = tiemposNormVal(d.key, tiemposGetField(r, d.key));
+          if (fv && sset.has(fv)) m++;
+        }
+        parts.push(`${d.label}:${m}`);
+      }
+      if (parts.length) zeroExplain = ` · Match: ${parts.slice(0,3).join(' · ')}${parts.length > 3 ? ' · …' : ''}`;
+    }
+    const typesTxt = ` · raw(min): num ${rawTypeCount.number}, str ${rawTypeCount.string}, date ${rawTypeCount.date}, undef ${rawTypeCount.undefined}`;
+    const exTxt = (parseOk === 0 && data.length > 0)
+      ? ` · ejemplo raw(min): ${String(rawExample).slice(0, 24)}${String(rawExample).length > 24 ? '…' : ''}${keysExample ? ` · keys: ${keysExample}` : ''}`
+      : '';
+    dbg.textContent = `Datos: ${tiemposData.length} · Filtrados: ${data.length} · Minutos OK: ${parseOk} (Σ≈${Math.round(sumAll)}) · inválidos: ${parseBad}${noneTxt}${extra}${zeroExplain}${typesTxt}${exTxt}`;
+  }
+
+  const rowDims = Array.isArray(tiRowDims) ? tiRowDims.filter(Boolean) : [];
+  const colDims = Array.isArray(tiColDims) ? tiColDims.filter(Boolean) : [];
+
+  const rowKeyParts = (r) => rowDims.map(k => (tiemposGetField(r, k) || '—'));
+  const colKeyParts = (r) => colDims.map(k => (tiemposGetField(r, k) || '—'));
+  const keyJoin = (parts) => parts.join(' || ');
+
+  const rowSet = new Set();
+  const colSet = new Set();
+  const cell = new Map(); // `${row}||${col}` -> sum
+  const rowTot = new Map();
+  const colTot = new Map();
+  let grand = 0;
+
+  const parseMinutes = (v) => {
+    if (typeof v === 'number') {
+      if (v > 0 && v < 1) return v * 24 * 60;
+      return v;
+    }
+    if (v instanceof Date) {
+      return v.getHours() * 60 + v.getMinutes() + (v.getSeconds() / 60);
+    }
+    const s0 = (v ?? '').toString().trim();
+    if (!s0) return NaN;
+    const t = s0.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+    if (t) {
+      const hh = parseInt(t[1], 10);
+      const mm = parseInt(t[2], 10);
+      const ss = t[3] ? parseInt(t[3], 10) : 0;
+      return hh * 60 + mm + (ss / 60);
+    }
+    const n = parseFloat(s0.replace(',', '.'));
+    if (Number.isFinite(n) && n > 0 && n < 1) return n * 24 * 60;
+    return n;
+  };
+
+  for (const r of data) {
+    const rkParts = rowDims.length ? rowKeyParts(r) : ['Total'];
+    const ckParts = colDims.length ? colKeyParts(r) : ['Total'];
+    const rk = keyJoin(rkParts);
+    const ck = keyJoin(ckParts);
+    const m = parseMinutes(pickMinutosRaw(r));
+    if (!Number.isFinite(m)) continue;
+    rowSet.add(rk); colSet.add(ck);
+    const k = rk + '||' + ck;
+    cell.set(k, (cell.get(k) || 0) + m);
+    rowTot.set(rk, (rowTot.get(rk) || 0) + m);
+    colTot.set(ck, (colTot.get(ck) || 0) + m);
+    grand += m;
+  }
+
+  const sortAlpha = (a,b) => a.localeCompare(b, 'es');
+  const sortPeriodo = (a,b) => {
+    const pa = a.split(' || ')[0];
+    const pb = b.split(' || ')[0];
+    const mA = pa.match(/^(\d{4})-(\d{2})$/);
+    const mB = pb.match(/^(\d{4})-(\d{2})$/);
+    if (mA && mB) return (mA[1]+mA[2]).localeCompare(mB[1]+mB[2]);
+    return sortAlpha(a,b);
+  };
+  const rowArr = [...rowSet].sort((a,b) => (rowDims[0] === 'periodo' ? sortPeriodo(a,b) : sortAlpha(a,b)));
+  const colArr = [...colSet].sort((a,b) => (colDims[0] === 'periodo' ? sortPeriodo(a,b) : sortAlpha(a,b)));
+
+  const fmt = (v) => Math.round(v * 10) / 10;
+
+  const rowHeaders = rowDims.length ? rowDims : [''];
+  const colHeaders = colDims.length ? colDims : [''];
+
+  const splitKey = (k) => k.split(' || ');
+
+  // Build multi-row column header
+  const colPartsArr = colArr.map(k => splitKey(k));
+  const colSpanRows = colHeaders.map((_, level) => {
+    const spans = [];
+    let i = 0;
+    while (i < colPartsArr.length) {
+      const label = colPartsArr[i][level] || '—';
+      let j = i + 1;
+      while (j < colPartsArr.length && (colPartsArr[j][level] || '—') === label) j++;
+      spans.push({ label, span: j - i });
+      i = j;
+    }
+    return spans;
+  });
+
+  const dimLabel = (k) => (TI_DIMS.find(d => d.key === k)?.label) || k || '';
+
+  const thead = `
+    <thead style="position:sticky;top:0;z-index:3">
+      ${colHeaders.map((ck, level) => `
+        <tr>
+          ${level === 0 ? rowHeaders.map((rk, idx) => `<th style="position:sticky;left:${idx*180}px;z-index:4;background:var(--surface-1);min-width:180px">${dimLabel(rk) || 'Filas'}</th>`).join('') : ''}
+          ${colSpanRows[level].map(s => `<th colspan="${s.span}" style="white-space:normal;word-break:break-word;min-width:140px">${escapeHtml(s.label)}</th>`).join('')}
+          ${level === 0 ? `<th rowspan="${colHeaders.length}" style="min-width:120px">Total</th>` : ''}
+        </tr>
+      `).join('')}
+    </thead>
+  `;
+
+  const tbody = `
+    <tbody>
+      ${rowArr.map(rk => {
+        const rParts = splitKey(rk);
+        const rowCells = rowHeaders.map((_, idx) => {
+          const val = rParts[idx] || '—';
+          return `<td style="position:sticky;left:${idx*180}px;z-index:2;background:var(--surface-1);font-weight:700;min-width:180px">${escapeHtml(val)}</td>`;
+        }).join('');
+        const cols = colArr.map(ck => `<td style="text-align:right">${fmt(cell.get(rk+'||'+ck) || 0)}</td>`).join('');
+        const rt = `<td style="text-align:right;font-weight:800">${fmt(rowTot.get(rk) || 0)}</td>`;
+        return `<tr>${rowCells}${cols}${rt}</tr>`;
+      }).join('')}
+      <tr>
+        ${rowHeaders.map((_, idx) => `<td style="position:sticky;left:${idx*180}px;z-index:2;background:var(--surface-1);font-weight:900;min-width:180px">${idx===0?'Total':''}</td>`).join('')}
+        ${colArr.map(ck => `<td style="text-align:right;font-weight:800">${fmt(colTot.get(ck) || 0)}</td>`).join('')}
+        <td style="text-align:right;font-weight:900">${fmt(grand)}</td>
+      </tr>
+    </tbody>
+  `;
+
+  const header = `
+    <table class="ops-table" style="min-width:900px">
+      ${thead}
+      ${tbody}
+    </table>
+  `;
+
+  wrap.innerHTML = header;
+}
+
+// ── OPERACIONES (persistencia Firestore) ──
+let unsubscribeOps = null;
+let currentOpsImportId = null;
+
+const OPS_LOCAL_KEY = 'opsData_local_v1';
+const OPS_LOCAL_META_KEY = 'opsData_local_meta_v1';
+
+function opsSaveLocal(imported, meta) {
+  try {
+    localStorage.setItem(OPS_LOCAL_KEY, JSON.stringify(imported || []));
+    localStorage.setItem(OPS_LOCAL_META_KEY, JSON.stringify(meta || { saved_at: Date.now() }));
+  } catch (e) {
+    // si el navegador bloquea localStorage, lo ignoramos
+  }
+}
+
+function opsLoadLocal() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(OPS_LOCAL_KEY) || '[]');
+    return Array.isArray(raw) ? raw : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+async function startOpsListener() {
+  if (unsubscribeOps) { unsubscribeOps(); unsubscribeOps = null; }
+  currentOpsImportId = null;
+  try {
+    const meta = await getDoc(opsImportMetaRef);
+    if (meta.exists()) currentOpsImportId = meta.data().current_import_id || null;
+  } catch (e) {
+    // Si Firestore no responde / no hay permisos, intentamos localStorage
+    const local = opsLoadLocal();
+    if (local.length > 0) {
+      opsData = local;
+      opsPage = 1;
+      opsPopulateFilters();
+      opsRender();
+      repInit();
+      if (currentSection === 'reporteria') repRender();
+      if (currentSection === 'carga-trabajo') workloadRender();
+    }
+    return;
+  }
+
+  if (!currentOpsImportId) return;
+
+  const q = query(opsRef, where('import_id', '==', currentOpsImportId));
+  unsubscribeOps = onSnapshot(q, (snapshot) => {
+    const loaded = snapshot.docs.map(d => d.data());
+    if (loaded.length === 0) return;
+    opsData = loaded;
+    opsSaveLocal(loaded, { import_id: currentOpsImportId, saved_at: Date.now(), source: 'firestore' });
+    opsPage = 1;
+    opsPopulateFilters();
+    opsRender();
+    repInit();
+    if (currentSection === 'reporteria') repRender();
+    if (currentSection === 'carga-trabajo') workloadRender();
+  });
+}
+
+// ── TIEMPOS (persistencia Firestore) ──
+let unsubscribeTiempos = null;
+let currentTiemposImportId = null;
+let tiemposData = [];
+let complexityByOblig = {}; // key: oblig_normalizada -> { categoria, peso, avgMin, n }
+
+function normObligKey(v) {
+  return (v ?? '').toString().trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function normUserKey(v) {
+  return (v ?? '').toString().trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function percentile(sorted, p) {
+  if (!sorted.length) return 0;
+  const idx = (sorted.length - 1) * p;
+  const lo = Math.floor(idx);
+  const hi = Math.ceil(idx);
+  if (lo === hi) return sorted[lo];
+  const w = idx - lo;
+  return sorted[lo] * (1 - w) + sorted[hi] * w;
+}
+
+function computeComplexityMapFromTiempos() {
+  complexityByOblig = {};
+  if (!Array.isArray(tiemposData) || tiemposData.length === 0) return;
+
+  const agg = new Map(); // obligKey -> { sum, n }
+  const pickMinutosRaw = (r) => {
+    if (!r || typeof r !== 'object') return r;
+    return (
+      r.minutos ?? r.Minutos ??
+      r.total ?? r.totales ?? r.Totales ?? r.TOTALES ??
+      r.minuto ?? r.minutos_total ?? r.minutos_totales
+    );
+  };
+  const parseMinutes = (v) => {
+    if (typeof v === 'number') {
+      if (v > 0 && v < 1) return v * 24 * 60;
+      return v;
+    }
+    if (v instanceof Date) {
+      return v.getHours() * 60 + v.getMinutes() + (v.getSeconds() / 60);
+    }
+    const s0 = (v ?? '').toString().trim();
+    if (!s0) return NaN;
+    const t = s0.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+    if (t) {
+      const hh = parseInt(t[1], 10);
+      const mm = parseInt(t[2], 10);
+      const ss = t[3] ? parseInt(t[3], 10) : 0;
+      return hh * 60 + mm + (ss / 60);
+    }
+    const n = parseFloat(s0.replace(',', '.'));
+    if (Number.isFinite(n) && n > 0 && n < 1) return n * 24 * 60;
+    return n;
+  };
+  for (const r of tiemposData) {
+    const k = normObligKey(r.obligacion);
+    if (!k) continue;
+    const m = parseMinutes(pickMinutosRaw(r));
+    if (!Number.isFinite(m) || m <= 0) continue;
+    const cur = agg.get(k) || { sum: 0, n: 0 };
+    cur.sum += m;
+    cur.n += 1;
+    agg.set(k, cur);
+  }
+
+  const avgs = [];
+  const rows = [];
+  for (const [k, v] of agg.entries()) {
+    const avg = v.n ? (v.sum / v.n) : 0;
+    avgs.push(avg);
+    rows.push({ k, avgMin: avg, n: v.n });
+  }
+  avgs.sort((a, b) => a - b);
+  const p33 = percentile(avgs, 0.33);
+  const p66 = percentile(avgs, 0.66);
+
+  const pesoMap = { baja: 1.0, media: 1.25, alta: 1.6 };
+  for (const r of rows) {
+    let categoria = 'media';
+    if (r.avgMin <= p33) categoria = 'baja';
+    else if (r.avgMin > p66) categoria = 'alta';
+    complexityByOblig[r.k] = { categoria, peso: pesoMap[categoria], avgMin: r.avgMin, n: r.n };
+  }
+}
+
+const TIEMPOS_LOCAL_KEY = 'tiemposData_local_v1';
+const TIEMPOS_LOCAL_META_KEY = 'tiemposData_local_meta_v1';
+
+function tiemposSaveLocal(rows, meta) {
+  try {
+    localStorage.setItem(TIEMPOS_LOCAL_KEY, JSON.stringify(rows || []));
+    localStorage.setItem(TIEMPOS_LOCAL_META_KEY, JSON.stringify(meta || { saved_at: Date.now() }));
+  } catch (e) {}
+}
+
+function tiemposLoadLocal() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(TIEMPOS_LOCAL_KEY) || '[]');
+    return Array.isArray(raw) ? raw : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+async function startTiemposListener() {
+  if (unsubscribeTiempos) { unsubscribeTiempos(); unsubscribeTiempos = null; }
+  currentTiemposImportId = null;
+  try {
+    const meta = await getDoc(tiemposImportMetaRef);
+    if (meta.exists()) currentTiemposImportId = meta.data().current_import_id || null;
+  } catch (e) {
+    const local = tiemposLoadLocal();
+    if (local.length > 0) {
+      tiemposData = local;
+      computeComplexityMapFromTiempos();
+      if (currentSection === 'carga-trabajo') workloadRender();
+    }
+    return;
+  }
+
+  if (!currentTiemposImportId) return;
+
+  const q = query(tiemposRef, where('import_id', '==', currentTiemposImportId));
+  unsubscribeTiempos = onSnapshot(q, (snapshot) => {
+    const loaded = snapshot.docs.map(d => d.data());
+    if (loaded.length === 0) return;
+    tiemposData = loaded;
+    tiemposSaveLocal(loaded, { import_id: currentTiemposImportId, saved_at: Date.now(), source: 'firestore' });
+    computeComplexityMapFromTiempos();
+    if (currentSection === 'tiempos') {
+      tiemposRender._filtersInitedFor = null;
+      tiemposRender();
+    }
+    if (currentSection === 'carga-trabajo') workloadRender();
+  });
+}
 
 function repInit() {
   const mesesOrd = {'Ene':1,'Feb':2,'Mar':3,'Abr':4,'May':5,'Jun':6,'Jul':7,'Ago':8,'Sep':9,'Oct':10,'Nov':11,'Dic':12};
-  const parsePer = (p) => { const m = p.match(/^([A-Za-z]+)-(\d{4})$/); if (m) return parseInt(m[2])*100+(mesesOrd[m[1]]||0); const y = p.match(/^(\d{4})$/); return y ? parseInt(y[1])*100+13 : 0; };
-  const periodos = [...new Set(opsData.map(r => r.periodo))].filter(Boolean).sort((a,b) => parsePer(a) - parsePer(b));
+  const normPeriodoYM = (p) => {
+    const s = (p || '').toString().trim();
+    if (/^\d{4}-\d{2}$/.test(s)) return s;
+    const m = s.match(/^([A-Za-zÁÉÍÓÚÑáéíóúñ]{3})-?(\d{4})$/);
+    if (m) {
+      const mon = m[1].slice(0,3);
+      const mm = mesesOrd[mon[0].toUpperCase() + mon.slice(1).toLowerCase()];
+      if (!mm) return null;
+      return `${m[2]}-${String(mm).padStart(2,'0')}`;
+    }
+    return null; // excluir YYYY u otros formatos
+  };
+  const periodos = [...new Set(opsData.map(r => normPeriodoYM(r.periodo)).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'es'));
   const mesVencs = [...new Set(opsData.map(r => r.vencimiento ? r.vencimiento.slice(0,7) : '').filter(Boolean))].sort();
   // Registrar en MS_DATA
   MS_DATA['rep-usuario']  = { items: ['Facundo Giacoppo','Ramiro Joya','Rosa Herrera','Marcos Hinojosa','Jose Garzon'], selected: new Set(), label: 'Todos' };
@@ -2722,7 +5606,20 @@ function repGetFiltered() {
   const selMes     = MS_DATA['rep-mesvenc'] ? MS_DATA['rep-mesvenc'].selected : new Set();
   return opsData.filter(r => {
     if (selUser.size    > 0 && !selUser.has(r.usuario))                       return false;
-    if (selPeriodo.size > 0 && !selPeriodo.has(r.periodo))                    return false;
+    // rep-periodo ahora está normalizado a YYYY-MM; comparar con periodo normalizado del registro
+    if (selPeriodo.size > 0) {
+      const p = (r.periodo || '').toString().trim();
+      const m3 = p.match(/^([A-Za-zÁÉÍÓÚÑáéíóúñ]{3})-?(\d{4})$/);
+      let ym = null;
+      if (/^\d{4}-\d{2}$/.test(p)) ym = p;
+      else if (m3) {
+        const mesesOrd = {'Ene':1,'Feb':2,'Mar':3,'Abr':4,'May':5,'Jun':6,'Jul':7,'Ago':8,'Sep':9,'Oct':10,'Nov':11,'Dic':12};
+        const mon = m3[1].slice(0,3);
+        const mm = mesesOrd[mon[0].toUpperCase() + mon.slice(1).toLowerCase()];
+        if (mm) ym = `${m3[2]}-${String(mm).padStart(2,'0')}`;
+      }
+      if (!ym || !selPeriodo.has(ym)) return false;
+    }
     if (selEstado.size  > 0 && !selEstado.has(r.estado))                      return false;
     if (selMes.size     > 0 && ![...selMes].some(m => r.vencimiento && r.vencimiento.startsWith(m))) return false;
     return true;
@@ -2744,12 +5641,10 @@ function repRender() {
   repRenderEficiencia(data);
   repRenderPeriodo(data);
   repRenderObligaciones(data);
-  repRenderCriticos(data);
   repRenderPeriodoTorta(data);
   repRenderUsuarioDetalle(data);
   repRenderRendimiento(data);
   repRenderRelaciones(data);
-  repRenderDetalle(data);
 }
 
 function repDestroyChart(id) {
@@ -2884,16 +5779,38 @@ function repRenderEficiencia(data) {
 function repRenderPeriodo(data) {
   repDestroyChart('periodo');
   const periodoMap = {};
+  const mesesOrd = {'Ene':1,'Feb':2,'Mar':3,'Abr':4,'May':5,'Jun':6,'Jul':7,'Ago':8,'Sep':9,'Oct':10,'Nov':11,'Dic':12};
+  const normPeriodoYM = (p) => {
+    const s = (p || '').toString().trim();
+    if (/^\d{4}-\d{2}$/.test(s)) return s;
+    const m = s.match(/^([A-Za-zÁÉÍÓÚÑáéíóúñ]{3})-?(\d{4})$/);
+    if (m) {
+      const mon = m[1].slice(0,3);
+      const mm = mesesOrd[mon[0].toUpperCase() + mon.slice(1).toLowerCase()];
+      if (!mm) return null;
+      return `${m[2]}-${String(mm).padStart(2,'0')}`;
+    }
+    return null;
+  };
   data.forEach(r => {
-    const p = r.periodo || 'Sin período';
-    periodoMap[p] = (periodoMap[p] || 0) + 1;
+    const ym = normPeriodoYM(r.periodo);
+    // Solo períodos año-mes (YYYY-MM). Excluir anuales (YYYY) y otros formatos.
+    if (!ym) return;
+    periodoMap[ym] = (periodoMap[ym] || 0) + 1;
   });
-  const sorted = Object.entries(periodoMap).sort((a,b) => a[0].localeCompare(b[0]));
+  const toLabel = (ym) => {
+    const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const [y, m] = ym.split('-');
+    const mi = parseInt(m, 10);
+    return `${meses[(mi-1)] || m}-${y}`;
+  };
+  // Ordenar de más antiguo a más reciente (ISO YYYY-MM ya ordena lexical)
+  const sorted = Object.entries(periodoMap).sort((a,b) => a[0].localeCompare(b[0], 'es'));
   const ctx = document.getElementById('chartPeriodo').getContext('2d');
   repCharts['periodo'] = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: sorted.map(e=>e[0]),
+      labels: sorted.map(e=>toLabel(e[0])),
       datasets: [{
         label: 'Obligaciones', data: sorted.map(e=>e[1]),
         backgroundColor: 'rgba(74,111,165,0.7)', borderColor: 'var(--col1)',
@@ -3210,122 +6127,111 @@ function repDetalleClear() {
   repDetalleFilter();
 }
 
-// ── DIAGRAMA SANKEY Cliente → Usuario ──
-// ── TABLA RELACIONES CLIENTE → USUARIOS (interactiva) ──
+// ── RELACIONES Cliente ↔ Usuario ──
 let repRelData = [];
-let repRelExpanded = new Set();
 
 function repRenderRelaciones(data) {
   repRelData = data;
   repRelRender();
 }
 
-function repRelRender() {
-  const tbody = document.getElementById('repRelTbody');
-  const empty = document.getElementById('repRelEmpty');
-  if (!tbody) return;
-
-  const buscar = (document.getElementById('repRelClienteBuscar')?.value || '').toLowerCase();
-  const coloresUsuario = {
-    'Facundo Giacoppo': '#4F7CFF',
-    'Ramiro Joya':      '#FF6B35',
-    'Rosa Herrera':     '#10B981',
-    'Marcos Hinojosa':  '#F59E0B',
-    'Jose Garzon':      '#8B5CF6'
-  };
-
-  // Agrupar por cliente
-  const clienteMap = {};
-  repRelData.forEach(r => {
-    if (!r.cliente || !r.usuario) return;
-    if (!clienteMap[r.cliente]) clienteMap[r.cliente] = {};
-    if (!clienteMap[r.cliente][r.usuario]) clienteMap[r.cliente][r.usuario] = { total: 0, cumplido: 0, pendiente: 0, vencido: 0 };
-    clienteMap[r.cliente][r.usuario].total++;
-    if (r.estado === 'Cumplido') clienteMap[r.cliente][r.usuario].cumplido++;
-    if (r.estado === 'Cumplido Tardio') clienteMap[r.cliente][r.usuario].cumplido++;
-    if (r.estado === 'Pendiente') clienteMap[r.cliente][r.usuario].pendiente++;
-    if (r.estado === 'Vencido') clienteMap[r.cliente][r.usuario].vencido++;
-  });
-
-  // Ordenar clientes por total desc
-  let clientes = Object.entries(clienteMap)
-    .map(([cl, uMap]) => ({
-      cl,
-      total: Object.values(uMap).reduce((s, u) => s + u.total, 0),
-      usuarios: Object.entries(uMap).sort((a, b) => b[1].total - a[1].total)
-    }))
-    .sort((a, b) => b.total - a.total);
-
-  if (buscar) clientes = clientes.filter(c => c.cl.toLowerCase().includes(buscar));
-
-  if (!clientes.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
-  empty.style.display = 'none';
-
-  tbody.innerHTML = clientes.map(c => {
-    const isOpen = repRelExpanded.has(c.cl);
-    const usuariosAvatars = c.usuarios.slice(0, 4).map(([u]) => {
-      const color = coloresUsuario[u] || '#94a3b8';
-      const ini = u.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-      return `<span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:${color};color:#fff;font-size:0.65rem;font-weight:700;margin-right:-4px;border:2px solid var(--surface-1)" title="${u}">${ini}</span>`;
-    }).join('');
-    const extra = c.usuarios.length > 4 ? `<span style="font-size:0.75rem;color:var(--ink-muted);margin-left:8px">+${c.usuarios.length - 4}</span>` : '';
-
-    const safeKey = c.cl.replace(/'/g, "\\'");
-    let rows = `<tr style="cursor:pointer" onclick="repRelToggle('${safeKey}')">
-      <td style="text-align:center;color:var(--ink-muted);font-size:0.9rem">${isOpen ? '▼' : '▶'}</td>
-      <td style="font-weight:600">${c.cl}</td>
-      <td style="text-align:center;font-weight:700;color:var(--accent)">${c.total}</td>
-      <td><div style="display:flex;align-items:center">${usuariosAvatars}${extra}</div></td>
-    </tr>`;
-
-    if (isOpen) {
-      rows += `<tr><td colspan="4" style="padding:0 0 8px 32px;background:var(--surface-2)">
-        <table style="width:100%;border-collapse:collapse;font-size:0.83rem">
-          <thead><tr style="color:var(--ink-muted);font-size:0.78rem">
-            <th style="text-align:left;padding:6px 8px;font-weight:600">Usuario</th>
-            <th style="text-align:center;padding:6px 8px;font-weight:600">Total</th>
-            <th style="text-align:center;padding:6px 8px;font-weight:600">✓ Cumplido</th>
-            <th style="text-align:center;padding:6px 8px;font-weight:600">⏳ Pendiente</th>
-            <th style="text-align:center;padding:6px 8px;font-weight:600">⚠ Vencido</th>
-            <th style="padding:6px 8px;font-weight:600">Distribución</th>
-          </tr></thead>
-          <tbody>
-          ${c.usuarios.map(([u, stats]) => {
-            const color = coloresUsuario[u] || '#94a3b8';
-            const ini = u.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-            const pctC = stats.total ? Math.round(stats.cumplido / stats.total * 100) : 0;
-            const pctP = stats.total ? Math.round(stats.pendiente / stats.total * 100) : 0;
-            const pctV = stats.total ? Math.round(stats.vencido / stats.total * 100) : 0;
-            return `<tr style="border-top:1px solid var(--border)">
-              <td style="padding:7px 8px;display:flex;align-items:center;gap:8px">
-                <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:${color};color:#fff;font-size:0.7rem;font-weight:700;flex-shrink:0">${ini}</span>
-                <span style="font-weight:500">${u.split(' ')[0]} ${u.split(' ').slice(-1)[0]}</span>
-              </td>
-              <td style="text-align:center;padding:7px 8px;font-weight:700">${stats.total}</td>
-              <td style="text-align:center;padding:7px 8px;color:#10B981;font-weight:600">${stats.cumplido}</td>
-              <td style="text-align:center;padding:7px 8px;color:#F59E0B;font-weight:600">${stats.pendiente}</td>
-              <td style="text-align:center;padding:7px 8px;color:#EF4444;font-weight:600">${stats.vencido}</td>
-              <td style="padding:7px 8px;min-width:120px">
-                <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--border)">
-                  ${pctC ? `<div style="width:${pctC}%;background:#10B981"></div>` : ''}
-                  ${pctP ? `<div style="width:${pctP}%;background:#F59E0B"></div>` : ''}
-                  ${pctV ? `<div style="width:${pctV}%;background:#EF4444"></div>` : ''}
-                </div>
-              </td>
-            </tr>`;
-          }).join('')}
-          </tbody>
-        </table>
-      </td></tr>`;
-    }
-    return rows;
-  }).join('');
+function escapeHtml(s) {
+  return (s || '').toString().replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]));
 }
 
-function repRelToggle(cliente) {
-  if (repRelExpanded.has(cliente)) repRelExpanded.delete(cliente);
-  else repRelExpanded.add(cliente);
-  repRelRender();
+function repRenderAvatar(u, coloresUsuario) {
+  const color = coloresUsuario[u] || '#94a3b8';
+  const ini = u.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  return `<span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:${color};color:#fff;font-size:0.65rem;font-weight:700;margin-right:-4px;border:2px solid var(--surface-1)" title="${escapeHtml(u)}">${ini}</span>`;
+}
+
+function repRelRender() {
+  const clienteBuscar = (document.getElementById('repRelClienteBuscar')?.value || '').toLowerCase();
+  const usuarioBuscar = (document.getElementById('repRelUsuarioBuscar')?.value || '').toLowerCase();
+
+  const tbodyCliente = document.getElementById('repRelClienteTbody');
+  const emptyCliente = document.getElementById('repRelClienteEmpty');
+  const tbodyUsuario = document.getElementById('repRelUsuarioTbody');
+  const emptyUsuario = document.getElementById('repRelUsuarioEmpty');
+  if (!tbodyCliente || !tbodyUsuario) return;
+
+  const coloresUsuario = {
+    'Facundo Giacoppo': '#4F7CFF',
+    'Ramiro Joya': '#FF6B35',
+    'Rosa Herrera': '#10B981',
+    'Marcos Hinojosa': '#F59E0B',
+    'Jose Garzon': '#8B5CF6'
+  };
+
+  const clienteMap = {}; // cliente -> { usuarios:Set, total:number }
+  const usuarioMap = {}; // usuario -> { clientes:Set, total:number }
+
+  repRelData.forEach(r => {
+    const cl = r.cliente;
+    const u = r.usuario;
+    if (!cl || !u) return;
+    if (!clienteMap[cl]) clienteMap[cl] = { usuarios: new Set(), total: 0 };
+    if (!usuarioMap[u]) usuarioMap[u] = { clientes: new Set(), total: 0 };
+    clienteMap[cl].usuarios.add(u);
+    clienteMap[cl].total++;
+    usuarioMap[u].clientes.add(cl);
+    usuarioMap[u].total++;
+  });
+
+  let clientes = Object.entries(clienteMap).map(([cl, v]) => ({
+    cl,
+    usuarios: [...v.usuarios].sort((a, b) => a.localeCompare(b, 'es')),
+    total: v.total
+  })).sort((a, b) => b.total - a.total);
+
+  let usuarios = Object.entries(usuarioMap).map(([u, v]) => ({
+    u,
+    clientes: [...v.clientes].sort((a, b) => a.localeCompare(b, 'es')),
+    total: v.total
+  })).sort((a, b) => b.total - a.total);
+
+  if (clienteBuscar) clientes = clientes.filter(c => c.cl.toLowerCase().includes(clienteBuscar));
+  if (usuarioBuscar) usuarios = usuarios.filter(x => x.u.toLowerCase().includes(usuarioBuscar));
+
+  // Render: clientes -> usuarios
+  if (!clientes.length) {
+    tbodyCliente.innerHTML = '';
+    emptyCliente.style.display = 'block';
+  } else {
+    emptyCliente.style.display = 'none';
+    tbodyCliente.innerHTML = clientes.map(c => {
+      const av = c.usuarios.slice(0, 4).map(u => repRenderAvatar(u, coloresUsuario)).join('');
+      const extra = c.usuarios.length > 4 ? `<span style="font-size:0.75rem;color:var(--ink-muted);margin-left:8px">+${c.usuarios.length - 4}</span>` : '';
+      return `
+        <tr>
+          <td style="font-weight:600">${escapeHtml(c.cl)}</td>
+          <td style="text-align:center">
+            <div style="display:flex;align-items:center;justify-content:center">${av}${extra}<span style="margin-left:10px;color:var(--ink-muted);font-size:0.8rem">(${c.usuarios.length})</span></div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Render: usuarios -> clientes
+  if (!usuarios.length) {
+    tbodyUsuario.innerHTML = '';
+    emptyUsuario.style.display = 'block';
+  } else {
+    emptyUsuario.style.display = 'none';
+    tbodyUsuario.innerHTML = usuarios.map(x => {
+      const list = x.clientes.slice(0, 6).map(cl => escapeHtml(cl)).join('<br>');
+      const extra = x.clientes.length > 6 ? `<div style="margin-top:4px;color:var(--ink-muted)">+${x.clientes.length - 6} más</div>` : '';
+      return `
+        <tr>
+          <td style="font-weight:600">${escapeHtml(x.u)}</td>
+          <td style="text-align:left;color:var(--ink-muted);font-size:0.85rem;white-space:normal;word-break:break-word;line-height:1.25">
+            ${list}${extra}
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
 }
 
 // ── LOGIN ENTER KEY ──
@@ -3334,10 +6240,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
   });
+  tiemposBindPivotControls();
+  tiemposBindDragDrop();
 });
 
 // ── INIT ──
 updateDateDisplay();
+tiemposBindPivotControls();
+tiemposBindDragDrop();
 
 // ── EXPOSE GLOBALS para onclick en HTML ──
 window.openNewModal = openNewModal;
@@ -3368,18 +6278,52 @@ window.switchSection = switchSection;
 window.repRender = repRender;
 window.repClearFilters = repClearFilters;
 window.repMsApply = repMsApply;
-window.repRelToggle = repRelToggle;
 window.repRelRender = repRelRender;
 window.repDetalleFilter = repDetalleFilter;
 window.repDetalleSort = repDetalleSort;
 window.repDetGoPage = repDetGoPage;
 window.repDetalleClear = repDetalleClear;
+window.workloadToggle = workloadToggle;
+window.adminImportOps = adminImportOps;
+window.adminImportClientes = adminImportClientes;
+window.adminImportTiempos = adminImportTiempos;
+window.openInfo = openInfo;
+window.closeInfo = closeInfo;
+window.tiemposRender = tiemposRender;
+window.tiemposClearFilters = tiemposClearFilters;
+window.tiemposToggleDimExpand = tiemposToggleDimExpand;
+window.tiemposToggleZoneExpand = tiemposToggleZoneExpand;
+window.tiemposToggleDimValue = tiemposToggleDimValue;
+window.tiemposToggleAllDim = tiemposToggleAllDim;
+window.tiemposDimFilterSearch = tiemposDimFilterSearch;
+window.tiemposConfirmDim = tiemposConfirmDim;
+window.tiemposResetDim = tiemposResetDim;
+window.tiemposSelectAllDim = tiemposSelectAllDim;
+window.tiemposSelectNoneDim = tiemposSelectNoneDim;
+window.tiemposAddFromPalette = tiemposAddFromPalette;
+window.tiemposMoveDim = tiemposMoveDim;
+window.tiemposRemoveAt = tiemposRemoveAt;
+window.tiemposDropAt = tiemposDropAt;
 window.doLogin = doLogin;
 window.doLogout = doLogout;
 window.doChangePassword = doChangePassword;
 window.openChangePwd = openChangePwd;
 window.toggleUserMenu = toggleUserMenu;
 window.openAdminPanel = openAdminPanel;
+window.clientsSelect = clientsSelect;
+window.clientsSave = clientsSave;
+window.clientsRenderList = clientsRenderList;
+window.clientsRenderInsights = clientsRenderInsights;
+window.clientsToggleFacetValue = clientsToggleFacetValue;
+window.clientsToggleFacetAll = clientsToggleFacetAll;
+window.clientsClearInsights = clientsClearInsights;
+window.clientsSetEtiquetaType = clientsSetEtiquetaType;
+window.clientsToggleEtiquetaValue = clientsToggleEtiquetaValue;
+window.clientsToggleEtiquetaAll = clientsToggleEtiquetaAll;
+window.clientsAddAcceso = clientsAddAcceso;
+window.clientsRemoveAcceso = clientsRemoveAcceso;
+window.clientsToggleClave = clientsToggleClave;
+window.clientsCopyField = clientsCopyField;
 window.closeAdminPanel = closeAdminPanel;
 
 </script>
