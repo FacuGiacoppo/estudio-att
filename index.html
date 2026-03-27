@@ -700,9 +700,10 @@
     align-items: center;
     gap: 0;
     padding: 0 2rem;
+    /* Solo scroll horizontal; overflow-y visible para no recortar submenús (los menús van position:fixed por JS) */
     overflow-x: auto;
-    overflow-y: hidden;
-    max-height: 56px;
+    overflow-y: visible;
+    min-height: 52px;
     scrollbar-width: thin;
   }
   .section-nav::-webkit-scrollbar { height: 6px; }
@@ -729,16 +730,13 @@
   }
   .section-dropdown-menu {
     display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    margin-top: 4px;
+    /* Posición final: fixed vía JS (evita recorte por overflow de la barra) */
     min-width: 220px;
     background: #fff;
     border: 1px solid rgba(26,26,46,0.12);
     border-radius: var(--radius);
     box-shadow: var(--shadow-lg);
-    z-index: 200;
+    z-index: 500;
     padding: 6px 0;
   }
   .section-nav-dropdown.open .section-dropdown-menu { display: block; }
@@ -2074,7 +2072,7 @@
       </div>
       <div class="rep-chart-card">
         <div class="rep-chart-title">Eficiencia por Usuario <button class="info-btn" onclick="openInfo('rep_eficiencia')">i</button></div>
-        <div class="rep-chart-sub">% cumplido en fecha vs tardío</div>
+        <div class="rep-chart-sub">Solo trabajo <b>cerrado</b> (cumplido + tardío + vencido). Los pendientes no entran al 100%.</div>
         <div style="position:relative;height:220px"><canvas id="chartEficiencia"></canvas></div>
       </div>
     </div>
@@ -2110,6 +2108,9 @@
     <!-- Tabla Rendimiento por Operador -->
     <div class="rep-criticos-section" style="margin-top:2rem">
       <div class="rep-chart-title" style="padding:0 0 12px">👤 Rendimiento por Operador <button class="info-btn" onclick="openInfo('rep_rendimiento')">i</button></div>
+      <div class="rep-chart-sub" style="padding:0 0 10px;font-size:0.8rem;max-width:900px;line-height:1.45">
+        <b>% Cumplidos / Tardíos / Vencidos</b> = sobre obligaciones ya cerradas (excluye <b>Pendiente</b>). <b>% Pendiente</b> = sobre el total (cuánto del panel sigue abierto).
+      </div>
       <div class="ops-table-wrap" style="padding:0">
         <table class="ops-table" id="repRendimientoTable">
           <thead><tr>
@@ -2140,9 +2141,6 @@
       <div>
         <div class="rep-chart-title" style="padding:0">⏱️ Reporte de Tiempos</div>
         <div class="rep-chart-sub">Seleccioná valores por dimensión y arrastrá a Filas o Columnas. Métrica: suma de minutos.</div>
-        <div id="tiSelfViewNote" style="display:none;margin-top:10px;padding:10px 12px;border-radius:8px;background:rgba(79,124,255,0.08);border:1px solid rgba(79,124,255,0.22);font-size:0.82rem;color:var(--ink)">
-          Estás viendo <b>solo tus registros</b> para poder analizar tu carga. Los socios tienen vista de todo el equipo.
-        </div>
       </div>
     </div>
 
@@ -3963,6 +3961,7 @@ async function clientsImportFile(event) {
       const row = raw[i] || [];
       const nombre = (iNombre >= 0 ? row[iNombre] : row[0])?.toString().trim() || '';
       if (!nombre) continue;
+      const notasExcel = (iNotas >= 0 ? row[iNotas] : '').toString().trim();
       const payload = {
         id_cliente: (iIdCliente >= 0 ? row[iIdCliente] : '').toString().trim(),
         nombre,
@@ -3978,11 +3977,12 @@ async function clientsImportFile(event) {
         jurisdiccion_domicilio: (iJurisdiccion >= 0 ? row[iJurisdiccion] : '').toString().trim(),
         etiquetas: (iEtiquetas >= 0 ? row[iEtiquetas] : '').toString().trim(),
         claves: (iClaves >= 0 ? row[iClaves] : '').toString().trim(),
-        notas: (iNotas >= 0 ? row[iNotas] : '').toString().trim(),
         created_at: serverTimestamp(),
         updated_at: serverTimestamp(),
         updated_by: currentUserData ? currentUserData.nombre : '',
       };
+      // Solo enviar notas si el Excel trae texto: si no, no incluir el campo y merge conserva lo guardado en la app.
+      if (notasExcel) payload.notas = notasExcel;
       const docId = nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 80) || `cliente-${Date.now()}-${i}`;
       pending.push({ docId, payload });
     }
@@ -4009,7 +4009,6 @@ async function clientsImportFile(event) {
         jurisdiccion_domicilio: '',
         etiquetas: '',
         claves: '',
-        notas: '',
         created_at: serverTimestamp(),
         updated_at: serverTimestamp(),
         updated_by: currentUserData ? currentUserData.nombre : '',
@@ -4513,6 +4512,32 @@ async function tiemposImportFile(event) {
 }
 
 // ── NAVEGACIÓN POR SECCIONES ──
+function resetSectionDropdownMenuStyles() {
+  document.querySelectorAll('.section-dropdown-menu').forEach((menu) => {
+    menu.style.position = '';
+    menu.style.left = '';
+    menu.style.top = '';
+    menu.style.right = '';
+    menu.style.zIndex = '';
+  });
+}
+
+function positionSectionDropdownMenu(dd) {
+  const trigger = dd.querySelector('.section-tab-dropdown');
+  const menu = dd.querySelector('.section-dropdown-menu');
+  if (!trigger || !menu) return;
+  const r = trigger.getBoundingClientRect();
+  const vw = window.innerWidth || document.documentElement.clientWidth || 0;
+  const pad = 8;
+  const mw = 220;
+  let left = r.left;
+  if (left + mw > vw - pad) left = Math.max(pad, vw - mw - pad);
+  menu.style.position = 'fixed';
+  menu.style.left = `${left}px`;
+  menu.style.top = `${r.bottom + 4}px`;
+  menu.style.zIndex = '500';
+}
+
 function clearSectionNavActive() {
   document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.section-nav-dropdown').forEach(d => {
@@ -4520,6 +4545,7 @@ function clearSectionNavActive() {
     const tr = d.querySelector('.section-tab-dropdown');
     if (tr) tr.setAttribute('aria-expanded', 'false');
   });
+  resetSectionDropdownMenuStyles();
 }
 
 function toggleSectionDropdown(dropdownId) {
@@ -4531,10 +4557,12 @@ function toggleSectionDropdown(dropdownId) {
     const tr = d.querySelector('.section-tab-dropdown');
     if (tr) tr.setAttribute('aria-expanded', 'false');
   });
+  resetSectionDropdownMenuStyles();
   if (willOpen) {
     dd.classList.add('open');
     const tr = dd.querySelector('.section-tab-dropdown');
     if (tr) tr.setAttribute('aria-expanded', 'true');
+    requestAnimationFrame(() => positionSectionDropdownMenu(dd));
   }
 }
 
@@ -4545,6 +4573,7 @@ function switchSectionFromDropdown(section, dropdownId) {
     const tr = dd.querySelector('.section-tab-dropdown');
     if (tr) tr.setAttribute('aria-expanded', 'false');
   }
+  resetSectionDropdownMenuStyles();
   switchSection(section, null);
 }
 
@@ -4621,12 +4650,12 @@ const INFO_CONTENT = {
   },
   rep_cumplimiento: { title: 'Cumplimiento General', body: 'Distribución de estados (Cumplido, Cumplido tardío, Pendiente, Vencido) para el conjunto filtrado.' },
   rep_carga_usuario: { title: 'Carga por Usuario', body: 'Cantidad de registros asignados a cada usuario dentro del filtro actual.' },
-  rep_eficiencia: { title: 'Eficiencia por Usuario', body: 'Porcentaje por usuario: cumplido en fecha vs tardío vs vencido (según estados).' },
+  rep_eficiencia: { title: 'Eficiencia por Usuario', body: 'Barras apiladas al 100%: solo obligaciones <b>cerradas</b> (Cumplido + Cumplido tardío + Vencido). <b>Pendiente</b> no entra: si no, el % de cumplimiento se diluye con trabajo futuro/abierto. Colores en la leyenda: verde claro = cumplido a tiempo, verde oscuro = tardío, rojo = vencido.' },
   rep_periodo: { title: 'Volumen por Período', body: 'Cantidad de registros por período. Útil para ver estacionalidad/carga mensual.' },
   rep_obligaciones: { title: 'Top 10 Obligaciones', body: 'Las obligaciones/tareas más repetidas en el set filtrado.' },
   rep_periodo_torta: { title: 'Cumplimiento por Período', body: 'Cumplimiento para los períodos seleccionados en filtros (si hay más de uno, consolida).' },
   rep_usuario_detalle: { title: 'Cumplimiento por Usuario — Detalle', body: 'Barras por usuario con conteos absolutos por estado.' },
-  rep_rendimiento: { title: 'Rendimiento por Operador', body: 'Tabla resumen por operador: totales y distribución por estado.' },
+  rep_rendimiento: { title: 'Rendimiento por Operador', body: '<b>Colores en %</b> (semáforo):<ul style="margin:8px 0 0 16px;line-height:1.5"><li><b>Cumplidos</b>: verde si el % sobre cerrados es alto (≥85% amarillo ≥60%); rojo si es bajo.</li><li><b>Tardíos / Vencidos</b>: verde si el % es bajo; rojo si es alto (muchos tardíos o vencidos entre lo ya cerrado).</li><li><b>Pendientes</b>: verde si pocos pendientes respecto del <b>total</b>; rojo si el backlog es grande.</li></ul><b>% Cumpl./Tard./Venc.</b> usan como base solo cerrados (sin Pendiente). <b>% Pend.</b> usa el total.' },
 };
 
 function openInfo(key) {
@@ -5461,9 +5490,7 @@ function tiemposRender() {
   const wrap = document.getElementById('tiemposPivotWrap');
   const empty = document.getElementById('tiemposPivotEmpty');
   const dbg = document.getElementById('tiDebugStatus');
-  const selfNote = document.getElementById('tiSelfViewNote');
   if (!wrap || !empty) return;
-  if (selfNote) selfNote.style.display = 'none';
   if (!Array.isArray(tiemposData) || tiemposData.length === 0) {
     wrap.innerHTML = '';
     empty.style.display = 'block';
@@ -5479,7 +5506,6 @@ function tiemposRender() {
     if (dbg) dbg.textContent = '';
     return;
   }
-  if (selfNote) selfNote.style.display = tiemposUserSeesOnlySelf() ? 'block' : 'none';
   empty.style.display = 'none';
 
   const filtKey = `${tiemposData.length}|${tiemposUserSeesOnlySelf() ? '1' : '0'}|${(currentUserData && currentUserData.nombre) || ''}`;
@@ -6172,16 +6198,18 @@ function repRenderKpis(data) {
   const tardio = data.filter(r => r.estado === 'Cumplido Tardio').length;
   const pendiente = data.filter(r => r.estado === 'Pendiente').length;
   const vencido = data.filter(r => r.estado === 'Vencido').length;
-  const pctOk = total ? Math.round((cumplido / total) * 100) : 0;
-  const pctTardio = total ? Math.round((tardio / total) * 100) : 0;
+  const cerrados = cumplido + tardio + vencido;
+  const pctOkTotal = total ? Math.round((cumplido / total) * 100) : 0;
+  const pctTardioTotal = total ? Math.round((tardio / total) * 100) : 0;
+  const pctOkCerrados = cerrados ? Math.round((cumplido / cerrados) * 100) : 0;
 
   const kpis = [
     { label: 'Total registros', value: total, sub: 'en la selección', color: 'var(--ink-muted)' },
-    { label: 'Cumplido a tiempo', value: cumplido, sub: `${pctOk}% del total`, color: 'var(--green)' },
-    { label: 'Cumplido tardío', value: tardio, sub: `${pctTardio}% del total`, color: '#2d7a4f' },
+    { label: 'Cumplido a tiempo', value: cumplido, sub: `${pctOkTotal}% del total · ${pctOkCerrados}% sobre cerrados`, color: 'var(--green)' },
+    { label: 'Cumplido tardío', value: tardio, sub: `${pctTardioTotal}% del total`, color: '#2d7a4f' },
     { label: 'Pendientes', value: pendiente, sub: 'sin completar', color: 'var(--gold)' },
     { label: 'Vencidos', value: vencido, sub: 'sin cumplir', color: 'var(--accent)' },
-    { label: 'Tasa de cumplimiento', value: pctOk + '%', sub: 'cumplido en fecha', color: 'var(--col1)' },
+    { label: 'Tasa cumplimiento (cerrados)', value: pctOkCerrados + '%', sub: 'cumplido a tiempo / (cerrados), excluye pendientes', color: 'var(--col1)' },
   ];
 
   document.getElementById('repKpis').innerHTML = kpis.map(k => `
@@ -6245,27 +6273,36 @@ function repRenderCargaUsuario(data) {
   });
 }
 
-// Eficiencia por usuario
+// Eficiencia por usuario (solo sobre obligaciones cerradas: sin Pendiente)
 function repRenderEficiencia(data) {
   repDestroyChart('eficiencia');
   const users = ['Facundo Giacoppo','Ramiro Joya','Rosa Herrera','Marcos Hinojosa','Jose Garzon'];
   const cumplidos = users.map(u => {
     const ud = data.filter(r => r.usuario === u);
-    const total = ud.length;
-    if (!total) return 0;
-    return Math.round(ud.filter(r => r.estado === 'Cumplido').length / total * 100);
+    const c = ud.filter(r => r.estado === 'Cumplido').length;
+    const t = ud.filter(r => r.estado === 'Cumplido Tardio').length;
+    const v = ud.filter(r => r.estado === 'Vencido').length;
+    const base = c + t + v;
+    if (!base) return 0;
+    return Math.round((c / base) * 100);
   });
   const tardios = users.map(u => {
     const ud = data.filter(r => r.usuario === u);
-    const total = ud.length;
-    if (!total) return 0;
-    return Math.round(ud.filter(r => r.estado === 'Cumplido Tardio').length / total * 100);
+    const c = ud.filter(r => r.estado === 'Cumplido').length;
+    const t = ud.filter(r => r.estado === 'Cumplido Tardio').length;
+    const v = ud.filter(r => r.estado === 'Vencido').length;
+    const base = c + t + v;
+    if (!base) return 0;
+    return Math.round((t / base) * 100);
   });
   const vencidos = users.map(u => {
     const ud = data.filter(r => r.usuario === u);
-    const total = ud.length;
-    if (!total) return 0;
-    return Math.round(ud.filter(r => r.estado === 'Vencido').length / total * 100);
+    const c = ud.filter(r => r.estado === 'Cumplido').length;
+    const t = ud.filter(r => r.estado === 'Cumplido Tardio').length;
+    const v = ud.filter(r => r.estado === 'Vencido').length;
+    const base = c + t + v;
+    if (!base) return 0;
+    return Math.round((v / base) * 100);
   });
   const ctx = document.getElementById('chartEficiencia').getContext('2d');
   repCharts['eficiencia'] = new Chart(ctx, {
@@ -6481,6 +6518,7 @@ function repRenderRendimiento(data) {
     return 'rep-rend-pct-gray';
   };
   const fmt = (n, t) => (t ? (n/t*100).toFixed(1) + '%' : '0%');
+  const fmtCerr = (n, cerr) => (cerr ? (n/cerr*100).toFixed(1) + '%' : '—');
 
   // Totales
   const totTotal    = rows.reduce((s,r) => s+r.total, 0);
@@ -6488,32 +6526,37 @@ function repRenderRendimiento(data) {
   const totTardio   = rows.reduce((s,r) => s+r.tardio, 0);
   const totPendiente= rows.reduce((s,r) => s+r.pendiente, 0);
   const totVencido  = rows.reduce((s,r) => s+r.vencido, 0);
+  const totCerrados = totCumplido + totTardio + totVencido;
 
   tbody.innerHTML = rows.map(r => {
-    const pC = r.cumplido/r.total, pT = r.tardio/r.total, pP = r.pendiente/r.total, pV = r.vencido/r.total;
+    const cerr = r.cumplido + r.tardio + r.vencido;
+    const pC = cerr ? r.cumplido / cerr : 0;
+    const pT = cerr ? r.tardio / cerr : 0;
+    const pP = r.total ? r.pendiente / r.total : 0;
+    const pV = cerr ? r.vencido / cerr : 0;
     return `<tr>
       <td>${r.u.split(' ')[0]} ${r.u.split(' ').slice(-1)[0]}</td>
       <td>${r.total}</td>
       <td>${r.cumplido}</td>
-      <td><span class="${pctClass(pC,'cumplido')}">${fmt(r.cumplido,r.total)}</span></td>
+      <td><span class="${cerr ? pctClass(pC,'cumplido') : 'rep-rend-pct-gray'}">${fmtCerr(r.cumplido, cerr)}</span></td>
       <td>${r.tardio}</td>
-      <td><span class="${pctClass(pT,'tardio')}">${fmt(r.tardio,r.total)}</span></td>
+      <td><span class="${cerr ? pctClass(pT,'tardio') : 'rep-rend-pct-gray'}">${fmtCerr(r.tardio, cerr)}</span></td>
       <td>${r.pendiente}</td>
       <td><span class="${pctClass(pP,'pendiente')}">${fmt(r.pendiente,r.total)}</span></td>
       <td>${r.vencido}</td>
-      <td><span class="${pctClass(pV,'vencido')}">${fmt(r.vencido,r.total)}</span></td>
+      <td><span class="${cerr ? pctClass(pV,'vencido') : 'rep-rend-pct-gray'}">${fmtCerr(r.vencido, cerr)}</span></td>
     </tr>`;
   }).join('') + `<tfoot><tr>
     <td>TOTAL</td>
     <td>${totTotal}</td>
     <td>${totCumplido}</td>
-    <td><span class="rep-rend-pct-gray">${fmt(totCumplido,totTotal)}</span></td>
+    <td><span class="rep-rend-pct-gray">${fmtCerr(totCumplido, totCerrados)}</span></td>
     <td>${totTardio}</td>
-    <td><span class="rep-rend-pct-gray">${fmt(totTardio,totTotal)}</span></td>
+    <td><span class="rep-rend-pct-gray">${fmtCerr(totTardio, totCerrados)}</span></td>
     <td>${totPendiente}</td>
     <td><span class="rep-rend-pct-gray">${fmt(totPendiente,totTotal)}</span></td>
     <td>${totVencido}</td>
-    <td><span class="rep-rend-pct-gray">${fmt(totVencido,totTotal)}</span></td>
+    <td><span class="rep-rend-pct-gray">${fmtCerr(totVencido, totCerrados)}</span></td>
   </tr></tfoot>`;
 }
 
@@ -6658,7 +6701,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const tr = d.querySelector('.section-tab-dropdown');
       if (tr) tr.setAttribute('aria-expanded', 'false');
     });
+    resetSectionDropdownMenuStyles();
   });
+  window.addEventListener('resize', () => {
+    document.querySelectorAll('.section-nav-dropdown.open').forEach(d => {
+      d.classList.remove('open');
+      const tr = d.querySelector('.section-tab-dropdown');
+      if (tr) tr.setAttribute('aria-expanded', 'false');
+    });
+    resetSectionDropdownMenuStyles();
+  });
+  const sn = document.getElementById('sectionNav');
+  if (sn) {
+    sn.addEventListener('scroll', () => {
+      document.querySelectorAll('.section-nav-dropdown.open').forEach(d => {
+        d.classList.remove('open');
+        const tr = d.querySelector('.section-tab-dropdown');
+        if (tr) tr.setAttribute('aria-expanded', 'false');
+      });
+      resetSectionDropdownMenuStyles();
+    }, { passive: true });
+  }
   tiemposBindPivotControls();
   tiemposBindDragDrop();
 });
