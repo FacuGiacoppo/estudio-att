@@ -2138,6 +2138,7 @@
       <div class="imp-card">
         <div class="imp-title">Operaciones</div>
         <div class="imp-sub">Importa el Excel de operaciones (Usuario, Cliente, Obligación, Período, Vencimiento, Estado...).</div>
+        <div class="imp-sub" id="imp-last-ops" style="margin-top:6px;font-size:0.78rem">Última carga: —</div>
         <div class="imp-actions">
           <label class="imp-btn primary" style="cursor:pointer">
             Importar Excel
@@ -2149,6 +2150,7 @@
       <div class="imp-card">
         <div class="imp-title">Clientes</div>
         <div class="imp-sub">Importa el Excel de clientes (ID, CUIT, Tipo societario, IVA, Ganancias, etiquetas, etc.).</div>
+        <div class="imp-sub" id="imp-last-clientes" style="margin-top:6px;font-size:0.78rem">Última carga: —</div>
         <div class="imp-actions">
           <label class="imp-btn primary" style="cursor:pointer">
             Importar Excel
@@ -2160,6 +2162,7 @@
       <div class="imp-card">
         <div class="imp-title">Tiempos (Plan-IN)</div>
         <div class="imp-sub">Importa el registro de tiempos (minutos) por Usuario/Cliente/Obligación/Período para estimar complejidad y mejorar la carga de trabajo.</div>
+        <div class="imp-sub" id="imp-last-tiempos" style="margin-top:6px;font-size:0.78rem">Última carga: —</div>
         <div class="imp-actions">
           <label class="imp-btn primary" style="cursor:pointer">
             Importar Excel
@@ -2228,6 +2231,7 @@ const ATT_LOGO_FALLBACK = "data:image/svg+xml;utf8," + encodeURIComponent(`
   <text x='150' y='70' text-anchor='middle' font-family='DM Serif Display, Georgia, serif' font-size='56' fill='#1a1a2e'>ATT</text>
 </svg>
 `);
+const IMPORT_LAST_LOCAL_KEY = 'imports_last_status_v1';
 
 // Usuarios del sistema con roles
 const USUARIOS = {
@@ -2315,6 +2319,53 @@ function showLogin() {
   document.getElementById('sectionNav').style.display = 'none';
 }
 
+function importLastLoad() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(IMPORT_LAST_LOCAL_KEY) || '{}');
+    return (raw && typeof raw === 'object') ? raw : {};
+  } catch (_) {
+    return {};
+  }
+}
+
+function importLastSave(kind, payload) {
+  try {
+    const all = importLastLoad();
+    all[kind] = payload;
+    localStorage.setItem(IMPORT_LAST_LOCAL_KEY, JSON.stringify(all));
+  } catch (_) {}
+}
+
+function importLastFmt(ts) {
+  if (!ts) return '—';
+  try {
+    const d = new Date(ts);
+    return d.toLocaleString('es-AR');
+  } catch (_) {
+    return '—';
+  }
+}
+
+function importLastRender() {
+  const all = importLastLoad();
+  const bind = (kind, id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const x = all[kind];
+    if (!x || !x.at) {
+      el.textContent = 'Última carga: —';
+      return;
+    }
+    const base = `Última carga: ${importLastFmt(x.at)}`;
+    const f = x.file ? ` · ${x.file}` : '';
+    const c = Number.isFinite(x.count) ? ` · ${x.count} registros` : '';
+    el.textContent = base + f + c;
+  };
+  bind('ops', 'imp-last-ops');
+  bind('clientes', 'imp-last-clientes');
+  bind('tiempos', 'imp-last-tiempos');
+}
+
 function showApp() {
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('userBadge').style.display = 'flex';
@@ -2338,6 +2389,7 @@ function showApp() {
   if (tabTiempos) tabTiempos.style.display = isSocioRole(u.rol) ? '' : 'none';
   const tabImp = document.getElementById('tab-importaciones');
   if (tabImp) tabImp.style.display = isAdminRole(u.rol) ? '' : 'none';
+  importLastRender();
   // Activar sección operaciones por defecto
   switchSection('operaciones', document.getElementById('tab-operaciones'));
   opsInit();
@@ -3825,6 +3877,8 @@ async function clientsImportFile(event) {
     if (!selectedClientId && firstImported) selectedClientId = firstImported.id;
   }
 
+  importLastSave('clientes', { at: Date.now(), file: file.name || '', count: imported });
+  importLastRender();
   showToast(`${imported} clientes importados ✓`);
   event.target.value = '';
 }
@@ -3981,6 +4035,8 @@ async function opsImportFile(event) {
     opsRender();
     repInit();
     repRender();
+    importLastSave('ops', { at: Date.now(), file: file.name || '', count: imported.length });
+    importLastRender();
     showToast(`${imported.length} registros importados ✓ (${persisted ? 'guardado' : 'guardado local'})`, 3500);
   } catch (e) {
     console.error('Error importando operaciones:', e);
@@ -4210,6 +4266,8 @@ async function tiemposImportFile(event) {
       tiemposRender();
     }
     if (currentSection === 'carga-trabajo') workloadRender();
+    importLastSave('tiempos', { at: Date.now(), file: file.name || '', count: imported.length });
+    importLastRender();
     showToast(`${imported.length} tiempos importados ✓ (${persisted ? 'guardado' : 'guardado local'})`, 3500);
   } catch (e) {
     console.error('Error importando tiempos:', e);
