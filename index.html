@@ -2222,6 +2222,12 @@ const tiemposRef = collection(db, "tiempos");
 const tiemposImportMetaRef = doc(db, "imports", "tiempos");
 const DEADLINE_ALERTS_MUTE_KEY = 'deadlineAlertsMutedKeys_v1';
 const ATT_LOGO_PATH = 'assets/att-logo.png';
+const ATT_LOGO_FALLBACK = "data:image/svg+xml;utf8," + encodeURIComponent(`
+<svg xmlns='http://www.w3.org/2000/svg' width='300' height='120' viewBox='0 0 300 120'>
+  <rect width='300' height='120' rx='14' fill='white'/>
+  <text x='150' y='70' text-anchor='middle' font-family='DM Serif Display, Georgia, serif' font-size='56' fill='#1a1a2e'>ATT</text>
+</svg>
+`);
 
 // Usuarios del sistema con roles
 const USUARIOS = {
@@ -2314,7 +2320,11 @@ function showApp() {
   document.getElementById('userBadge').style.display = 'flex';
   const u = currentUserData;
   const logoImg = document.getElementById('attLogoImg');
-  if (logoImg) logoImg.src = ATT_LOGO_PATH;
+  if (logoImg) {
+    // GitHub Pages fallback: if assets/att-logo.png is missing, show inline ATT logo.
+    logoImg.onerror = () => { logoImg.onerror = null; logoImg.src = ATT_LOGO_FALLBACK; };
+    logoImg.src = ATT_LOGO_PATH;
+  }
   const initials = u.nombre.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   document.getElementById('userAvatar').textContent = initials;
   document.getElementById('userName').textContent = u.nombre.split(' ')[0];
@@ -4259,10 +4269,9 @@ const INFO_CONTENT = {
     body: `
       <div style="color:var(--ink-muted);margin-bottom:10px">Este panel es una <b>medida comparativa</b> para ayudarte a asignar tareas.</div>
       <ul>
-        <li><b>Abiertas (ventana 30d)</b>: total operativo de tareas <b>Pendiente/Vencido</b> cuya fecha entra en la ventana <b>[vencidas + próximos 30 días]</b>.</li>
-        <li><b>Próx. 30d</b>: subgrupo de “Abiertas” con vencimiento entre <b>hoy y +30 días</b> (<code>0..30</code>).</li>
-        <li><b>Vencidas</b>: subgrupo de “Abiertas” con vencimiento anterior a hoy (<code>&lt;0</code>).</li>
-        <li><b>Relación</b>: <b>Abiertas = Próx. 30d + Vencidas</b>.</li>
+        <li><b>Abiertas</b>: cantidad total de operaciones del usuario con estado <b>Pendiente</b> o <b>Vencido</b> (sin límite de días).</li>
+        <li><b>Próx. 30d</b>: de las abiertas, cuántas vencen en los próximos 30 días.</li>
+        <li><b>Vencidas</b>: de las abiertas, cuántas ya están vencidas.</li>
         <li><b>Mensuales / Anuales</b>: clasificación inferida desde <b>Período</b> (mensual tipo <code>Mar-2026</code>; anual tipo <code>2026</code> o “anual”).</li>
         <li><b>Complejidad</b>: se estima automáticamente con el Excel <b>Tiempos (Plan‑IN)</b>. Para cada <b>Obligación</b> calcula minutos promedio históricos y la clasifica en <b>Baja/Media/Alta</b>.</li>
         <li><b>Puntaje</b>: suma ponderada por <b>urgencia</b> (vencidas/próximas), por <b>cadencia</b> (mensual vs anual) y por <b>complejidad</b>. Más alto = más carga.</li>
@@ -4357,14 +4366,7 @@ function workloadRender() {
 
   const parsed = usuarios.map((u) => {
     const uKey = normU(u);
-    const open = opsData.filter(r => {
-      if (normU(r.usuario) !== uKey) return false;
-      if (!openStates.has(r.estado)) return false;
-      const d = r.vencimiento ? parseDate(r.vencimiento) : null;
-      if (!d) return false; // sin vencimiento no entra en la ventana operativa
-      const diffDays = Math.ceil((d - todayDate) / 86400000);
-      return diffDays <= 30; // incluye vencidas (<0) + próximos 30 días
-    });
+    const open = opsData.filter(r => normU(r.usuario) === uKey && openStates.has(r.estado));
     let score = 0;
     let monthlyCnt = 0;
     let annualCnt = 0;
