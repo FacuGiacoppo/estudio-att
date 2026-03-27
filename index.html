@@ -2002,66 +2002,6 @@
       </div>
     </div>
 
-    <!-- Relaciones Cliente ↔ Usuario -->
-    <div class="rep-criticos-section" style="margin-top:2rem">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:0 0 14px;flex-wrap:wrap;gap:10px">
-        <div>
-          <div class="rep-chart-title" style="padding:0">↔ Relaciones Cliente — Usuario <button class="info-btn" onclick="openInfo('rep_relaciones')">i</button></div>
-          <div class="rep-chart-sub" style="color:var(--ink-muted);font-size:0.8rem;margin-top:2px">Buscá por cliente o por usuario</div>
-        </div>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-        <!-- Usuarios por cliente -->
-        <div class="ops-table-wrap" style="padding:0;max-height:480px;overflow-y:auto">
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:0 0 12px;gap:10px;flex-wrap:wrap">
-            <div style="font-weight:700;color:var(--ink)">Usuarios para el cliente</div>
-            <div style="position:relative;min-width:200px;max-width:260px;flex:1">
-              <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink-muted);font-size:0.85rem">🔍</span>
-              <input type="text" id="repRelClienteBuscar" placeholder="Buscar cliente..."
-                style="width:100%;padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--ink);font-size:0.83rem;box-sizing:border-box"
-                oninput="repRelRender()">
-            </div>
-          </div>
-          <table class="ops-table" id="repRelClienteTable">
-            <thead style="position:sticky;top:0;z-index:2">
-              <tr>
-                <th>Cliente</th>
-                <th style="text-align:center">Usuarios</th>
-              </tr>
-            </thead>
-            <tbody id="repRelClienteTbody"></tbody>
-          </table>
-          <div id="repRelClienteEmpty" class="ops-empty" style="display:none">Sin datos con los filtros actuales.</div>
-        </div>
-
-        <!-- Clientes por usuario -->
-        <div class="ops-table-wrap" style="padding:0;max-height:480px;overflow-y:auto">
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:0 0 12px;gap:10px;flex-wrap:wrap">
-            <div style="font-weight:700;color:var(--ink)">Clientes para el usuario</div>
-            <div style="position:relative;min-width:200px;max-width:260px;flex:1">
-              <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink-muted);font-size:0.85rem">🔍</span>
-              <input type="text" id="repRelUsuarioBuscar" placeholder="Buscar usuario..."
-                style="width:100%;padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--ink);font-size:0.83rem;box-sizing:border-box"
-                oninput="repRelRender()">
-            </div>
-          </div>
-          <table class="ops-table" id="repRelUsuarioTable">
-            <thead style="position:sticky;top:0;z-index:2">
-              <tr>
-                <th>Usuario</th>
-                <th style="text-align:center">Clientes</th>
-              </tr>
-            </thead>
-            <tbody id="repRelUsuarioTbody"></tbody>
-          </table>
-          <div id="repRelUsuarioEmpty" class="ops-empty" style="display:none">Sin datos con los filtros actuales.</div>
-        </div>
-      </div>
-    </div>
-    <!-- (Detalle completo removido: usar sección Operaciones) -->
-
-  -->
   </div>
 </div><!-- /panel-reporteria -->
 
@@ -4493,7 +4433,6 @@ const INFO_CONTENT = {
   rep_periodo_torta: { title: 'Cumplimiento por Período', body: 'Cumplimiento para los períodos seleccionados en filtros (si hay más de uno, consolida).' },
   rep_usuario_detalle: { title: 'Cumplimiento por Usuario — Detalle', body: 'Barras por usuario con conteos absolutos por estado.' },
   rep_rendimiento: { title: 'Rendimiento por Operador', body: 'Tabla resumen por operador: totales y distribución por estado.' },
-  rep_relaciones: { title: 'Relaciones Cliente ↔ Usuario', body: 'Permite ver usuarios asociados a un cliente, o clientes asociados a un usuario, según los registros filtrados.' },
 };
 
 function openInfo(key) {
@@ -5909,7 +5848,6 @@ function repRender() {
   repRenderPeriodoTorta(data);
   repRenderUsuarioDetalle(data);
   repRenderRendimiento(data);
-  repRenderRelaciones(data);
 }
 
 function repDestroyChart(id) {
@@ -6392,111 +6330,8 @@ function repDetalleClear() {
   repDetalleFilter();
 }
 
-// ── RELACIONES Cliente ↔ Usuario ──
-let repRelData = [];
-
-function repRenderRelaciones(data) {
-  repRelData = data;
-  repRelRender();
-}
-
 function escapeHtml(s) {
   return (s || '').toString().replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]));
-}
-
-function repRenderAvatar(u, coloresUsuario) {
-  const color = coloresUsuario[u] || '#94a3b8';
-  const ini = u.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-  return `<span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:${color};color:#fff;font-size:0.65rem;font-weight:700;margin-right:-4px;border:2px solid var(--surface-1)" title="${escapeHtml(u)}">${ini}</span>`;
-}
-
-function repRelRender() {
-  const clienteBuscar = (document.getElementById('repRelClienteBuscar')?.value || '').toLowerCase();
-  const usuarioBuscar = (document.getElementById('repRelUsuarioBuscar')?.value || '').toLowerCase();
-
-  const tbodyCliente = document.getElementById('repRelClienteTbody');
-  const emptyCliente = document.getElementById('repRelClienteEmpty');
-  const tbodyUsuario = document.getElementById('repRelUsuarioTbody');
-  const emptyUsuario = document.getElementById('repRelUsuarioEmpty');
-  if (!tbodyCliente || !tbodyUsuario) return;
-
-  const coloresUsuario = {
-    'Facundo Giacoppo': '#4F7CFF',
-    'Ramiro Joya': '#FF6B35',
-    'Rosa Herrera': '#10B981',
-    'Marcos Hinojosa': '#F59E0B',
-    'Jose Garzon': '#8B5CF6'
-  };
-
-  const clienteMap = {}; // cliente -> { usuarios:Set, total:number }
-  const usuarioMap = {}; // usuario -> { clientes:Set, total:number }
-
-  repRelData.forEach(r => {
-    const cl = r.cliente;
-    const u = r.usuario;
-    if (!cl || !u) return;
-    if (!clienteMap[cl]) clienteMap[cl] = { usuarios: new Set(), total: 0 };
-    if (!usuarioMap[u]) usuarioMap[u] = { clientes: new Set(), total: 0 };
-    clienteMap[cl].usuarios.add(u);
-    clienteMap[cl].total++;
-    usuarioMap[u].clientes.add(cl);
-    usuarioMap[u].total++;
-  });
-
-  let clientes = Object.entries(clienteMap).map(([cl, v]) => ({
-    cl,
-    usuarios: [...v.usuarios].sort((a, b) => a.localeCompare(b, 'es')),
-    total: v.total
-  })).sort((a, b) => b.total - a.total);
-
-  let usuarios = Object.entries(usuarioMap).map(([u, v]) => ({
-    u,
-    clientes: [...v.clientes].sort((a, b) => a.localeCompare(b, 'es')),
-    total: v.total
-  })).sort((a, b) => b.total - a.total);
-
-  if (clienteBuscar) clientes = clientes.filter(c => c.cl.toLowerCase().includes(clienteBuscar));
-  if (usuarioBuscar) usuarios = usuarios.filter(x => x.u.toLowerCase().includes(usuarioBuscar));
-
-  // Render: clientes -> usuarios
-  if (!clientes.length) {
-    tbodyCliente.innerHTML = '';
-    emptyCliente.style.display = 'block';
-  } else {
-    emptyCliente.style.display = 'none';
-    tbodyCliente.innerHTML = clientes.map(c => {
-      const av = c.usuarios.slice(0, 4).map(u => repRenderAvatar(u, coloresUsuario)).join('');
-      const extra = c.usuarios.length > 4 ? `<span style="font-size:0.75rem;color:var(--ink-muted);margin-left:8px">+${c.usuarios.length - 4}</span>` : '';
-      return `
-        <tr>
-          <td style="font-weight:600">${escapeHtml(c.cl)}</td>
-          <td style="text-align:center">
-            <div style="display:flex;align-items:center;justify-content:center">${av}${extra}<span style="margin-left:10px;color:var(--ink-muted);font-size:0.8rem">(${c.usuarios.length})</span></div>
-          </td>
-        </tr>
-      `;
-    }).join('');
-  }
-
-  // Render: usuarios -> clientes
-  if (!usuarios.length) {
-    tbodyUsuario.innerHTML = '';
-    emptyUsuario.style.display = 'block';
-  } else {
-    emptyUsuario.style.display = 'none';
-    tbodyUsuario.innerHTML = usuarios.map(x => {
-      const list = x.clientes.slice(0, 6).map(cl => escapeHtml(cl)).join('<br>');
-      const extra = x.clientes.length > 6 ? `<div style="margin-top:4px;color:var(--ink-muted)">+${x.clientes.length - 6} más</div>` : '';
-      return `
-        <tr>
-          <td style="font-weight:600">${escapeHtml(x.u)}</td>
-          <td style="text-align:left;color:var(--ink-muted);font-size:0.85rem;white-space:normal;word-break:break-word;line-height:1.25">
-            ${list}${extra}
-          </td>
-        </tr>
-      `;
-    }).join('');
-  }
 }
 
 // ── LOGIN ENTER KEY ──
@@ -6543,7 +6378,6 @@ window.switchSection = switchSection;
 window.repRender = repRender;
 window.repClearFilters = repClearFilters;
 window.repMsApply = repMsApply;
-window.repRelRender = repRelRender;
 window.repDetalleFilter = repDetalleFilter;
 window.repDetalleSort = repDetalleSort;
 window.repDetGoPage = repDetGoPage;
