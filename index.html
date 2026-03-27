@@ -2236,6 +2236,8 @@ const IMPORT_LAST_LOCAL_KEY = 'imports_last_status_v1';
 /** Imports a Firestore: 20s era corto y disparaba “nube lenta” con conexión normal. */
 const FIRESTORE_IMPORT_META_TIMEOUT_MS = 60000;
 const FIRESTORE_IMPORT_BATCH_TIMEOUT_MS = 180000;
+/** Firestore permite hasta 500 operaciones por batch; más lote = menos viajes de red. */
+const FIRESTORE_BATCH_MAX_OPS = 500;
 
 // Usuarios del sistema con roles
 const USUARIOS = {
@@ -3840,6 +3842,20 @@ async function clientsImportFile(event) {
     const pct = Math.max(1, Math.min(99, Math.round((processed / totalRows) * 100)));
     showToast(`Importando clientes... (guardando ${pct}%)`, 0, true);
   };
+  let clientBatch = writeBatch(db);
+  let clientBatchOps = 0;
+  const flushClientBatch = async () => {
+    if (clientBatchOps === 0) return;
+    await clientBatch.commit();
+    clientBatch = writeBatch(db);
+    clientBatchOps = 0;
+  };
+  const queueCliente = async (docId, payload) => {
+    clientBatch.set(doc(db, 'clientes', docId), payload, { merge: true });
+    clientBatchOps++;
+    imported++;
+    if (clientBatchOps >= FIRESTORE_BATCH_MAX_OPS) await flushClientBatch();
+  };
   if (headerRow >= 0) {
     const headers = (raw[headerRow] || []);
     const idx = (keys) => headers.findIndex(h => headerMatches(h, keys));
@@ -3885,8 +3901,7 @@ async function clientsImportFile(event) {
         updated_by: currentUserData ? currentUserData.nombre : '',
       };
       const docId = nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 80) || `cliente-${Date.now()}-${i}`;
-      await setDoc(doc(db, "clientes", docId), payload, { merge: true });
-      imported++;
+      await queueCliente(docId, payload);
       if (imported % 50 === 0) bumpProgress();
     }
   } else {
@@ -3919,11 +3934,12 @@ async function clientsImportFile(event) {
         updated_by: currentUserData ? currentUserData.nombre : '',
       };
       const docId = nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 80) || `cliente-${Date.now()}-${i}`;
-      await setDoc(doc(db, "clientes", docId), payload, { merge: true });
-      imported++;
+      await queueCliente(docId, payload);
       if (imported % 50 === 0) bumpProgress();
     }
   }
+
+  await flushClientBatch();
 
   if (imported === 0) {
     showToast('No se pudieron detectar clientes en el archivo');
@@ -4042,7 +4058,7 @@ async function opsImportFile(event) {
         updated_by: currentUserData ? currentUserData.nombre : ''
       }, { merge: true }), FIRESTORE_IMPORT_META_TIMEOUT_MS, 'setDoc meta');
 
-      const CHUNK = 250;
+      const CHUNK = FIRESTORE_BATCH_MAX_OPS;
       let batch = writeBatch(db);
       let inBatch = 0;
       let cloudAborted = false;
@@ -4070,8 +4086,6 @@ async function opsImportFile(event) {
           showToast(`Importando... (guardando ${pct}%)`, 0, true);
           batch = writeBatch(db);
           inBatch = 0;
-          // Dejar respirar el UI en imports grandes
-          await new Promise(r => setTimeout(r, 0));
         }
       }
       if (!cloudAborted && inBatch > 0) {
@@ -4290,7 +4304,7 @@ async function tiemposImportFile(event) {
         updated_by: currentUserData ? currentUserData.nombre : ''
       }, { merge: true }), FIRESTORE_IMPORT_META_TIMEOUT_MS, 'setDoc tiempos meta');
 
-      const CHUNK = 250;
+      const CHUNK = FIRESTORE_BATCH_MAX_OPS;
       let batch = writeBatch(db);
       let inBatch = 0;
       let cloudAborted = false;
@@ -4318,7 +4332,6 @@ async function tiemposImportFile(event) {
           showToast(`Importando tiempos... (guardando ${pct}%)`, 0, true);
           batch = writeBatch(db);
           inBatch = 0;
-          await new Promise(r => setTimeout(r, 0));
         }
       }
       if (!cloudAborted && inBatch > 0) {
@@ -4364,11 +4377,7 @@ async function tiemposImportFile(event) {
       }, { merge: true });
     } catch (_) {}
     importLastRender();
-    try {
-      await startTiemposListener();
-    } catch (e) {
-      console.warn('startTiemposListener post-import:', e);
-    }
+    startTiemposListener().catch((e) => console.warn('startTiemposListener post-import:', e));
     showToast(`${imported.length} tiempos importados ✓ (${persisted ? 'guardado' : 'guardado local'})`, 3500);
   } catch (e) {
     console.error('Error importando tiempos:', e);
