@@ -1673,20 +1673,20 @@
     📁 Proy. Balances <span class="section-tag soon">Próximo</span>
   </button>
   <div class="section-nav-dropdown" id="navSocios" style="display:none;">
-    <button type="button" class="section-tab section-tab-dropdown" id="tab-socios-trigger" aria-haspopup="true" aria-expanded="false" onclick="event.stopPropagation(); toggleSectionDropdown('navSocios');">
+    <button type="button" class="section-tab section-tab-dropdown" id="tab-socios-trigger" aria-haspopup="true" aria-expanded="false">
       Socios <span class="section-tag soon">Socios</span>
     </button>
     <div class="section-dropdown-menu" role="menu" aria-label="Sección Socios">
-      <button type="button" class="section-dropdown-item" onclick="switchSectionFromDropdown('tiempos', 'navSocios')">⏱️ Reporte de Tiempos</button>
-      <button type="button" class="section-dropdown-item" onclick="switchSectionFromDropdown('carga-trabajo', 'navSocios')">📌 Carga de trabajo</button>
+      <button type="button" class="section-dropdown-item" data-rep-section="tiempos" data-rep-dd="navSocios">⏱️ Reporte de Tiempos</button>
+      <button type="button" class="section-dropdown-item" data-rep-section="carga-trabajo" data-rep-dd="navSocios">📌 Carga de trabajo</button>
     </div>
   </div>
   <div class="section-nav-dropdown" id="navAdmin" style="display:none;">
-    <button type="button" class="section-tab section-tab-dropdown" id="tab-admin-trigger" aria-haspopup="true" aria-expanded="false" onclick="event.stopPropagation(); toggleSectionDropdown('navAdmin');">
+    <button type="button" class="section-tab section-tab-dropdown" id="tab-admin-trigger" aria-haspopup="true" aria-expanded="false">
       Admin <span class="section-tag soon">Admin</span>
     </button>
     <div class="section-dropdown-menu" role="menu" aria-label="Sección Admin">
-      <button type="button" class="section-dropdown-item" onclick="switchSectionFromDropdown('importaciones', 'navAdmin')">⬆️ Importaciones</button>
+      <button type="button" class="section-dropdown-item" data-rep-section="importaciones" data-rep-dd="navAdmin">⬆️ Importaciones</button>
     </div>
   </div>
 </div>
@@ -2055,6 +2055,10 @@
       <button type="button" class="btn-clear-filters" onclick="repClearFilters()">✕ Limpiar filtros</button>
     </div>
 
+    <div class="rep-logic-banner" style="margin:0 0 14px;padding:12px 14px;border-radius:10px;background:rgba(74,111,165,0.08);border:1px solid rgba(74,111,165,0.2);font-size:0.82rem;line-height:1.45;color:var(--ink)">
+      <b>Criterio unificado:</b> gráficos de <b>resultado / cumplimiento</b> (donas, torta, eficiencia, detalle por usuario, tabla rendimiento) usan solo obligaciones <b>cerradas</b> (cumplido, tardío, vencido), sin pendientes. Gráficos de <b>volumen</b> (carga por usuario, volumen por período, top obligaciones) muestran <b>todo</b> el filtro, incluyendo pendientes.
+    </div>
+
     <!-- KPI Cards -->
     <div class="rep-kpi-grid" id="repKpis"></div>
 
@@ -2067,7 +2071,7 @@
       </div>
       <div class="rep-chart-card">
         <div class="rep-chart-title">Carga por Usuario <button class="info-btn" onclick="openInfo('rep_carga_usuario')">i</button></div>
-        <div class="rep-chart-sub">Total de tareas asignadas</div>
+        <div class="rep-chart-sub">Volumen total en el filtro (incluye pendientes)</div>
         <div style="position:relative;height:220px"><canvas id="chartCargaUsuario"></canvas></div>
       </div>
       <div class="rep-chart-card">
@@ -2081,12 +2085,12 @@
     <div class="rep-charts-row">
       <div class="rep-chart-card rep-chart-wide">
         <div class="rep-chart-title">Volumen por Período <button class="info-btn" onclick="openInfo('rep_periodo')">i</button></div>
-        <div class="rep-chart-sub">Cantidad de obligaciones por mes</div>
+        <div class="rep-chart-sub">Todos los estados · cantidad por mes</div>
         <div style="position:relative;height:200px"><canvas id="chartPeriodo"></canvas></div>
       </div>
       <div class="rep-chart-card">
         <div class="rep-chart-title">Top 10 Obligaciones <button class="info-btn" onclick="openInfo('rep_obligaciones')">i</button></div>
-        <div class="rep-chart-sub">Las más frecuentes</div>
+        <div class="rep-chart-sub">Todos los estados en el filtro</div>
         <div style="position:relative;height:280px"><canvas id="chartObligaciones"></canvas></div>
       </div>
     </div>
@@ -2100,7 +2104,7 @@
       </div>
       <div class="rep-chart-card">
         <div class="rep-chart-title">Cumplimiento por Usuario — Detalle <button class="info-btn" onclick="openInfo('rep_usuario_detalle')">i</button></div>
-        <div class="rep-chart-sub">Cantidad absoluta por estado y colaborador</div>
+        <div class="rep-chart-sub">Solo obligaciones cerradas (sin pendientes), conteos por persona</div>
         <div style="position:relative;height:240px"><canvas id="chartUsuarioDetalle"></canvas></div>
       </div>
     </div>
@@ -2514,6 +2518,7 @@ function showApp() {
   if (navSocios) navSocios.style.display = isSocioRole(u.rol) ? '' : 'none';
   const navAdmin = document.getElementById('navAdmin');
   if (navAdmin) navAdmin.style.display = isAdminRole(u.rol) ? '' : 'none';
+  bindSectionNavDropdowns();
   importLastRender();
   importLastSyncFromCloud();
   // Activar sección operaciones por defecto
@@ -4535,7 +4540,32 @@ function positionSectionDropdownMenu(dd) {
   menu.style.position = 'fixed';
   menu.style.left = `${left}px`;
   menu.style.top = `${r.bottom + 4}px`;
-  menu.style.zIndex = '500';
+  menu.style.zIndex = '99999';
+}
+
+function bindSectionNavDropdowns() {
+  document.querySelectorAll('.section-nav-dropdown .section-tab-dropdown').forEach((btn) => {
+    if (btn.dataset.navDdBound) return;
+    btn.dataset.navDdBound = '1';
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      const dd = btn.closest('.section-nav-dropdown');
+      if (dd && dd.id) toggleSectionDropdown(dd.id);
+    }, true);
+  });
+  document.querySelectorAll('.section-dropdown-item[data-rep-section]').forEach((item) => {
+    if (item.dataset.navDdItemBound) return;
+    item.dataset.navDdItemBound = '1';
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const sec = item.getAttribute('data-rep-section');
+      const ddid = item.getAttribute('data-rep-dd');
+      if (sec && ddid) switchSectionFromDropdown(sec, ddid);
+    });
+  });
 }
 
 function clearSectionNavActive() {
@@ -4648,13 +4678,13 @@ const INFO_CONTENT = {
       </div>
     `
   },
-  rep_cumplimiento: { title: 'Cumplimiento General', body: 'Distribución de estados (Cumplido, Cumplido tardío, Pendiente, Vencido) para el conjunto filtrado.' },
-  rep_carga_usuario: { title: 'Carga por Usuario', body: 'Cantidad de registros asignados a cada usuario dentro del filtro actual.' },
+  rep_cumplimiento: { title: 'Cumplimiento General', body: 'Distribución entre <b>obligaciones ya cerradas</b> (cumplido, tardío, vencido). <b>Pendiente</b> no entra: para ver backlog usá KPIs o el gráfico Carga por usuario.' },
+  rep_carga_usuario: { title: 'Carga por Usuario', body: 'Cantidad total de registros por usuario en el filtro, <b>incluye pendientes</b> (volumen de carga / backlog).' },
   rep_eficiencia: { title: 'Eficiencia por Usuario', body: 'Barras apiladas al 100%: solo obligaciones <b>cerradas</b> (Cumplido + Cumplido tardío + Vencido). <b>Pendiente</b> no entra: si no, el % de cumplimiento se diluye con trabajo futuro/abierto. Colores en la leyenda: verde claro = cumplido a tiempo, verde oscuro = tardío, rojo = vencido.' },
-  rep_periodo: { title: 'Volumen por Período', body: 'Cantidad de registros por período. Útil para ver estacionalidad/carga mensual.' },
-  rep_obligaciones: { title: 'Top 10 Obligaciones', body: 'Las obligaciones/tareas más repetidas en el set filtrado.' },
-  rep_periodo_torta: { title: 'Cumplimiento por Período', body: 'Cumplimiento para los períodos seleccionados en filtros (si hay más de uno, consolida).' },
-  rep_usuario_detalle: { title: 'Cumplimiento por Usuario — Detalle', body: 'Barras por usuario con conteos absolutos por estado.' },
+  rep_periodo: { title: 'Volumen por Período', body: 'Cantidad de registros por mes (todos los estados del filtro). Sirve para ver estacionalidad y carga mensual.' },
+  rep_obligaciones: { title: 'Top 10 Obligaciones', body: 'Obligaciones más frecuentes en el filtro (todos los estados).' },
+  rep_periodo_torta: { title: 'Cumplimiento por Período', body: 'Misma base que la dona general: solo estados <b>cerrados</b> (sin pendientes), para el subconjunto del filtro de período.' },
+  rep_usuario_detalle: { title: 'Cumplimiento por Usuario — Detalle', body: 'Conteos por persona solo entre <b>cerrados</b> (sin pendientes), alineado a Eficiencia. Para pendientes por persona usá <b>Carga por usuario</b>.' },
   rep_rendimiento: { title: 'Rendimiento por Operador', body: '<b>Colores en %</b> (semáforo):<ul style="margin:8px 0 0 16px;line-height:1.5"><li><b>Cumplidos</b>: verde si el % sobre cerrados es alto (≥85% amarillo ≥60%); rojo si es bajo.</li><li><b>Tardíos / Vencidos</b>: verde si el % es bajo; rojo si es alto (muchos tardíos o vencidos entre lo ya cerrado).</li><li><b>Pendientes</b>: verde si pocos pendientes respecto del <b>total</b>; rojo si el backlog es grande.</li></ul><b>% Cumpl./Tard./Venc.</b> usan como base solo cerrados (sin Pendiente). <b>% Pend.</b> usa el total.' },
 };
 
@@ -6167,6 +6197,14 @@ function repGetFiltered() {
   });
 }
 
+/** Base única para gráficos de “resultado”: solo filas ya cerradas (sin Pendiente). */
+function repDataSoloCerrados(rows) {
+  if (!Array.isArray(rows)) return [];
+  return rows.filter(r =>
+    r.estado === 'Cumplido' || r.estado === 'Cumplido Tardio' || r.estado === 'Vencido'
+  );
+}
+
 function repClearFilters() {
   REP_MS_KEYS.forEach(k => {
     if (MS_DATA[k]) { MS_DATA[k].selected.clear(); msUpdateBtn(k); msRenderList(k,''); }
@@ -6221,28 +6259,31 @@ function repRenderKpis(data) {
   `).join('');
 }
 
-// Dona cumplimiento
+// Dona cumplimiento (solo cerrados: misma base que eficiencia / torta / detalle)
 function repRenderCumplimiento(data) {
   repDestroyChart('cumplimiento');
+  const cerr = repDataSoloCerrados(data);
   const counts = {
-    'Cumplido': data.filter(r=>r.estado==='Cumplido').length,
-    'Cumplido Tardío': data.filter(r=>r.estado==='Cumplido Tardio').length,
-    'Pendiente': data.filter(r=>r.estado==='Pendiente').length,
-    'Vencido': data.filter(r=>r.estado==='Vencido').length,
+    'Cumplido': cerr.filter(r => r.estado === 'Cumplido').length,
+    'Cumplido Tardío': cerr.filter(r => r.estado === 'Cumplido Tardio').length,
+    'Vencido': cerr.filter(r => r.estado === 'Vencido').length,
   };
-  document.getElementById('repCumplSubtitle').textContent = `${data.length} registros`;
+  const n = cerr.length;
+  document.getElementById('repCumplSubtitle').textContent = n
+    ? `${n} cerradas (sin pendientes) · ${data.length} registros en el filtro`
+    : `Sin obligaciones cerradas en el filtro · ${data.length} registros totales`;
   const ctx = document.getElementById('chartCumplimiento').getContext('2d');
   repCharts['cumplimiento'] = new Chart(ctx, {
     type: 'doughnut',
     data: {
       labels: Object.keys(counts),
-      datasets: [{ data: Object.values(counts), backgroundColor: ['#4a9b5f','#2d7a4f','#f5c518','#e53935'], borderWidth: 2, borderColor: '#fff' }]
+      datasets: [{ data: Object.values(counts), backgroundColor: ['#4a9b5f', '#2d7a4f', '#e53935'], borderWidth: 2, borderColor: '#fff' }]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: {
         legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 11 }, padding: 12 } },
-        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} (${data.length ? Math.round(ctx.raw/data.length*100) : 0}%)` } }
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} (${n ? Math.round(ctx.raw / n * 100) : 0}%)` } }
       },
       cutout: '60%'
     }
@@ -6404,42 +6445,43 @@ function repRenderObligaciones(data) {
   });
 }
 
-// Torta por período seleccionado
+// Torta por período seleccionado (solo cerrados, coherente con dona general)
 function repRenderPeriodoTorta(data) {
   repDestroyChart('periodoTorta');
   const selPeriodos = MS_DATA['rep-periodo'] ? [...MS_DATA['rep-periodo'].selected] : [];
   const label = selPeriodos.length > 0 ? selPeriodos.join(', ') : 'Todos los períodos';
-  document.getElementById('repPeriodoTortaSub').textContent = label;
+  const cerr = repDataSoloCerrados(data);
   const counts = {
-    'Cumplido':       data.filter(r => r.estado === 'Cumplido').length,
-    'Cumplido Tardío': data.filter(r => r.estado === 'Cumplido Tardio').length,
-    'Pendiente':      data.filter(r => r.estado === 'Pendiente').length,
-    'Vencido':        data.filter(r => r.estado === 'Vencido').length,
+    'Cumplido': cerr.filter(r => r.estado === 'Cumplido').length,
+    'Cumplido Tardío': cerr.filter(r => r.estado === 'Cumplido Tardio').length,
+    'Vencido': cerr.filter(r => r.estado === 'Vencido').length,
   };
-  const total = Object.values(counts).reduce((a,b)=>a+b,0);
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+  document.getElementById('repPeriodoTortaSub').textContent = `${label} · ${total} cerradas (sin pendientes)`;
   const ctx = document.getElementById('chartPeriodoTorta').getContext('2d');
   repCharts['periodoTorta'] = new Chart(ctx, {
     type: 'pie',
     data: {
       labels: Object.keys(counts),
-      datasets: [{ data: Object.values(counts), backgroundColor: ['#4a9b5f','#2d7a4f','#f5c518','#e53935'], borderWidth: 2, borderColor: '#fff' }]
+      datasets: [{ data: Object.values(counts), backgroundColor: ['#4a9b5f', '#2d7a4f', '#e53935'], borderWidth: 2, borderColor: '#fff' }]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: {
         legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 11 }, padding: 10 } },
-        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} (${total ? Math.round(ctx.raw/total*100) : 0}%)` } }
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} (${total ? Math.round(ctx.raw / total * 100) : 0}%)` } }
       }
     }
   });
 }
 
-// Detalle por usuario (absolutos)
+// Detalle por usuario (solo cerrados: mismo volumen que eficiencia; pendientes → gráfico Carga)
 function repRenderUsuarioDetalle(data) {
   repDestroyChart('usuarioDetalle');
+  const cerr = repDataSoloCerrados(data);
   const users = ['Facundo Giacoppo','Ramiro Joya','Rosa Herrera','Marcos Hinojosa','Jose Garzon'];
   const shortNames = users.map(u => u.split(' ')[0]);
-  const mkData = estado => users.map(u => data.filter(r => r.usuario===u && r.estado===estado).length);
+  const mkData = estado => users.map(u => cerr.filter(r => r.usuario === u && r.estado === estado).length);
   const ctx = document.getElementById('chartUsuarioDetalle').getContext('2d');
   repCharts['usuarioDetalle'] = new Chart(ctx, {
     type: 'bar',
@@ -6448,7 +6490,6 @@ function repRenderUsuarioDetalle(data) {
       datasets: [
         { label: 'Cumplido',  data: mkData('Cumplido'),       backgroundColor: '#4a9b5f', borderRadius: 3 },
         { label: 'Tardío',    data: mkData('Cumplido Tardio'), backgroundColor: '#2d7a4f', borderRadius: 3 },
-        { label: 'Pendiente', data: mkData('Pendiente'),       backgroundColor: '#f5c518', borderRadius: 3 },
         { label: 'Vencido',   data: mkData('Vencido'),         backgroundColor: '#e53935', borderRadius: 3 },
       ]
     },
@@ -6695,14 +6736,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
   });
   document.addEventListener('click', (e) => {
-    if (e.target.closest('.section-nav-dropdown')) return;
-    document.querySelectorAll('.section-nav-dropdown.open').forEach(d => {
-      d.classList.remove('open');
-      const tr = d.querySelector('.section-tab-dropdown');
-      if (tr) tr.setAttribute('aria-expanded', 'false');
-    });
-    resetSectionDropdownMenuStyles();
+    setTimeout(() => {
+      const t = e.target;
+      if (t && t.closest && t.closest('.section-nav-dropdown')) return;
+      document.querySelectorAll('.section-nav-dropdown.open').forEach(d => {
+        d.classList.remove('open');
+        const tr = d.querySelector('.section-tab-dropdown');
+        if (tr) tr.setAttribute('aria-expanded', 'false');
+      });
+      resetSectionDropdownMenuStyles();
+    }, 0);
   });
+  bindSectionNavDropdowns();
   window.addEventListener('resize', () => {
     document.querySelectorAll('.section-nav-dropdown.open').forEach(d => {
       d.classList.remove('open');
@@ -6760,6 +6805,7 @@ window.msToggleItem = msToggleItem;
 window.switchSection = switchSection;
 window.toggleSectionDropdown = toggleSectionDropdown;
 window.switchSectionFromDropdown = switchSectionFromDropdown;
+window.bindSectionNavDropdowns = bindSectionNavDropdowns;
 window.repRender = repRender;
 window.repClearFilters = repClearFilters;
 window.repMsApply = repMsApply;
