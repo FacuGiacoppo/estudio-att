@@ -719,6 +719,10 @@
     align-items: center;
     flex-shrink: 0;
   }
+  details.section-nav-dropdown {
+    flex-direction: column;
+    align-items: flex-start;
+  }
   .section-nav-dropdown .section-tab-dropdown {
     padding-right: 18px;
   }
@@ -739,8 +743,18 @@
     z-index: 500;
     padding: 6px 0;
   }
-  .section-nav-dropdown.open .section-dropdown-menu { display: block; }
-  .section-nav-dropdown.has-active > .section-tab-dropdown {
+  details.section-nav-dropdown > summary.section-tab-dropdown {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  details.section-nav-dropdown > summary.section-tab-dropdown::-webkit-details-marker {
+    display: none;
+  }
+  details.section-nav-dropdown[open] .section-dropdown-menu { display: block; }
+  details.section-nav-dropdown.has-active > summary.section-tab-dropdown {
     color: var(--accent);
     border-bottom-color: var(--accent);
     font-weight: 600;
@@ -1672,23 +1686,23 @@
   <button class="section-tab" id="tab-balances" style="opacity:0.5;cursor:default">
     📁 Proy. Balances <span class="section-tag soon">Próximo</span>
   </button>
-  <div class="section-nav-dropdown" id="navSocios" style="display:none;">
-    <button type="button" class="section-tab section-tab-dropdown" id="tab-socios-trigger" aria-haspopup="true" aria-expanded="false">
+  <details class="section-nav-dropdown" id="navSocios" style="display:none;">
+    <summary class="section-tab section-tab-dropdown" id="tab-socios-trigger" aria-haspopup="true" aria-expanded="false">
       Socios <span class="section-tag soon">Socios</span>
-    </button>
+    </summary>
     <div class="section-dropdown-menu" role="menu" aria-label="Sección Socios">
       <button type="button" class="section-dropdown-item" data-rep-section="tiempos" data-rep-dd="navSocios">⏱️ Reporte de Tiempos</button>
       <button type="button" class="section-dropdown-item" data-rep-section="carga-trabajo" data-rep-dd="navSocios">📌 Carga de trabajo</button>
     </div>
-  </div>
-  <div class="section-nav-dropdown" id="navAdmin" style="display:none;">
-    <button type="button" class="section-tab section-tab-dropdown" id="tab-admin-trigger" aria-haspopup="true" aria-expanded="false">
+  </details>
+  <details class="section-nav-dropdown" id="navAdmin" style="display:none;">
+    <summary class="section-tab section-tab-dropdown" id="tab-admin-trigger" aria-haspopup="true" aria-expanded="false">
       Admin <span class="section-tag soon">Admin</span>
-    </button>
+    </summary>
     <div class="section-dropdown-menu" role="menu" aria-label="Sección Admin">
       <button type="button" class="section-dropdown-item" data-rep-section="importaciones" data-rep-dd="navAdmin">⬆️ Importaciones</button>
     </div>
-  </div>
+  </details>
 </div>
 
 <!-- PANEL REQUERIMIENTOS -->
@@ -2518,7 +2532,7 @@ function showApp() {
   if (navSocios) navSocios.style.display = isSocioRole(u.rol) ? '' : 'none';
   const navAdmin = document.getElementById('navAdmin');
   if (navAdmin) navAdmin.style.display = isAdminRole(u.rol) ? '' : 'none';
-  bindSectionNavDropdowns();
+  initSectionNavDetails();
   importLastRender();
   importLastSyncFromCloud();
   // Activar sección operaciones por defecto
@@ -4543,17 +4557,24 @@ function positionSectionDropdownMenu(dd) {
   menu.style.zIndex = '99999';
 }
 
-function bindSectionNavDropdowns() {
-  document.querySelectorAll('.section-nav-dropdown .section-tab-dropdown').forEach((btn) => {
-    if (btn.dataset.navDdBound) return;
-    btn.dataset.navDdBound = '1';
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      const dd = btn.closest('.section-nav-dropdown');
-      if (dd && dd.id) toggleSectionDropdown(dd.id);
-    }, true);
+function initSectionNavDetails() {
+  document.querySelectorAll('details.section-nav-dropdown').forEach((det) => {
+    if (det.dataset.navDetailsInit) return;
+    det.dataset.navDetailsInit = '1';
+    const summary = det.querySelector('summary.section-tab-dropdown');
+    det.addEventListener('toggle', () => {
+      if (det.open) {
+        document.querySelectorAll('details.section-nav-dropdown').forEach((o) => {
+          if (o !== det && o.open) o.open = false;
+        });
+        positionSectionDropdownMenu(det);
+        requestAnimationFrame(() => positionSectionDropdownMenu(det));
+        if (summary) summary.setAttribute('aria-expanded', 'true');
+      } else {
+        resetSectionDropdownMenuStyles();
+        if (summary) summary.setAttribute('aria-expanded', 'false');
+      }
+    });
   });
   document.querySelectorAll('.section-dropdown-item[data-rep-section]').forEach((item) => {
     if (item.dataset.navDdItemBound) return;
@@ -4571,6 +4592,7 @@ function bindSectionNavDropdowns() {
 function clearSectionNavActive() {
   document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.section-nav-dropdown').forEach(d => {
+    if (d.tagName === 'DETAILS') d.open = false;
     d.classList.remove('open', 'has-active');
     const tr = d.querySelector('.section-tab-dropdown');
     if (tr) tr.setAttribute('aria-expanded', 'false');
@@ -4580,29 +4602,13 @@ function clearSectionNavActive() {
 
 function toggleSectionDropdown(dropdownId) {
   const dd = document.getElementById(dropdownId);
-  if (!dd) return;
-  const willOpen = !dd.classList.contains('open');
-  document.querySelectorAll('.section-nav-dropdown').forEach(d => {
-    d.classList.remove('open');
-    const tr = d.querySelector('.section-tab-dropdown');
-    if (tr) tr.setAttribute('aria-expanded', 'false');
-  });
-  resetSectionDropdownMenuStyles();
-  if (willOpen) {
-    dd.classList.add('open');
-    const tr = dd.querySelector('.section-tab-dropdown');
-    if (tr) tr.setAttribute('aria-expanded', 'true');
-    requestAnimationFrame(() => positionSectionDropdownMenu(dd));
-  }
+  if (!dd || dd.tagName !== 'DETAILS') return;
+  dd.open = !dd.open;
 }
 
 function switchSectionFromDropdown(section, dropdownId) {
   const dd = document.getElementById(dropdownId);
-  if (dd) {
-    dd.classList.remove('open');
-    const tr = dd.querySelector('.section-tab-dropdown');
-    if (tr) tr.setAttribute('aria-expanded', 'false');
-  }
+  if (dd && dd.tagName === 'DETAILS') dd.open = false;
   resetSectionDropdownMenuStyles();
   switchSection(section, null);
 }
@@ -6739,31 +6745,21 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       const t = e.target;
       if (t && t.closest && t.closest('.section-nav-dropdown')) return;
-      document.querySelectorAll('.section-nav-dropdown.open').forEach(d => {
-        d.classList.remove('open');
-        const tr = d.querySelector('.section-tab-dropdown');
-        if (tr) tr.setAttribute('aria-expanded', 'false');
+      document.querySelectorAll('details.section-nav-dropdown').forEach((d) => {
+        d.open = false;
       });
       resetSectionDropdownMenuStyles();
     }, 0);
   });
-  bindSectionNavDropdowns();
+  initSectionNavDetails();
   window.addEventListener('resize', () => {
-    document.querySelectorAll('.section-nav-dropdown.open').forEach(d => {
-      d.classList.remove('open');
-      const tr = d.querySelector('.section-tab-dropdown');
-      if (tr) tr.setAttribute('aria-expanded', 'false');
-    });
+    document.querySelectorAll('details.section-nav-dropdown').forEach((d) => { d.open = false; });
     resetSectionDropdownMenuStyles();
   });
   const sn = document.getElementById('sectionNav');
   if (sn) {
     sn.addEventListener('scroll', () => {
-      document.querySelectorAll('.section-nav-dropdown.open').forEach(d => {
-        d.classList.remove('open');
-        const tr = d.querySelector('.section-tab-dropdown');
-        if (tr) tr.setAttribute('aria-expanded', 'false');
-      });
+      document.querySelectorAll('details.section-nav-dropdown').forEach((d) => { d.open = false; });
       resetSectionDropdownMenuStyles();
     }, { passive: true });
   }
@@ -6805,7 +6801,7 @@ window.msToggleItem = msToggleItem;
 window.switchSection = switchSection;
 window.toggleSectionDropdown = toggleSectionDropdown;
 window.switchSectionFromDropdown = switchSectionFromDropdown;
-window.bindSectionNavDropdowns = bindSectionNavDropdowns;
+window.initSectionNavDetails = initSectionNavDetails;
 window.repRender = repRender;
 window.repClearFilters = repClearFilters;
 window.repMsApply = repMsApply;
