@@ -1192,25 +1192,35 @@
     display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
   }
 
-  /* Botón “Limpiar filtros” en barra clara: .btn-secondary es para header oscuro y se veía “transparente” */
-  .rep-toolbar .btn-rep-clear {
+  /* Limpiar filtros: botón sólido y legible en barras claras (evita herencia tipo “fantasma”) */
+  .ops-toolbar .btn-clear-filters,
+  .rep-toolbar .btn-clear-filters {
+    -webkit-appearance: none;
+    appearance: none;
     margin-left: auto;
+    flex-shrink: 0;
     font-size: 0.8rem;
-    padding: 8px 16px;
-    font-weight: 600;
+    padding: 9px 18px;
+    font-weight: 700;
     font-family: 'DM Sans', sans-serif;
     cursor: pointer;
     border-radius: var(--radius);
-    color: var(--ink);
-    background: #fff;
-    border: 1px solid rgba(26, 26, 46, 0.2);
-    box-shadow: 0 1px 2px rgba(26, 26, 46, 0.06);
-    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+    letter-spacing: 0.02em;
+    color: var(--ink) !important;
+    background: #ffffff !important;
+    border: 2px solid var(--ink) !important;
+    box-shadow: 0 2px 0 rgba(26, 26, 46, 0.12), 0 1px 3px rgba(26, 26, 46, 0.08);
+    transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
   }
-  .rep-toolbar .btn-rep-clear:hover {
-    background: var(--surface-2);
-    border-color: rgba(26, 26, 46, 0.3);
-    box-shadow: 0 2px 4px rgba(26, 26, 46, 0.08);
+  .ops-toolbar .btn-clear-filters:hover,
+  .rep-toolbar .btn-clear-filters:hover {
+    background: #f2f0eb !important;
+    box-shadow: 0 3px 0 rgba(26, 26, 46, 0.14), 0 2px 8px rgba(26, 26, 46, 0.1);
+  }
+  .ops-toolbar .btn-clear-filters:active,
+  .rep-toolbar .btn-clear-filters:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 rgba(26, 26, 46, 0.12);
   }
 
   .rep-kpi-grid {
@@ -1805,6 +1815,7 @@
         </div>
       </div>
 
+      <button type="button" class="btn-clear-filters" onclick="opsClearFilters()">✕ Limpiar filtros</button>
     </div>
 
     <div class="ops-stats" id="opsStats"></div>
@@ -1947,7 +1958,7 @@
           </div>
         </div>
       </div>
-      <button type="button" class="btn-rep-clear" onclick="repClearFilters()">✕ Limpiar filtros</button>
+      <button type="button" class="btn-clear-filters" onclick="repClearFilters()">✕ Limpiar filtros</button>
     </div>
 
     <!-- KPI Cards -->
@@ -3577,6 +3588,32 @@ function opsPopulateFilters() {
   // usuario y estado ya tienen items hardcodeados en MS_DATA
   msInit('usuario', MS_DATA.usuario.items);
   msInit('estado', MS_DATA.estado.items);
+}
+
+function opsClearFilters() {
+  const panel = document.getElementById('panel-operaciones');
+  const dateBtns = panel ? panel.querySelectorAll('.ops-date-btn') : document.querySelectorAll('.ops-date-btn');
+  if (dateBtns && dateBtns.length) {
+    opsCurrentFilter = 'todos';
+    dateBtns.forEach(b => b.classList.remove('active'));
+    dateBtns[0].classList.add('active');
+    opsUpdateDateDisplay();
+  }
+  ['usuario', 'estado', 'oblig', 'cliente'].forEach((k) => {
+    if (MS_DATA[k]) {
+      MS_DATA[k].selected.clear();
+      msUpdateBtn(k);
+      msRenderList(k, '');
+    }
+  });
+  if (panel) {
+    panel.querySelectorAll('.ms-dropdown.open').forEach((dd) => dd.classList.remove('open'));
+    panel.querySelectorAll('.ms-wrapper .ms-btn.active').forEach((b) => b.classList.remove('active'));
+  }
+  const search = document.getElementById('opsSearch');
+  if (search) search.value = '';
+  opsPage = 1;
+  opsRender();
 }
 
 function opsSetFilter(f, btn) {
@@ -6382,6 +6419,7 @@ window.navDate = navDate;
 window.exportData = exportData;
 window.renderBoard = renderBoard;
 window.moveStage = moveStage;
+window.opsClearFilters = opsClearFilters;
 window.opsSetFilter = opsSetFilter;
 window.opsNavDate = opsNavDate;
 window.opsSortBy = opsSortBy;
