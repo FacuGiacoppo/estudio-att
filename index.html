@@ -2239,6 +2239,14 @@ const FIRESTORE_IMPORT_BATCH_TIMEOUT_MS = 180000;
 /** Firestore permite hasta 500 operaciones por batch; más lote = menos viajes de red. */
 const FIRESTORE_BATCH_MAX_OPS = 500;
 
+function firestoreWithTimeout(promise, ms, label) {
+  let timer = null;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`Timeout ${label || ''}`.trim())), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => { if (timer) clearTimeout(timer); });
+}
+
 // Usuarios del sistema con roles
 const USUARIOS = {
   'facundogiacoppo@outlook.com':  { nombre: 'Facundo Giacoppo', rol: 'socio-admin' },
@@ -3787,6 +3795,7 @@ function normalizeKey(v) {
 async function clientsImportFile(event) {
   const file = event.target.files[0];
   if (!file) return;
+  if (unsubscribeClients) { try { unsubscribeClients(); } catch (_) {} unsubscribeClients = null; }
   showToast('Importando clientes... (leyendo)', 0, true);
   const { read, utils } = await import('https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs');
   const ab = await file.arrayBuffer();
@@ -3835,27 +3844,7 @@ async function clientsImportFile(event) {
     }
   }
 
-  let imported = 0;
-  let processed = 0;
-  const totalRows = Math.max(1, raw.length - (headerRow >= 0 ? (headerRow + 1) : 1));
-  const bumpProgress = () => {
-    const pct = Math.max(1, Math.min(99, Math.round((processed / totalRows) * 100)));
-    showToast(`Importando clientes... (guardando ${pct}%)`, 0, true);
-  };
-  let clientBatch = writeBatch(db);
-  let clientBatchOps = 0;
-  const flushClientBatch = async () => {
-    if (clientBatchOps === 0) return;
-    await clientBatch.commit();
-    clientBatch = writeBatch(db);
-    clientBatchOps = 0;
-  };
-  const queueCliente = async (docId, payload) => {
-    clientBatch.set(doc(db, 'clientes', docId), payload, { merge: true });
-    clientBatchOps++;
-    imported++;
-    if (clientBatchOps >= FIRESTORE_BATCH_MAX_OPS) await flushClientBatch();
-  };
+  const pending = [];
   if (headerRow >= 0) {
     const headers = (raw[headerRow] || []);
     const idx = (keys) => headers.findIndex(h => headerMatches(h, keys));
@@ -3877,7 +3866,6 @@ async function clientsImportFile(event) {
 
     for (let i = headerRow + 1; i < raw.length; i++) {
       const row = raw[i] || [];
-      processed++;
       const nombre = (iNombre >= 0 ? row[iNombre] : row[0])?.toString().trim() || '';
       if (!nombre) continue;
       const payload = {
@@ -3901,13 +3889,11 @@ async function clientsImportFile(event) {
         updated_by: currentUserData ? currentUserData.nombre : '',
       };
       const docId = nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 80) || `cliente-${Date.now()}-${i}`;
-      await queueCliente(docId, payload);
-      if (imported % 50 === 0) bumpProgress();
+      pending.push({ docId, payload });
     }
   } else {
     for (let i = 0; i < raw.length; i++) {
       const row = raw[i] || [];
-      processed++;
       const nombre = (row[0] || '').toString().trim();
       if (!nombre) continue;
       if (normalizeKey(nombre) === 'cliente') continue;
@@ -3934,36 +3920,58 @@ async function clientsImportFile(event) {
         updated_by: currentUserData ? currentUserData.nombre : '',
       };
       const docId = nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 80) || `cliente-${Date.now()}-${i}`;
-      await queueCliente(docId, payload);
-      if (imported % 50 === 0) bumpProgress();
+      pending.push({ docId, payload });
     }
   }
 
-  await flushClientBatch();
-
+  const imported = pending.length;
   if (imported === 0) {
     showToast('No se pudieron detectar clientes en el archivo');
     event.target.value = '';
     return;
   }
 
-  if (headerRow >= 0) {
-    const firstImported = clientsData.find(c => c.nombre);
-    if (!selectedClientId && firstImported) selectedClientId = firstImported.id;
-  }
+  if (headerRow >= 0 && !selectedClientId) selectedClientId = pending[0].docId;
 
   importLastSave('clientes', { at: Date.now(), file: file.name || '', count: imported });
-  try {
-    await setDoc(doc(db, "imports", "clientes"), {
-      last_uploaded_at: serverTimestamp(),
-      last_file_name: file.name || '',
-      last_count: imported,
-      updated_by: currentUserData ? currentUserData.nombre : ''
-    }, { merge: true });
-  } catch (_) {}
   importLastRender();
-  showToast(`${imported} clientes importados ✓`, 3500);
+  showToast(`${imported} clientes listos. Sincronizando con la nube en segundo plano…`, 4200);
   event.target.value = '';
+
+  void (async () => {
+    try {
+      showToast('Subiendo clientes a la nube…', 0, true);
+      let batch = writeBatch(db);
+      let n = 0;
+      let done = 0;
+      for (const { docId, payload } of pending) {
+        batch.set(doc(db, 'clientes', docId), payload, { merge: true });
+        n++;
+        done++;
+        if (n >= FIRESTORE_BATCH_MAX_OPS) {
+          await batch.commit();
+          batch = writeBatch(db);
+          n = 0;
+          const pct = Math.max(1, Math.min(99, Math.round((done / imported) * 100)));
+          showToast(`Subiendo clientes a la nube… ${pct}%`, 0, true);
+        }
+      }
+      if (n > 0) await batch.commit();
+      await setDoc(doc(db, 'imports', 'clientes'), {
+        last_uploaded_at: serverTimestamp(),
+        last_file_name: file.name || '',
+        last_count: imported,
+        updated_by: currentUserData ? currentUserData.nombre : ''
+      }, { merge: true });
+      importLastRender();
+      showToast('Nube: clientes sincronizados ✓', 2800);
+    } catch (e) {
+      console.error('clientsImportFile nube:', e);
+      showToast('No se pudo completar la subida de clientes a la nube.', 4000);
+    } finally {
+      try { startClientsListener(); } catch (_) {}
+    }
+  })();
 }
 
 async function opsImportFile(event) {
@@ -3975,14 +3983,6 @@ async function opsImportFile(event) {
   showToast('Importando archivo... (leyendo)', 0, true);
 
   try {
-    const withTimeout = (promise, ms, label) => {
-      let timer = null;
-      const timeout = new Promise((_, reject) => {
-        timer = setTimeout(() => reject(new Error(`Timeout ${label || ''}`.trim())), ms);
-      });
-      return Promise.race([promise, timeout]).finally(() => { if (timer) clearTimeout(timer); });
-    };
-
     const { read, utils } = await import('https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs');
     const ab = await file.arrayBuffer();
     const wb = read(ab);
@@ -4046,86 +4046,102 @@ async function opsImportFile(event) {
 
     if (imported.length === 0) { showToast('No se detectaron filas para importar'); return; }
     showToast(`Importando... (parseado ${imported.length} filas)`, 0, true);
-  
-    // Persistir en Firestore para que quede guardado al refrescar
+
     const importId = 'ops_' + Date.now().toString(36);
-    let persisted = false;
-    try {
-      showToast('Importando... (guardando en la nube)', 0, true);
-      await withTimeout(setDoc(opsImportMetaRef, {
-        current_import_id: importId,
-        updated_at: serverTimestamp(),
-        updated_by: currentUserData ? currentUserData.nombre : ''
-      }, { merge: true }), FIRESTORE_IMPORT_META_TIMEOUT_MS, 'setDoc meta');
+    if (unsubscribeOps) { try { unsubscribeOps(); } catch (_) {} unsubscribeOps = null; }
+    currentOpsImportId = null;
 
-      const CHUNK = FIRESTORE_BATCH_MAX_OPS;
-      let batch = writeBatch(db);
-      let inBatch = 0;
-      let cloudAborted = false;
-      for (let i = 0; i < imported.length; i++) {
-        const r = imported[i];
-        const ref = doc(db, "operaciones", `${importId}_${i}`);
-        batch.set(ref, {
-          ...r,
-          import_id: importId,
-          created_at: serverTimestamp(),
-          updated_at: serverTimestamp(),
-          updated_by: currentUserData ? currentUserData.nombre : ''
-        }, { merge: true });
-        inBatch++;
-        if (inBatch >= CHUNK) {
-          try {
-            await withTimeout(batch.commit(), FIRESTORE_IMPORT_BATCH_TIMEOUT_MS, 'batch.commit');
-          } catch (e) {
-            cloudAborted = true;
-            console.error('Commit Firestore demoró demasiado, corto nube:', e);
-            showToast('El guardado en línea tardó demasiado (se detuvo). Los datos quedaron en este navegador; probá de nuevo con mejor conexión.', 4500);
-            break;
-          }
-          const pct = Math.max(1, Math.min(99, Math.round(((i + 1) / imported.length) * 100)));
-          showToast(`Importando... (guardando ${pct}%)`, 0, true);
-          batch = writeBatch(db);
-          inBatch = 0;
-        }
-      }
-      if (!cloudAborted && inBatch > 0) {
-        try {
-          await withTimeout(batch.commit(), FIRESTORE_IMPORT_BATCH_TIMEOUT_MS, 'batch.commit final');
-          showToast('Importando... (guardando 99%)', 0, true);
-          persisted = true;
-        } catch (e) {
-          console.error('Commit final Firestore demoró demasiado:', e);
-        }
-      } else if (!cloudAborted) {
-        persisted = true;
-      }
-    } catch (e) {
-      console.error('No se pudo persistir operaciones en Firestore:', e);
-    }
-
+    // Uso inmediato en el navegador (lo que antes sentías como “segundos”)
     opsData = imported;
     opsPage = 1;
-    opsSaveLocal(imported, { import_id: importId, saved_at: Date.now(), source: persisted ? 'firestore+local' : 'local' });
-  
-    // Repoblar multiselect
+    opsSaveLocal(imported, { import_id: importId, saved_at: Date.now(), source: 'local' });
+
     const newObligs = [...new Set(imported.map(r=>r.obligacion))].sort();
     const newClientes = [...new Set(imported.map(r=>r.cliente))].sort();
     MS_DATA.oblig.items = newObligs; MS_DATA.oblig.selected.clear(); msUpdateBtn('oblig'); msRenderList('oblig','');
     MS_DATA.cliente.items = newClientes; MS_DATA.cliente.selected.clear(); msUpdateBtn('cliente'); msRenderList('cliente','');
-  
+
     opsRender();
     repInit();
     repRender();
     importLastSave('ops', { at: Date.now(), file: file.name || '', count: imported.length });
-    try {
-      await setDoc(opsImportMetaRef, {
-        last_uploaded_at: serverTimestamp(),
-        last_file_name: file.name || '',
-        last_count: imported.length
-      }, { merge: true });
-    } catch (_) {}
     importLastRender();
-    showToast(`${imported.length} registros importados ✓ (${persisted ? 'guardado' : 'guardado local'})`, 3500);
+    showToast(`${imported.length} operaciones listas. Sincronizando con la nube en segundo plano…`, 4200);
+
+    // Subida a Firestore sin bloquear la UI (puede tardar minutos en archivos grandes)
+    void (async () => {
+      let persisted = false;
+      try {
+        showToast('Subiendo operaciones a la nube…', 0, true);
+        await firestoreWithTimeout(setDoc(opsImportMetaRef, {
+          current_import_id: importId,
+          updated_at: serverTimestamp(),
+          updated_by: currentUserData ? currentUserData.nombre : ''
+        }, { merge: true }), FIRESTORE_IMPORT_META_TIMEOUT_MS, 'setDoc meta');
+
+        const CHUNK = FIRESTORE_BATCH_MAX_OPS;
+        let batch = writeBatch(db);
+        let inBatch = 0;
+        let cloudAborted = false;
+        for (let i = 0; i < imported.length; i++) {
+          const r = imported[i];
+          const ref = doc(db, "operaciones", `${importId}_${i}`);
+          batch.set(ref, {
+            ...r,
+            import_id: importId,
+            created_at: serverTimestamp(),
+            updated_at: serverTimestamp(),
+            updated_by: currentUserData ? currentUserData.nombre : ''
+          }, { merge: true });
+          inBatch++;
+          if (inBatch >= CHUNK) {
+            try {
+              await firestoreWithTimeout(batch.commit(), FIRESTORE_IMPORT_BATCH_TIMEOUT_MS, 'batch.commit');
+            } catch (e) {
+              cloudAborted = true;
+              console.error('Commit Firestore demoró demasiado, corto nube:', e);
+              showToast('La subida a la nube se detuvo; seguís con la copia en este navegador.', 4500);
+              break;
+            }
+            const pct = Math.max(1, Math.min(99, Math.round(((i + 1) / imported.length) * 100)));
+            showToast(`Subiendo operaciones a la nube… ${pct}%`, 0, true);
+            batch = writeBatch(db);
+            inBatch = 0;
+          }
+        }
+        if (!cloudAborted && inBatch > 0) {
+          try {
+            await firestoreWithTimeout(batch.commit(), FIRESTORE_IMPORT_BATCH_TIMEOUT_MS, 'batch.commit final');
+            persisted = true;
+          } catch (e) {
+            console.error('Commit final Firestore demoró demasiado:', e);
+          }
+        } else if (!cloudAborted) {
+          persisted = true;
+        }
+        if (persisted) {
+          try {
+            await setDoc(opsImportMetaRef, {
+              last_uploaded_at: serverTimestamp(),
+              last_file_name: file.name || '',
+              last_count: imported.length
+            }, { merge: true });
+          } catch (_) {}
+          try {
+            opsSaveLocal(opsData, { import_id: importId, saved_at: Date.now(), source: 'firestore+local' });
+          } catch (_) {}
+          importLastRender();
+          showToast('Nube: operaciones sincronizadas ✓', 2800);
+        }
+      } catch (e) {
+        console.error('No se pudo persistir operaciones en Firestore:', e);
+        showToast('No se pudo completar la subida a la nube; los datos siguen en este equipo.', 4000);
+      } finally {
+        if (persisted) {
+          try { startOpsListener(); } catch (err) { console.warn('startOpsListener:', err); }
+        }
+      }
+    })();
   } catch (e) {
     console.error('Error importando operaciones:', e);
     showToast('Error al importar (ver consola)');
@@ -4144,14 +4160,6 @@ async function tiemposImportFile(event) {
   showToast('Importando tiempos... (leyendo)', 0, true);
 
   try {
-    const withTimeout = (promise, ms, label) => {
-      let timer = null;
-      const timeout = new Promise((_, reject) => {
-        timer = setTimeout(() => reject(new Error(`Timeout ${label || ''}`.trim())), ms);
-      });
-      return Promise.race([promise, timeout]).finally(() => { if (timer) clearTimeout(timer); });
-    };
-
     const normText = (v) => (v ?? '').toString().trim().replace(/\s+/g,' ');
     const normKey = (v) => normText(v).toLowerCase();
     const normPeriodo = (p) => {
@@ -4292,93 +4300,97 @@ async function tiemposImportFile(event) {
 
     if (imported.length === 0) { showToast('No se detectaron filas de tiempos para importar', 3200); return; }
     showToast(`Importando tiempos... (parseado ${imported.length} filas)`, 0, true);
-    await new Promise((r) => setTimeout(r, 0));
 
     const importId = 'tiempos_' + Date.now().toString(36);
-    let persisted = false;
-    try {
-      showToast('Importando tiempos... (guardando en la nube)', 0, true);
-      await withTimeout(setDoc(tiemposImportMetaRef, {
-        current_import_id: importId,
-        updated_at: serverTimestamp(),
-        updated_by: currentUserData ? currentUserData.nombre : ''
-      }, { merge: true }), FIRESTORE_IMPORT_META_TIMEOUT_MS, 'setDoc tiempos meta');
 
-      const CHUNK = FIRESTORE_BATCH_MAX_OPS;
-      let batch = writeBatch(db);
-      let inBatch = 0;
-      let cloudAborted = false;
-      for (let i = 0; i < imported.length; i++) {
-        const r = imported[i];
-        const ref = doc(db, "tiempos", `${importId}_${i}`);
-        batch.set(ref, {
-          ...r,
-          import_id: importId,
-          created_at: serverTimestamp(),
-          updated_at: serverTimestamp(),
-          updated_by: currentUserData ? currentUserData.nombre : ''
-        }, { merge: true });
-        inBatch++;
-        if (inBatch >= CHUNK) {
-          try {
-            await withTimeout(batch.commit(), FIRESTORE_IMPORT_BATCH_TIMEOUT_MS, 'batch.commit tiempos');
-          } catch (e) {
-            cloudAborted = true;
-            console.error('Commit tiempos demoró demasiado, corto nube:', e);
-            showToast('El guardado en línea tardó demasiado (se detuvo). Los datos de tiempos quedaron en este navegador; probá de nuevo con mejor conexión.', 4500);
-            break;
-          }
-          const pct = Math.max(1, Math.min(99, Math.round(((i + 1) / imported.length) * 100)));
-          showToast(`Importando tiempos... (guardando ${pct}%)`, 0, true);
-          batch = writeBatch(db);
-          inBatch = 0;
-        }
-      }
-      if (!cloudAborted && inBatch > 0) {
-        try {
-          await withTimeout(batch.commit(), FIRESTORE_IMPORT_BATCH_TIMEOUT_MS, 'batch.commit tiempos final');
-          showToast('Importando tiempos... (guardando 99%)', 0, true);
-          persisted = true;
-        } catch (e) {
-          console.error('Commit final tiempos demoró demasiado:', e);
-        }
-      } else if (!cloudAborted) {
-        persisted = true;
-      }
-    } catch (e) {
-      console.error('No se pudo persistir tiempos en Firestore:', e);
-    }
-
-    // Ceder el hilo antes de trabajo pesado (localStorage / UI) para no “congelar” la pestaña.
-    await new Promise((r) => setTimeout(r, 0));
     tiemposData = imported;
-    const savedLocal = tiemposSaveLocal(imported, { import_id: importId, saved_at: Date.now(), source: persisted ? 'firestore+local' : 'local' });
+    const savedLocal = tiemposSaveLocal(imported, { import_id: importId, saved_at: Date.now(), source: 'local' });
     if (savedLocal === false && imported.length > 0) {
-      showToast('Datos en memoria y en la nube. La copia local fue omitida o falló (archivo muy grande).', 4200);
+      showToast('Archivo grande: copia local omitida; al terminar la nube quedará el respaldo.', 4200);
     }
-    await new Promise((r) => setTimeout(r, 0));
     computeComplexityMapFromTiempos();
-    // refrescar pivot si está abierto
     if (currentSection === 'tiempos') {
       tiemposRender._filtersInitedFor = null;
-      await new Promise((r) => setTimeout(r, 0));
       tiemposRender();
     }
-    if (currentSection === 'carga-trabajo') {
-      await new Promise((r) => setTimeout(r, 0));
-      workloadRender();
-    }
+    if (currentSection === 'carga-trabajo') workloadRender();
     importLastSave('tiempos', { at: Date.now(), file: file.name || '', count: imported.length });
-    try {
-      await setDoc(tiemposImportMetaRef, {
-        last_uploaded_at: serverTimestamp(),
-        last_file_name: file.name || '',
-        last_count: imported.length
-      }, { merge: true });
-    } catch (_) {}
     importLastRender();
-    startTiemposListener().catch((e) => console.warn('startTiemposListener post-import:', e));
-    showToast(`${imported.length} tiempos importados ✓ (${persisted ? 'guardado' : 'guardado local'})`, 3500);
+    showToast(`${imported.length} tiempos listos. Sincronizando con la nube en segundo plano…`, 4200);
+
+    void (async () => {
+      let persisted = false;
+      try {
+        showToast('Subiendo tiempos a la nube…', 0, true);
+        await firestoreWithTimeout(setDoc(tiemposImportMetaRef, {
+          current_import_id: importId,
+          updated_at: serverTimestamp(),
+          updated_by: currentUserData ? currentUserData.nombre : ''
+        }, { merge: true }), FIRESTORE_IMPORT_META_TIMEOUT_MS, 'setDoc tiempos meta');
+
+        const CHUNK = FIRESTORE_BATCH_MAX_OPS;
+        let batch = writeBatch(db);
+        let inBatch = 0;
+        let cloudAborted = false;
+        for (let i = 0; i < imported.length; i++) {
+          const r = imported[i];
+          const ref = doc(db, "tiempos", `${importId}_${i}`);
+          batch.set(ref, {
+            ...r,
+            import_id: importId,
+            created_at: serverTimestamp(),
+            updated_at: serverTimestamp(),
+            updated_by: currentUserData ? currentUserData.nombre : ''
+          }, { merge: true });
+          inBatch++;
+          if (inBatch >= CHUNK) {
+            try {
+              await firestoreWithTimeout(batch.commit(), FIRESTORE_IMPORT_BATCH_TIMEOUT_MS, 'batch.commit tiempos');
+            } catch (e) {
+              cloudAborted = true;
+              console.error('Commit tiempos demoró demasiado, corto nube:', e);
+              showToast('La subida de tiempos a la nube se detuvo; seguís con la copia en este navegador.', 4500);
+              break;
+            }
+            const pct = Math.max(1, Math.min(99, Math.round(((i + 1) / imported.length) * 100)));
+            showToast(`Subiendo tiempos a la nube… ${pct}%`, 0, true);
+            batch = writeBatch(db);
+            inBatch = 0;
+          }
+        }
+        if (!cloudAborted && inBatch > 0) {
+          try {
+            await firestoreWithTimeout(batch.commit(), FIRESTORE_IMPORT_BATCH_TIMEOUT_MS, 'batch.commit tiempos final');
+            persisted = true;
+          } catch (e) {
+            console.error('Commit final tiempos demoró demasiado:', e);
+          }
+        } else if (!cloudAborted) {
+          persisted = true;
+        }
+        if (persisted) {
+          try {
+            await setDoc(tiemposImportMetaRef, {
+              last_uploaded_at: serverTimestamp(),
+              last_file_name: file.name || '',
+              last_count: imported.length
+            }, { merge: true });
+          } catch (_) {}
+          try {
+            tiemposSaveLocal(tiemposData, { import_id: importId, saved_at: Date.now(), source: 'firestore+local' });
+          } catch (_) {}
+          importLastRender();
+          showToast('Nube: tiempos sincronizados ✓', 2800);
+        }
+      } catch (e) {
+        console.error('No se pudo persistir tiempos en Firestore:', e);
+        showToast('No se pudo completar la subida de tiempos a la nube; los datos siguen en este equipo.', 4000);
+      } finally {
+        if (persisted) {
+          startTiemposListener().catch((err) => console.warn('startTiemposListener post-import:', err));
+        }
+      }
+    })();
   } catch (e) {
     console.error('Error importando tiempos:', e);
     showToast('Error al importar tiempos (ver consola)', 3200);
