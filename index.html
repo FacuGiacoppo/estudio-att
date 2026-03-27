@@ -2116,7 +2116,8 @@
           📌 Carga de trabajo por Usuario
           <button class="info-btn" onclick="openInfo('workload')">i</button>
         </div>
-        <div class="rep-chart-sub">Heurística basada en vencimiento y cadencia mensual/anual (tareas abiertas)</div>
+        <div class="rep-chart-sub">Heurística basada en vencimiento y cadencia. Las <b>cantidades</b> (abiertas, próx. 30d, vencidas) salen del import de <b>Operaciones</b>; el import de <b>Tiempos</b> solo calibra la <b>complejidad</b> por obligación.</div>
+        <div id="workloadDataHint" class="rep-chart-sub" style="margin-top:6px;font-size:0.8rem;opacity:0.9"></div>
       </div>
     </div>
     <div id="workloadRows" style="display:flex;flex-direction:column;gap:12px"></div>
@@ -4119,6 +4120,10 @@ async function tiemposImportFile(event) {
   const file = inputEl && inputEl.files ? inputEl.files[0] : null;
   if (inputEl) inputEl.value = '';
   if (!file) { showToast('No se seleccionó archivo'); return; }
+  // Evita que el listener viejo (otro import_id) pise tiemposData mientras importamos.
+  if (unsubscribeTiempos) { try { unsubscribeTiempos(); } catch (_) {} unsubscribeTiempos = null; }
+  currentTiemposImportId = null;
+
   showToast('Importando tiempos... (leyendo)', 0, true);
 
   try {
@@ -4270,6 +4275,7 @@ async function tiemposImportFile(event) {
 
     if (imported.length === 0) { showToast('No se detectaron filas de tiempos para importar', 3200); return; }
     showToast(`Importando tiempos... (parseado ${imported.length} filas)`, 0, true);
+    await new Promise((r) => setTimeout(r, 0));
 
     const importId = 'tiempos_' + Date.now().toString(36);
     let persisted = false;
@@ -4327,15 +4333,25 @@ async function tiemposImportFile(event) {
       console.error('No se pudo persistir tiempos en Firestore:', e);
     }
 
+    // Ceder el hilo antes de trabajo pesado (localStorage / UI) para no “congelar” la pestaña.
+    await new Promise((r) => setTimeout(r, 0));
     tiemposData = imported;
-    tiemposSaveLocal(imported, { import_id: importId, saved_at: Date.now(), source: persisted ? 'firestore+local' : 'local' });
+    const savedLocal = tiemposSaveLocal(imported, { import_id: importId, saved_at: Date.now(), source: persisted ? 'firestore+local' : 'local' });
+    if (savedLocal === false && imported.length > 0) {
+      showToast('Datos en memoria y en la nube. La copia local fue omitida o falló (archivo muy grande).', 4200);
+    }
+    await new Promise((r) => setTimeout(r, 0));
     computeComplexityMapFromTiempos();
     // refrescar pivot si está abierto
     if (currentSection === 'tiempos') {
       tiemposRender._filtersInitedFor = null;
+      await new Promise((r) => setTimeout(r, 0));
       tiemposRender();
     }
-    if (currentSection === 'carga-trabajo') workloadRender();
+    if (currentSection === 'carga-trabajo') {
+      await new Promise((r) => setTimeout(r, 0));
+      workloadRender();
+    }
     importLastSave('tiempos', { at: Date.now(), file: file.name || '', count: imported.length });
     try {
       await setDoc(tiemposImportMetaRef, {
@@ -4345,6 +4361,11 @@ async function tiemposImportFile(event) {
       }, { merge: true });
     } catch (_) {}
     importLastRender();
+    try {
+      await startTiemposListener();
+    } catch (e) {
+      console.warn('startTiemposListener post-import:', e);
+    }
     showToast(`${imported.length} tiempos importados ✓ (${persisted ? 'guardado' : 'guardado local'})`, 3500);
   } catch (e) {
     console.error('Error importando tiempos:', e);
@@ -4403,6 +4424,9 @@ const INFO_CONTENT = {
     title: 'Cómo leer “Carga de trabajo”',
     body: `
       <div style="color:var(--ink-muted);margin-bottom:10px">Este panel es una <b>medida comparativa</b> para ayudarte a asignar tareas.</div>
+      <div style="margin-bottom:10px;padding:8px 10px;border-radius:8px;background:rgba(79,124,255,0.08);border:1px solid rgba(79,124,255,0.2);font-size:0.88rem">
+        <b>Fuente de datos:</b> los conteos de tareas (<b>Abiertas</b>, <b>Próx. 30d</b>, <b>Vencidas</b>) se calculan sobre el Excel de <b>Operaciones</b> importado. El Excel de <b>Tiempos</b> no suma filas acá: sirve para estimar <b>complejidad</b> por obligación (minutos promedio).
+      </div>
       <ul>
         <li><b>Abiertas</b>: cantidad total de operaciones del usuario con estado <b>Pendiente</b> o <b>Vencido</b> (sin límite de días).</li>
         <li><b>Próx. 30d</b>: de las abiertas, cuántas vencen en los próximos 30 días.</li>
@@ -4475,8 +4499,13 @@ function isAnnualPeriodo(periodo) {
 function workloadRender() {
   const rowsEl = document.getElementById('workloadRows');
   const emptyEl = document.getElementById('workloadEmpty');
+  const hintEl = document.getElementById('workloadDataHint');
   if (!rowsEl || !emptyEl) return;
-  if (!Array.isArray(opsData)) { rowsEl.innerHTML = ''; emptyEl.style.display = 'block'; return; }
+  if (!Array.isArray(opsData)) { rowsEl.innerHTML = ''; emptyEl.style.display = 'block'; if (hintEl) hintEl.textContent = ''; return; }
+  if (hintEl) {
+    const nTi = Array.isArray(tiemposData) ? tiemposData.length : 0;
+    hintEl.textContent = `Base actual: ${opsData.length} operaciones · ${nTi} registros de tiempos (solo para complejidad).`;
+  }
 
   const normU = (v) => (v ?? '').toString().trim().replace(/\s+/g,' ').toLowerCase();
   // Usuarios: derivar desde datos para evitar fallas por espacios/variantes
@@ -5656,12 +5685,41 @@ function computeComplexityMapFromTiempos() {
 
 const TIEMPOS_LOCAL_KEY = 'tiemposData_local_v1';
 const TIEMPOS_LOCAL_META_KEY = 'tiemposData_local_meta_v1';
+/** Evita JSON.stringify gigante que congela el navegador en imports masivos. */
+const TIEMPOS_LOCAL_MAX_ROWS = 12000;
 
 function tiemposSaveLocal(rows, meta) {
+  const list = rows || [];
+  const baseMeta = { ...(meta || {}), saved_at: (meta && meta.saved_at) || Date.now() };
   try {
-    localStorage.setItem(TIEMPOS_LOCAL_KEY, JSON.stringify(rows || []));
-    localStorage.setItem(TIEMPOS_LOCAL_META_KEY, JSON.stringify(meta || { saved_at: Date.now() }));
-  } catch (e) {}
+    if (list.length > TIEMPOS_LOCAL_MAX_ROWS) {
+      try { localStorage.removeItem(TIEMPOS_LOCAL_KEY); } catch (_) {}
+      localStorage.setItem(
+        TIEMPOS_LOCAL_META_KEY,
+        JSON.stringify({
+          ...baseMeta,
+          local_rows_omitted: true,
+          local_row_count: list.length,
+          note: 'Dataset demasiado grande para copia local completa'
+        })
+      );
+      return false;
+    }
+    localStorage.setItem(TIEMPOS_LOCAL_KEY, JSON.stringify(list));
+    localStorage.setItem(TIEMPOS_LOCAL_META_KEY, JSON.stringify(baseMeta));
+    return true;
+  } catch (e) {
+    if (e && (e.name === 'QuotaExceededError' || e.code === 22)) {
+      try {
+        localStorage.setItem(
+          TIEMPOS_LOCAL_META_KEY,
+          JSON.stringify({ ...baseMeta, local_quota_error: true })
+        );
+      } catch (_) {}
+    }
+    console.warn('tiemposSaveLocal:', e);
+    return false;
+  }
 }
 
 function tiemposLoadLocal() {
@@ -5696,13 +5754,16 @@ async function startTiemposListener() {
     const loaded = snapshot.docs.map(d => d.data());
     if (loaded.length === 0) return;
     tiemposData = loaded;
-    tiemposSaveLocal(loaded, { import_id: currentTiemposImportId, saved_at: Date.now(), source: 'firestore' });
-    computeComplexityMapFromTiempos();
-    if (currentSection === 'tiempos') {
-      tiemposRender._filtersInitedFor = null;
-      tiemposRender();
-    }
-    if (currentSection === 'carga-trabajo') workloadRender();
+    const impId = currentTiemposImportId;
+    setTimeout(() => {
+      tiemposSaveLocal(loaded, { import_id: impId, saved_at: Date.now(), source: 'firestore' });
+      computeComplexityMapFromTiempos();
+      if (currentSection === 'tiempos') {
+        tiemposRender._filtersInitedFor = null;
+        tiemposRender();
+      }
+      if (currentSection === 'carga-trabajo') workloadRender();
+    }, 0);
   });
 }
 
