@@ -1660,7 +1660,7 @@
     📈 Reportería
   </button>
   <button class="section-tab" onclick="switchSection('tiempos', this)" id="tab-tiempos">
-    ⏱️ Tiempos
+    ⏱️ Reporte de Tiempos
   </button>
   <button class="section-tab" onclick="switchSection('mis-clientes', this)" id="tab-mis-clientes">
     👥 Mis Clientes
@@ -1679,6 +1679,7 @@
       Socios <span class="section-tag soon">Socios</span>
     </button>
     <div class="section-dropdown-menu" role="menu" aria-label="Sección Socios">
+      <button type="button" class="section-dropdown-item" onclick="switchSectionFromDropdown('tiempos', 'navSocios')">⏱️ Reporte de Tiempos</button>
       <button type="button" class="section-dropdown-item" onclick="switchSectionFromDropdown('carga-trabajo', 'navSocios')">📌 Carga de trabajo</button>
     </div>
   </div>
@@ -2132,12 +2133,12 @@
   </div>
 </div><!-- /panel-reporteria -->
 
-<!-- PANEL TIEMPOS (socios: vista completa · miembros: solo sus filas) -->
+<!-- PANEL REPORTE DE TIEMPOS (público: socios ven todo · no socios solo sus filas) -->
 <div class="section-panel" id="panel-tiempos" style="padding:0 2rem 3rem">
   <div class="rep-container">
     <div class="rep-toolbar" style="position:relative;top:auto;background:transparent;border-bottom:none;padding:0 0 14px">
       <div>
-        <div class="rep-chart-title" style="padding:0">⏱️ Tiempos</div>
+        <div class="rep-chart-title" style="padding:0">⏱️ Reporte de Tiempos</div>
         <div class="rep-chart-sub">Seleccioná valores por dimensión y arrastrá a Filas o Columnas. Métrica: suma de minutos.</div>
         <div id="tiSelfViewNote" style="display:none;margin-top:10px;padding:10px 12px;border-radius:8px;background:rgba(79,124,255,0.08);border:1px solid rgba(79,124,255,0.22);font-size:0.82rem;color:var(--ink)">
           Estás viendo <b>solo tus registros</b> para poder analizar tu carga. Los socios tienen vista de todo el equipo.
@@ -4571,6 +4572,8 @@ function switchSection(section, btn) {
   }
   if (btn) {
     btn.classList.add('active');
+  } else if (section === 'tiempos') {
+    document.getElementById('tab-tiempos')?.classList.add('active');
   } else if (section === 'carga-trabajo') {
     document.getElementById('navSocios')?.classList.add('has-active');
   } else if (section === 'importaciones') {
@@ -4902,6 +4905,34 @@ function tiemposRowsForView() {
   });
 }
 
+/** Evita que un miembro quede con filtros guardados de otro usuario (solo ve filas propias). */
+function tiemposSanitizeFiltersForRestrictedView() {
+  if (!tiemposUserSeesOnlySelf() || !currentUserData) return false;
+  const me = tiemposNormVal('usuario', currentUserData.nombre);
+  if (!me) return false;
+  let changed = false;
+  const uf = tiDimFilters['usuario'];
+  if (uf instanceof Set) {
+    if (uf.size === 0 && tiDimNoneExplicit && tiDimNoneExplicit.has('usuario')) {
+      tiDimFilters['usuario'] = null;
+      tiDimNoneExplicit.delete('usuario');
+      changed = true;
+    } else if (uf.size > 0) {
+      const kept = [...uf].filter((x) => tiemposNormVal('usuario', x) === me);
+      if (kept.length === 0) {
+        tiDimFilters['usuario'] = null;
+        tiDimNoneExplicit.delete('usuario');
+        changed = true;
+      } else if (kept.length !== uf.size) {
+        tiDimFilters['usuario'] = new Set(kept);
+        tiDimNoneExplicit.delete('usuario');
+        changed = true;
+      }
+    }
+  }
+  return changed;
+}
+
 function tiemposGetFiltered() {
   const base = tiemposRowsForView();
   if (!Array.isArray(base) || base.length === 0) return [];
@@ -5019,6 +5050,7 @@ function tiemposLoadConfig() {
       });
     }
   } catch (_) {}
+  if (tiemposSanitizeFiltersForRestrictedView()) tiemposSaveConfig();
 }
 
 // ── Drag & Drop pivot ──
@@ -5425,6 +5457,7 @@ function tiemposPopulateFilters() {
 
 function tiemposRender() {
   tiemposEnsureUi();
+  if (tiemposSanitizeFiltersForRestrictedView()) tiemposSaveConfig();
   const wrap = document.getElementById('tiemposPivotWrap');
   const empty = document.getElementById('tiemposPivotEmpty');
   const dbg = document.getElementById('tiDebugStatus');
